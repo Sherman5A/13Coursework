@@ -132,7 +132,7 @@ create_table(conn, sql_create_projects_table)
 create_table(conn, sql_create_tasks_table)
 
 
-project = ('Cool App with SQLite & Python', '2015-01-01', '2015-01-30');
+project = ('Cool App with SQLite & Python', '2015-01-01', '2015-01-30')
 project_id = create_project(conn, project)
 
 # tasks
