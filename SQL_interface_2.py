@@ -1,5 +1,3 @@
-from os import error
-from SQLInterface import create_connection
 import sqlite3
 from sqlite3.dbapi2 import Cursor, Error
 

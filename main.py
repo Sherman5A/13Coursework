@@ -39,13 +39,14 @@ class StartPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        lbl_title = tk.Label(self, text='Title')
-        lbl_title.pack()
+        lbl_title = tk.Label(self, text='Start Page:')
+        lbl_title.pack(pady=10)
         self.btn_start_login = tk.Button(self, text='Login Page', command=lambda: self.controller.show_frame('TextLogin'))
-        self.btn_start_login.pack()
+        self.btn_start_login.pack(pady=3)
 
+        
         self.btn_signup = tk.Button(self, text='Sign up', command=lambda: self.controller.show_frame('SignUp'))
-        self.btn_signup.pack()
+        self.btn_signup.pack(pady=3)
         
 
 
@@ -63,17 +64,21 @@ class TextLogin(tk.Frame):
         self.input_frame.pack()
         
         lbl_username = tk.Label(self.input_frame, text='Username:')
-        lbl_username.grid(column=0, row=0, pady=5)
+        lbl_username.grid(column=0, row=0, pady=3)
         
         self.ent_username = tk.Entry(self.input_frame)
-        self.ent_username.grid(column=1, row=0, pady=5)
+        self.ent_username.grid(column=1, row=0, pady=3)
         
         lbl_password = tk.Label(self.input_frame, text='Password:')
-        lbl_password.grid(column=0, row=1, pady=5)
+        lbl_password.grid(column=0, row=1, pady=3)
         
         self.ent_password = tk.Entry(self.input_frame)
-        self.ent_password.grid(column=1, row=1, pady=5)
-        self.btn_login = tk.Button(self, text='Login', command='')
+        self.ent_password.grid(column=1, row=1, pady=3)
+        btn_login = tk.Button(self, text='Login', command='')
+        btn_login.pack(pady=3)
+
+        btn_retrun_start_page = tk.Button(self, text='Return to start page', command=lambda: self.controller.show_frame('StartPage'))
+        btn_retrun_start_page.pack(pady=3)
 
     def login_check(self):
         '''Checks username and password'''
@@ -104,49 +109,58 @@ class SignUp(tk.Frame):
         lbl_first_name = tk.Label(user_input_frame, text='First Name:')
         lbl_first_name.grid(row=0, column=0, pady=4)
 
-        ent_first_name = tk.Entry(user_input_frame)
-        ent_first_name.grid(row=0, column=1, pady=4)
+        self.ent_first_name = tk.Entry(user_input_frame)
+        self.ent_first_name.grid(row=0, column=1, pady=4)
 
         lbl_second_name = tk.Label(user_input_frame, text='Last name:')
         lbl_second_name.grid(row=1, column=0, pady=4)
 
-        lbl_second_name = tk.Entry(user_input_frame)
-        lbl_second_name.grid(row=1, column=1, pady=4)
+        self.ent_second_name = tk.Entry(user_input_frame)
+        self.ent_second_name.grid(row=1, column=1, pady=4)
+
+        lbl_year_group = tk.Label(user_input_frame, text='Year group:')
+        lbl_year_group.grid(row=2, column=0)
 
         year_groups = ['12', '13']
         year_value = tk.StringVar(user_input_frame, value='Select a year group')
 
-        menu_year_group = tk.OptionMenu(user_input_frame, year_value, *year_groups)
-        menu_year_group.grid(row=2, column=0, sticky='ew', pady=3, columnspan=2)
+        self.menu_year_group = tk.OptionMenu(user_input_frame, year_value, *year_groups)
+        self.menu_year_group.grid(row=2, column=1, sticky='ew', pady=3)
 
+        lbl_form_group = tk.Label(user_input_frame, text='Form group:')
+        lbl_form_group.grid(row=3, column=0)
         
         form_value = tk.StringVar(user_input_frame, value='Select a form group')
         form_list = ['A', 'B', 'C', 'D', 'E', 'D', 'F']
         
-        menu_form_group = tk.OptionMenu(user_input_frame, form_value, *form_list)
-        menu_form_group.grid(row=3, column=0, sticky='ew', pady=3, columnspan=2)
+        self.menu_form_group = tk.OptionMenu(user_input_frame, form_value, *form_list)
+        self.menu_form_group.grid(row=3, column=1, sticky='ew', pady=3)
 
         lbl_username = tk.Label(user_input_frame, text='Username:')
         lbl_username.grid(row=4, column=0, pady=3)
 
-        ent_username = tk.Entry(user_input_frame)
-        ent_username.grid(row=4, column=1, pady=3)
+        self.ent_username = tk.Entry(user_input_frame)
+        self.ent_username.grid(row=4, column=1, pady=3)
 
         #<3 <3
 
-        lbl_password = tk.Label(user_input_frame, text='Password')
+        lbl_password = tk.Label(user_input_frame, text='Password:')
         lbl_password.grid(row=5, column=0, pady=3)
 
-        ent_password = tk.Entry(user_input_frame, show='*')
-        ent_password.grid(row=5, column=1, pady=3)
+        self.ent_password = tk.Entry(user_input_frame, show='*')
+        self.ent_password.grid(row=5, column=1, pady=3)
 
-        lbl_password_repeat = tk.Label(user_input_frame, text='Repeat Password')
+        lbl_password_repeat = tk.Label(user_input_frame, text='Repeat Password:')
         lbl_password_repeat.grid(row=6, column=0, pady=3)
 
-        ent_password_repeat = tk.Entry(user_input_frame, show='*')
-        ent_password_repeat.grid(row=6, column=1, pady=3)
+        self.ent_password_repeat = tk.Entry(user_input_frame, show='*')
+        self.ent_password_repeat.grid(row=6, column=1, pady=3)
 
+        btn_confirm = tk.Button(self, text='Sign up', command='')
+        btn_confirm.pack(pady=5)
 
+        btn_return_start = tk.Button(self, text= 'Return to start page', command=lambda: self.controller.show_frame('StartPage'))
+        btn_return_start.pack(pady=3)
         
 
 if __name__ == '__main__':

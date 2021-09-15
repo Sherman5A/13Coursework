@@ -29,8 +29,3 @@ def validate_num(input, min_num=None):
 
 def validate_date(input):
     pass
-
-
-
-print(validate_alpha(25))
-print(validate_num(-5,0))
