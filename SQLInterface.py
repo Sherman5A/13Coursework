@@ -126,31 +126,31 @@ sql_create_tasks_table = """CREATE TABLE IF NOT EXISTS tasks (
                                 FOREIGN KEY (project_id) REFERENCES projects (id)
                             );"""
 
-conn = create_connection("test.db")
-create_table(conn, sql_create_projects_table)
-create_table(conn, sql_create_tasks_table)
+# conn = create_connection("test.db")
+# create_table(conn, sql_create_projects_table)
+# create_table(conn, sql_create_tasks_table)
 
 
-project = ('Cool App with SQLite & Python', '2015-01-01', '2015-01-30')
-project_id = create_project(conn, project)
+# project = ('Cool App with SQLite & Python', '2015-01-01', '2015-01-30')
+# project_id = create_project(conn, project)
 
-# tasks
-task_1 = ('Analyze the requirements of the app', 1, 1, project_id, '2015-01-01',
-          '2015-01-02')
-task_2 = ('Confirm with user about the top requirements', 1, 1, project_id,
-          '2015-01-03', '2015-01-05')
+# # tasks
+# task_1 = ('Analyze the requirements of the app', 1, 1, project_id, '2015-01-01',
+#           '2015-01-02')
+# task_2 = ('Confirm with user about the top requirements', 1, 1, project_id,
+#           '2015-01-03', '2015-01-05')
 
-# create tasks
-# create_task(conn, task_1)
-# create_task(conn, task_2)
+# # create tasks
+# # create_task(conn, task_1)
+# # create_task(conn, task_2)
 
-update_task(conn, (2, '2015-01-04', '2015-01-06', 2))
+# update_task(conn, (2, '2015-01-04', '2015-01-06', 2))
 
-print("1. Query task by priority:")
-select_task_by_priority(conn, 2)
+# print("1. Query task by priority:")
+# select_task_by_priority(conn, 2)
 
-print("2. Query all tasks")
-select_all_tasks(conn)
+# print("2. Query all tasks")
+# select_all_tasks(conn)
 
-# delete_task(conn, 2); delete by ID
-# delete_all_tasks(conn);
+# # delete_task(conn, 2); delete by ID
+# # delete_all_tasks(conn);
