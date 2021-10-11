@@ -269,7 +269,24 @@ class TeacherMenu(tk.Frame):
         '''Logs out of sql database'''
         # log out of sql
         self.controller.show_frame('StartPage')
+
+class Logout(tk.Frame):
+
+    def __init__(self, parent, controller):
+        '''Intialise class values and create intialise GUI elements'''
+
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        # gui creation
         
+        self.logout_title = tk.Label(self, text='Title')
+        self.logout_title.pack(pady=3)
+        
+        self.confimation_label = tk.Label(self, text='Confirm Logout')
+        self.confimation_label.pack(pady=3)
+
+        self.confirm
 
 if __name__ == '__main__':
     
