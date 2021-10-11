@@ -1,15 +1,14 @@
 '''Init, GUI construction'''
 
 import tkinter as tk
-
 import logic
 
 
 class Gui(tk.Tk):
-    '''GUI for program'''
+    '''GUI controller for program, shows class frames, inits and manages frame classes'''
 
     def __init__(self, *args, **kwargs):
-        '''Creates gui, a base frame, inits class frames'''
+        '''Creates gui, base container frame, inits class frames'''
         
         tk.Tk.__init__(self, *args, **kwargs)
 
@@ -19,7 +18,7 @@ class Gui(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu):
+        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, Logout):
             frame = F(parent=container, controller=self)
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky='nsew')
@@ -28,7 +27,7 @@ class Gui(tk.Tk):
         self.show_frame("StartPage")
 
     def show_frame(self, page_name):
-        '''Switch to specified frame classs'''
+        '''Raise specified frame classs: page_name'''
         frame = self.frames[page_name]
         frame.tkraise()
 
@@ -59,7 +58,10 @@ class StartPage(tk.Frame):
 
         btn_teacher_menu = tk.Button(self, text='Teacher Menu', command=lambda: self.controller.show_frame('TeacherMenu'))
         btn_teacher_menu.pack(pady=3)
-        
+
+        btn_logout_menu = tk.Button(self, text='Logout', command=lambda: self.controller.show_frame('Logout'))
+        btn_logout_menu.pack(pady=3)
+     
 
 class TextLogin(tk.Frame):
     '''Page to login to system'''
@@ -160,7 +162,7 @@ class SignUp(tk.Frame):
         self.ent_username = tk.Entry(frame_user_input)
         self.ent_username.grid(row=4, column=1, pady=3)
 
-        #<3 <3
+        # <3 <3
 
         lbl_password = tk.Label(frame_user_input, text='Password:')
         lbl_password.grid(row=5, column=0, pady=3)
@@ -182,6 +184,7 @@ class SignUp(tk.Frame):
 
 
 class StudentMenu(tk.Frame):
+    '''GUI menu for student access, provdies less options than teacher'''
 
     def __init__(self, parent, controller):
         '''Initialise class values and create initial GUI elements'''
@@ -212,7 +215,7 @@ class StudentMenu(tk.Frame):
         # may add function: 
         # btn_view_permissions = tk.Button(frame_stuent_actions, text='View user permissions', command='')
 
-        btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.logout())
+        btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('Logout'))
         btn_user_logout.pack(pady=3)
 
     def student_configure(self, student_name):
@@ -224,8 +227,9 @@ class StudentMenu(tk.Frame):
         # log out of sql
         self.controller.show_frame('StartPage')
 
-    
+   
 class TeacherMenu(tk.Frame):
+    '''GUI Menu for teacher, has elevated permissions over student menu'''
 
     def __init__(self, parent, controller):
         '''Initialise class values and create initial GUI elements'''
@@ -257,7 +261,7 @@ class TeacherMenu(tk.Frame):
         btn_view_permissions = tk.Button(frame_teacher_actions, text='View user permissions', command='')
         btn_view_permissions.grid(row=1, column=1, sticky='ew', pady=3, padx=3)
 
-        btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.logout())
+        btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('Logout'))
         btn_user_logout.pack(pady=3)
 
     def teacher_configure(self, teacher_name):
@@ -265,12 +269,9 @@ class TeacherMenu(tk.Frame):
         self.teacher_name.set(teacher_name)
 
 
-    def logout(self):
-        '''Logs out of sql database'''
-        # log out of sql
-        self.controller.show_frame('StartPage')
 
 class Logout(tk.Frame):
+    '''Confirms whether user wants to logout'''
 
     def __init__(self, parent, controller):
         '''Intialise class values and create intialise GUI elements'''
@@ -279,14 +280,29 @@ class Logout(tk.Frame):
         self.controller = controller
 
         # gui creation
-        
-        self.logout_title = tk.Label(self, text='Title')
-        self.logout_title.pack(pady=3)
-        
-        self.confimation_label = tk.Label(self, text='Confirm Logout')
-        self.confimation_label.pack(pady=3)
 
-        self.confirm
+        lbl_logout_confirm = tk.Label(self, text='Are you sure you want to logout')
+        lbl_logout_confirm.pack()
+
+        login_btn_frame = tk.Frame(self)
+        login_btn_frame.pack(fill='both', expand=True, pady=5)
+
+        tk.Grid.columnconfigure(login_btn_frame, 0, weight=1)
+        tk.Grid.columnconfigure(login_btn_frame, 1, weight=1)
+        tk.Grid.rowconfigure(login_btn_frame, 0, weight=1)
+
+        self.btn_login_confim = tk.Button(login_btn_frame, text='Logout', command='')
+        self.btn_login_confim.grid(row=0, column=0, sticky='nsew', padx=5)
+
+        self.btn_login_cancel = tk.Button(login_btn_frame, text='Cancel', command='')
+        self.btn_login_cancel.grid(row=0, column=1, sticky='nsew', padx=5)
+
+    def logout(self):
+        '''Logs out of sql database'''
+        # log out of sql
+        self.controller.show_frame('StartPage')
+
+
 
 if __name__ == '__main__':
     
