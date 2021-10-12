@@ -228,41 +228,41 @@ class StudentMenu(tk.Frame):
         self.controller.show_frame('StartPage')
 
    
-class TeacherMenu(tk.Frame):
+class TeacherMenu(StudentMenu):
     '''GUI Menu for teacher, has elevated permissions over student menu'''
 
     def __init__(self, parent, controller):
         '''Initialise class values and create initial GUI elements'''
 
-        tk.Frame.__init__(self, parent)
+        
         self.controller = controller
-
+        StudentMenu.__init__(self, parent, controller)
         # gui creation
         # string var for student name, allows text to change
 
-        self.teacher_name = tk.StringVar(self, value='Teacher Name')
+        # self.teacher_name = tk.StringVar(self, value='Teacher Name')
 
-        lbl_teacher_title = tk.Label(self, textvariable=self.teacher_name)
-        lbl_teacher_title.pack(pady=5)
+        # lbl_teacher_title = tk.Label(self, textvariable=self.teacher_name)
+        # lbl_teacher_title.pack(pady=5)
 
         frame_teacher_actions = tk.Frame(self)
         frame_teacher_actions.pack(pady=3)
 
         btn_manual_sign = tk.Button(frame_teacher_actions, text='Manual sign students', command='')
-        btn_manual_sign.grid(row=0, column=0, sticky='ew', pady=3, padx=3)
+        btn_manual_sign.grid(row=2, column=0, sticky='ew', pady=3, padx=3)
 
         btn_search_attendence = tk.Button(frame_teacher_actions, text='View student history', command='')
-        btn_search_attendence.grid(row=0, column=1, sticky='ew', pady=3, padx=3)
+        btn_search_attendence.grid(row=2, column=1, sticky='ew', pady=3, padx=3)
 
         btn_edit_student = tk.Button(frame_teacher_actions, text='Edit student info', command='')
-        btn_edit_student.grid(row=1, column=0, sticky='ew', pady=3, padx=3)
+        btn_edit_student.grid(row=3, column=0, sticky='ew', pady=3, padx=3)
 
         # may add function: 
         btn_view_permissions = tk.Button(frame_teacher_actions, text='View user permissions', command='')
-        btn_view_permissions.grid(row=1, column=1, sticky='ew', pady=3, padx=3)
+        btn_view_permissions.grid(row=3, column=1, sticky='ew', pady=3, padx=3)
 
-        btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('Logout'))
-        btn_user_logout.pack(pady=3)
+        # btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('Logout'))
+        # btn_user_logout.pack(pady=3)
 
     def teacher_configure(self, teacher_name):
         '''Configure the TeacherMenu to the logged in student'''
