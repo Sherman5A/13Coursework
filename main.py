@@ -23,7 +23,7 @@ class Gui(tk.Tk):
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky='nsew')
 
-        self.title("Sign System")
+        self.title("6th Form Sign System")
         self.show_frame("StartPage")
 
     def show_frame(self, page_name):
@@ -40,6 +40,8 @@ class StartPage(tk.Frame):
         # initialse frame
         tk.Frame.__init__(self, parent)
         self.controller = controller
+
+        self.config(bg='#00ff93')
 
         # create GUI elements
         lbl_title = tk.Label(self, text='Start Page:')
@@ -73,6 +75,8 @@ class TextLogin(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
+        self.config(bg='#f0ff00')
+
         # Create GUI elements
         lbl_page_title = tk.Label(self, text='Login')
         lbl_page_title.pack()
@@ -88,13 +92,13 @@ class TextLogin(tk.Frame):
         lbl_password = tk.Label(self.input_frame, text='Password:')
         lbl_password.grid(column=0, row=1, pady=3)
         
-        self.ent_password = tk.Entry(self.input_frame)
+        self.ent_password = tk.Entry(self.input_frame, show='*')
         self.ent_password.grid(column=1, row=1, pady=3)
         btn_login = tk.Button(self, text='Login', command='')
         btn_login.pack(pady=3)
 
-        btn_retrun_start_page = tk.Button(self, text='Return to start page', command=lambda: self.controller.show_frame('StartPage'))
-        btn_retrun_start_page.pack(pady=3)
+        btn_return_start_page = tk.Button(self, text='Return to start page', command=lambda: self.controller.show_frame('StartPage'))
+        btn_return_start_page.pack(pady=3)
 
     def login_check(self):
         """Checks username and password"""
@@ -118,6 +122,7 @@ class SignUp(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         
+        self.config(bg='pink')
         # gui creation
         lbl_signup_title = tk.Label(self, text='Sign up')
         lbl_signup_title.pack(pady=10)
@@ -176,7 +181,7 @@ class SignUp(tk.Frame):
         self.ent_password_repeat = tk.Entry(frame_user_input, show='*')
         self.ent_password_repeat.grid(row=6, column=1, pady=3)
 
-        btn_confirm = tk.Button(self, text='Sign up', command='')
+        btn_confirm = tk.Button(self, text='Confirm sign up', command='')
         btn_confirm.pack(pady=5)
 
         btn_return_start = tk.Button(self, text= 'Return to start page', command=lambda: self.controller.show_frame('StartPage'))
@@ -192,6 +197,8 @@ class StudentMenu(tk.Frame):
         # initialise frame 
         tk.Frame.__init__(self, parent)
         self.controller = controller
+
+        self.config(bg='#ff0093')
 
         # gui creation
         # string var for student name, allows text to change
@@ -235,6 +242,7 @@ class TeacherMenu(StudentMenu):
         """Initialise class values and create initial GUI elements"""
 
         
+
         self.controller = controller
         StudentMenu.__init__(self, parent, controller)
         # gui creation
@@ -244,6 +252,8 @@ class TeacherMenu(StudentMenu):
 
         # lbl_teacher_title = tk.Label(self, textvariable=self.teacher_name)
         # lbl_teacher_title.pack(pady=5)
+
+        self.config(bg='#492852')
 
         frame_teacher_actions = tk.Frame(self)
         frame_teacher_actions.pack(pady=3)
