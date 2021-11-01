@@ -47,7 +47,7 @@ class StartPage(tk.Frame):
         lbl_title = tk.Label(self, text='Start Page:')
         lbl_title.pack(pady=10)
 
-        self.btn_start_login = tk.Button(self, text='Login Page', command=lambda: self.controller.show_frame('TextLogin'))
+        self.btn_start_login = tk.Button(self, text='Login Page', command=lambda: self.controller.show_frame('TextLogin'), fg='yellow', bg='#00ff93')
         self.btn_start_login.pack(pady=3)
 
         self.btn_signup = tk.Button(self, text='Sign up', command=lambda: self.controller.show_frame('SignUp'))
@@ -222,7 +222,7 @@ class StudentMenu(tk.Frame):
         # may add function: 
         # btn_view_permissions = tk.Button(frame_stuent_actions, text='View user permissions', command='')
 
-        btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('LogoutMenu'))
+        btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.logout())
         btn_user_logout.pack(pady=3)
 
     def student_configure(self, student_name):
@@ -231,7 +231,12 @@ class StudentMenu(tk.Frame):
 
     def logout(self):
         """Logs out of sql database"""
-        # log out of sql
+        # self.controller.show_frame('Logout')
+        # print(type(self).__name__)
+        class_name = type(self).__name__
+        self.controller.frames['LogoutMenu'].set_calling_class(class_name)
+        self.controller.show_frame('LogoutMenu')
+
 
 
    
@@ -278,12 +283,12 @@ class TeacherMenu(StudentMenu):
         """Configure the TeacherMenu to the logged in student"""
         self.teacher_name.set(teacher_name)
     
-    def logout(self):
-        # self.controller.show_frame('Logout')
-        # print(type(self).__name__)
-        class_name = type(self).__name__
-        self.controller.frames['LogoutMenu'].set_calling_class(class_name)
-        # self.controller.show_frame('LogoutMenu')
+    # def logout(self):
+    #     # self.controller.show_frame('Logout')
+    #     # print(type(self).__name__)
+    #     class_name = type(self).__name__
+    #     self.controller.frames['LogoutMenu'].set_calling_class(class_name)
+    #     # self.controller.show_frame('LogoutMenu')
 
 
 
@@ -311,7 +316,7 @@ class LogoutMenu(tk.Frame):
         self.btn_logout_confim = tk.Button(logout_btn_frame, text='Logout', command='')
         self.btn_logout_confim.grid(row=0, column=0, sticky='nsew', padx=5)
 
-        self.btn_logout_cancel = tk.Button(logout_btn_frame, text='Cancel', command=lambda: self.controller.show_frame[self.call])
+        self.btn_logout_cancel = tk.Button(logout_btn_frame, text='Cancel', command=lambda: self.controller.show_frame(self.caller))
         self.btn_logout_cancel.grid(row=0, column=1, sticky='nsew', padx=5)
 
     def set_calling_class(self, caller):
