@@ -1,6 +1,7 @@
 """Init, GUI construction"""
 
 import tkinter as tk
+from tkinter.constants import NW
 import logic
 
 
@@ -18,7 +19,7 @@ class Gui(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu):
+        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch):
             frame = F(parent=container, controller=self)
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky='nsew')
@@ -63,6 +64,10 @@ class StartPage(tk.Frame):
 
         btn_logout_menu = tk.Button(self, text='Logout', command=lambda: self.controller.show_frame('LogoutMenu'))
         btn_logout_menu.pack(pady=3)
+
+        btn_logout_menu = tk.Button(self, text='Search', command=lambda: self.controller.show_frame('UserSearch'))
+        btn_logout_menu.pack(pady=3)
+     
      
 
 class TextLogin(tk.Frame):
@@ -296,7 +301,7 @@ class LogoutMenu(tk.Frame):
     """Confirms whether user wants to logout"""
 
     def __init__(self, parent, controller):
-        """Intialise class values and create intialise GUI elements"""
+        """Intialise class values and create GUI elements"""
 
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -313,7 +318,7 @@ class LogoutMenu(tk.Frame):
         tk.Grid.columnconfigure(logout_btn_frame, 1, weight=1)
         tk.Grid.rowconfigure(logout_btn_frame, 0, weight=1)
 
-        self.btn_logout_confim = tk.Button(logout_btn_frame, text='Logout', command='')
+        self.btn_logout_confim = tk.Button(logout_btn_frame, text='Logout', command=lambda: self.logout())
         self.btn_logout_confim.grid(row=0, column=0, sticky='nsew', padx=5)
 
         self.btn_logout_cancel = tk.Button(logout_btn_frame, text='Cancel', command=lambda: self.controller.show_frame(self.caller))
@@ -327,6 +332,77 @@ class LogoutMenu(tk.Frame):
         """Logs out of sql database"""
         # log out of sql
         self.controller.show_frame('StartPage')
+
+
+class UserSearch(tk.Frame):
+    """Search for students"""
+
+    def __init__(self, parent, controller):
+        """Intitialise class values and create GUI elements"""
+
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        # gui creation
+
+        self.search_config_frame = tk.Frame(self)
+        self.search_config_frame.pack(side='left', anchor=NW)
+
+        title_frame = tk.Frame(self.search_config_frame)
+        title_frame.pack(fill='both', anchor=NW, pady=20)
+
+        lbl_search_title = tk.Label(title_frame, text='User Search')
+        lbl_search_title.pack()
+
+        self.btn_change_sign_search = tk.Button(title_frame, text='Go to sign search')
+        self.btn_change_sign_search.pack()
+
+        search_term_frame = tk.Frame(self.search_config_frame)
+        search_term_frame.pack(fill='both', anchor=NW)
+
+        lbl_fname_search = tk.Label(search_term_frame, text='First name:')
+        lbl_fname_search.grid(row=0, column=0, sticky='nsew', pady=3)
+
+        self.ent_fname_search = tk.Entry(search_term_frame)
+        self.ent_fname_search.grid(row=0, column=1, sticky='nsew', pady=3)
+
+        lbl_sec_name_search = tk.Label(search_term_frame, text='Second name:')
+        lbl_sec_name_search.grid(row=1, column=0, sticky='nsew', pady=3)
+
+        self.ent_sec_name_search = tk.Entry(search_term_frame)
+        self.ent_sec_name_search.grid(row=1, column=1, sticky='nsew', pady=3)
+
+        lbl_year_search = tk.Label(search_term_frame, text='Year group:')
+        lbl_year_search.grid(row=2, column=0, sticky='nsew', pady=3)
+
+        self.year_value = tk.StringVar(search_term_frame, value='Select a year group')
+        year_list = ['12', '13']
+
+        self.menu_year_search = tk.OptionMenu(search_term_frame, self.year_value, *year_list)
+        self.menu_year_search.grid(row=2, column=1, sticky='nsew', pady=3)
+
+        lbl_form_search = tk.Label(search_term_frame, text='Form group:')
+        lbl_form_search.grid(row=3, column=0, sticky='nsew', pady=3)
+
+        self.form_value = tk.StringVar(search_term_frame, value='Select a form group')
+        form_list = ['A', 'B', 'C', 'D', 'E', 'D', 'F']
+        
+        self.menu_form_search = tk.OptionMenu(search_term_frame, self.form_value, *form_list)
+        self.menu_form_search.grid(row=3, column=1, sticky='ew', pady=3)
+
+
+        lbl_username_search = tk.Label(search_term_frame, text='Username')
+        lbl_username_search.grid(row=4, column=0, sticky='nsew', pady=3)
+
+        self.ent_username_search = tk.Entry(search_term_frame)
+        self.ent_username_search.grid(row=4, column=1, sticky='nsew', pady=3)
+
+        self.btn_begin_search = tk.Button(search_term_frame, text='Search', command='')
+        self.btn_begin_search.grid(row=5, column=0, columnspan=2, sticky='ew', pady=3)
+
+        btn_return_main =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame['StudentMenu'])
+        btn_return_main.grid(row=6, column=0, columnspan=2, sticky='ew', pady=5)
+
 
 
 if __name__ == '__main__':
