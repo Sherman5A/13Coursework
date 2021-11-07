@@ -67,8 +67,7 @@ class StartPage(tk.Frame):
 
         btn_logout_menu = tk.Button(self, text='Search', command=lambda: self.controller.show_frame('UserSearch'))
         btn_logout_menu.pack(pady=3)
-     
-     
+        
 
 class TextLogin(tk.Frame):
     """Page to login to system"""
@@ -242,16 +241,12 @@ class StudentMenu(tk.Frame):
         self.controller.frames['LogoutMenu'].set_calling_class(class_name)
         self.controller.show_frame('LogoutMenu')
 
-
-
    
 class TeacherMenu(StudentMenu):
     """GUI Menu for teacher, has elevated permissions over student menu"""
 
     def __init__(self, parent, controller):
         """Initialise class values and create initial GUI elements"""
-
-        
 
         self.controller = controller
         StudentMenu.__init__(self, parent, controller)
@@ -294,7 +289,6 @@ class TeacherMenu(StudentMenu):
     #     class_name = type(self).__name__
     #     self.controller.frames['LogoutMenu'].set_calling_class(class_name)
     #     # self.controller.show_frame('LogoutMenu')
-
 
 
 class LogoutMenu(tk.Frame):
