@@ -1,7 +1,7 @@
 """Init, GUI construction"""
 
 import tkinter as tk
-from tkinter.constants import NW
+from tkinter.constants import BOTH, NW
 import logic
 
 
@@ -19,7 +19,7 @@ class Gui(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, SignSearch):
+        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, SignSearch, SignIn, SignOut):
             frame = F(parent=container, controller=self)
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky='nsew')
@@ -217,10 +217,10 @@ class StudentMenu(tk.Frame):
         frame_student_actions = tk.Frame(self)
         frame_student_actions.pack(pady=3)
 
-        btn_school_sign_in = tk.Button(frame_student_actions, text='Sign into school', command='')
+        btn_school_sign_in = tk.Button(frame_student_actions, text='Sign into school', command=lambda: self.controller.show_frame('SignIn'))
         btn_school_sign_in.grid(row=0, column=0, sticky='ew', pady=3, padx=3)
 
-        btn_school_sign_out = tk.Button(frame_student_actions, text='Sign out of school', command='')
+        btn_school_sign_out = tk.Button(frame_student_actions, text='Sign out of school', command=lambda: self.controller.show_frame('SignOut'))
         btn_school_sign_out.grid(row=0, column=1, sticky='ew', pady=3, padx=3)
 
         btn_view_attendence = tk.Button(frame_student_actions, text='View sign in / out history', command='')
@@ -281,6 +281,7 @@ class TeacherMenu(StudentMenu):
     def teacher_configure(self, teacher_name):
         """Configure the TeacherMenu to the logged in student"""
         self.teacher_name.set(teacher_name)
+
 
 class LogoutMenu(tk.Frame):
     """Confirms whether user wants to logout"""
@@ -459,6 +460,58 @@ class SignSearch(tk.Frame):
         btn_return_main =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame('StudentMenu'))
         btn_return_main.grid(row=5, column=0, columnspan=2, sticky='ew', pady=5)
 
+
+class SignIn(tk.Frame):
+    """Record sign into of school (not the program"""
+
+    def __init__(self, parent, controller):
+        """"Intitialse class values and creates GUI elements"""
+
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        # gui creation
+
+        lbl_sign_in_title = tk.Label(self, text='Sign In')
+        lbl_sign_in_title.pack(pady=20)
+
+        btn_sign_in = tk.Button(self, text='Sign In', command='')
+        btn_sign_in.pack(pady=10, padx=25, expand=True, fill='both')
+
+        btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_cancel.pack(pady=10, padx=25, expand=True, fill='both')
+   
+
+class SignOut(tk.Frame):
+    """Record sign out of school (not the program)"""
+
+    def __init__(self, parent, controller):
+        """Initialise class values and creates GUI elements"""
+
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        # GUI creation
+
+        lbl_sign_out_title = tk.Label(self, text='Sign Out')
+        lbl_sign_out_title.pack(pady=20)
+
+        frame_sign_out_type = tk.Frame(self)
+        frame_sign_out_type.pack()
+
+        lbl_sign_out_type = tk.Label(frame_sign_out_type, text='Sign out reason:')
+        lbl_sign_out_type.grid(row=0, column=0)
+
+        self.sign_value = tk.StringVar(frame_sign_out_type, value='Sign out type')
+
+        sign_out_types = ['Breaktime / Lunchtime', 'Going home']
+
+        self.menu_sign_out_type = tk.OptionMenu(frame_sign_out_type, self.sign_value, *sign_out_types)
+        self.menu_sign_out_type.grid(row=0, column=1)
+
+        
+        
+        
 
 if __name__ == '__main__':
     
