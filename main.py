@@ -481,7 +481,7 @@ class SignIn(tk.Frame):
         btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
         btn_cancel.pack(pady=10, padx=25, expand=True, fill='both')
 
-
+# troubleshooting
 class SignOut(tk.Frame):
     """Record sign out of school (not the program)"""
 
