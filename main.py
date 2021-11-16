@@ -1,7 +1,7 @@
 """Init, GUI construction"""
 
 import tkinter as tk
-from tkinter.constants import BOTH, NW
+from tkinter.constants import NW
 import logic
 
 
@@ -294,21 +294,21 @@ class LogoutMenu(tk.Frame):
 
         # gui creation
 
-        lbl_logout_confirm_title = tk.Label(self, text='Are you sure you want to logout')
-        lbl_logout_confirm_title.pack()
+        lbl_logout_confirm_title = tk.Label(self, text='Are you sure you want to logout:')
+        lbl_logout_confirm_title.pack(pady=(10,0))
 
         logout_btn_frame = tk.Frame(self)
-        logout_btn_frame.pack(fill='both', expand=True, pady=5)
+        logout_btn_frame.pack(fill='both', expand=True, pady=10)
 
         tk.Grid.columnconfigure(logout_btn_frame, 0, weight=1)
         tk.Grid.columnconfigure(logout_btn_frame, 1, weight=1)
         tk.Grid.rowconfigure(logout_btn_frame, 0, weight=1)
 
         self.btn_logout_confim = tk.Button(logout_btn_frame, text='Logout', command=lambda: self.logout())
-        self.btn_logout_confim.grid(row=0, column=0, sticky='nsew', padx=5)
+        self.btn_logout_confim.grid(row=0, column=0, sticky='nsew', padx=(25,5), pady=(6,5))
 
         self.btn_logout_cancel = tk.Button(logout_btn_frame, text='Cancel', command=lambda: self.controller.show_frame(self.caller))
-        self.btn_logout_cancel.grid(row=0, column=1, sticky='nsew', padx=5)
+        self.btn_logout_cancel.grid(row=0, column=1, sticky='nsew', padx=(5,25), pady=(6,5))
 
     def set_calling_class(self, caller):
         self.caller = caller
@@ -480,7 +480,7 @@ class SignIn(tk.Frame):
 
         btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
         btn_cancel.pack(pady=10, padx=25, expand=True, fill='both')
-   
+
 
 class SignOut(tk.Frame):
     """Record sign out of school (not the program)"""
@@ -507,11 +507,17 @@ class SignOut(tk.Frame):
         sign_out_types = ['Breaktime / Lunchtime', 'Going home']
 
         self.menu_sign_out_type = tk.OptionMenu(frame_sign_out_type, self.sign_value, *sign_out_types)
+        self.menu_sign_out_type.config(width='17')
         self.menu_sign_out_type.grid(row=0, column=1)
 
-        
-        
-        
+        btn_sign_out = tk.Button(self, text='Sign out', command='')
+        btn_sign_out.pack(pady=(15, 0), padx=50, expand=True, fill='both')
+
+        btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_cancel.pack(pady=(15, 20), padx=50, expand=True, fill='both')     
+
+
+
 
 if __name__ == '__main__':
     
