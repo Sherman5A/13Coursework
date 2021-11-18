@@ -19,7 +19,7 @@ class Gui(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, SignSearch, SignIn, SignOut):
+        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, SignSearch, SignIn, SignOut, SignHistory):
             frame = F(parent=container, controller=self)
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky='nsew')
@@ -70,6 +70,9 @@ class StartPage(tk.Frame):
 
         btn_sign_search_menu = tk.Button(self, text='Sign Search', command=lambda: self.controller.show_frame('SignSearch'))
         btn_sign_search_menu.pack(pady=3)
+
+        btn_sign_history = tk.Button(self, text='Sign History', command=lambda: self.controller.show_frame('SignHistory'))
+        btn_sign_history.pack(pady=3)
      
 
 class TextLogin(tk.Frame):
@@ -481,7 +484,7 @@ class SignIn(tk.Frame):
         btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
         btn_cancel.pack(pady=10, padx=25, expand=True, fill='both')
 
-# troubleshooting
+
 class SignOut(tk.Frame):
     """Record sign out of school (not the program)"""
 
@@ -515,6 +518,44 @@ class SignOut(tk.Frame):
 
         btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
         btn_cancel.pack(pady=(15, 20), padx=50, expand=True, fill='both')     
+
+
+class SignHistory(tk.Frame):
+    """"Record history of sign ins and outs"""
+
+    def __init__(self, parent, controller):
+        """Initialise class values and creates GUI elements"""
+
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        # GUI creation
+
+        lbl_sign_history_title = tk.Label(self, text='Sign in / out history')
+        lbl_sign_history_title.pack()
+
+        frame_menu = tk.Frame(self)
+        frame_menu.pack()
+
+        btn_return = tk.Button(frame_menu, text='Return to menu', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_return.pack()
+
+        frame_sign_history = tk.Frame(self, relief='groove', borderwidth=2)
+        frame_sign_history.pack(expand=True, fill='both')
+
+        scroll_sign_history = tk.Scrollbar(frame_sign_history)
+        scroll_sign_history.pack(side='right', fill='y')
+
+        list_sign_history = tk.Listbox(frame_sign_history,  yscrollcommand=scroll_sign_history.set)
+        list_sign_history.pack(side='left', fill='both', expand=True)
+
+        for line in range(1, 26):
+            list_sign_history.insert(tk.END, "Geeks " + str(line))
+        
+        scroll_sign_history.config(command=list_sign_history.yview)
+
+
+
 
 
 
