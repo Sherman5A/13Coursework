@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from tkinter.constants import NW
+from typing import Text
 import logic
 
 
@@ -12,25 +13,27 @@ class Gui(tk.Tk):
         """Creates gui, base container frame, inits class frames"""
         
         tk.Tk.__init__(self, *args, **kwargs)
+        # initialise tkinter
 
-        container = tk.Frame(self)
+        container = tk.Frame(self) # create a frame to fit the classes into 
         container.pack(side='top', fill='both', expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.frames = {}
+        self.frames = {} # dictionary to place classes into
         for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, SignSearch, SignIn, SignOut, SignHistory):
-            frame = F(parent=container, controller=self)
-            self.frames[F.__name__] = frame
+            frame = F(parent=container, controller=self) # initialise frame and assign reference to frame
+            self.frames[F.__name__] = frame # F.__name__ gets name of class, it then assgins the class reference to dictionary key
             frame.grid(row=0, column=0, sticky='nsew')
 
+        # page setup
         self.title("6th Form Sign System")
         self.show_frame("StartPage")
 
     def show_frame(self, page_name):
         """Raise specified frame classs: page_name"""
         frame = self.frames[page_name]
-        frame.tkraise()
+        frame.tkraise() # raises frame of arguement
 
 
 class StartPage(tk.Frame):
@@ -39,9 +42,10 @@ class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         """Initialise class values and create GUI elements"""
         # initialse frame
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent) # start tk frame class
         self.controller = controller
 
+        # set background colour
         self.config(bg='#00ff93')
 
         # create GUI elements
@@ -462,6 +466,72 @@ class SignSearch(tk.Frame):
 
         btn_return_main =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame('StudentMenu'))
         btn_return_main.grid(row=5, column=0, columnspan=2, sticky='ew', pady=5)
+
+
+class EditSearch(tk.Frame):
+    """Edit search result"""
+
+    def __init__(self, parent, controller):
+        """"Initialise class values and creates GUI elements"""
+
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        # gui creation
+
+        lbl_edit_title = tk.Label(self, text='Edit Table Entry')
+        lbl_edit_title.pack()
+
+        self.frame_edit_terms = tk.Frame(self)
+        self.frame_edit_terms.pack()
+
+        lbl_fname = tk.Label(self, text='First name')
+        lbl_fname.grid(row=0, column=0, columnspan=2)
+
+        
+        lbl_fname = tk.Label(self.frame_edit_terms, text='First name:')
+        lbl_fname.grid(row=1, column=0)
+
+        self.fname_value = tk.StringVar(self.frame_edit_terms, value='First name placeholder')
+        self.ent_fname = tk.Entry(self.frame_edit_terms, textvariable=self.fname_value)
+        self.ent_fname.grid(row=1, column=1)
+
+        lbl_sname = tk.Label(self.frame_edit_terms, text='Second name:')
+        lbl_sname.grid(row=2, column=0)
+
+        self.sname_value = tk.StringVar(self.frame_edit_terms, value='Second name placeholder')
+        self.ent_fname = tk.Entry(self.frame_edit_terms, textvariable=self.sname_value)
+        self.ent_fname.grid(row=2, column=1)
+
+        lbl_year_group = tk.Label(self.frame_edit_terms, text='Year group:')
+        lbl_year_group.grid(row=3, column=0)
+
+        self.year_group_value = tk.StringVar(self.frame_edit_terms, value='Year group placeholder')
+        year_values = ['12', '13']
+        self.menu_year_group = tk.OptionMenu(self.frame_edit_terms, self.year_group_value, *year_values)
+        self.menu_year_group.grid(row=3, column=0)
+
+        lbl_form_group = tk.Label(self.frame_edit_terms, text='Form group:')
+        lbl_form_group.grid(row=4, column=0)
+
+        self.form_group_value = tk.StringVar(self.frame_edit_terms, value='Form group placeholder')
+        form_values = ['A', 'B', 'C', 'D', 'E', 'F']
+        self.menu_form_group = tk.OptionMenu(self.frame_edit_terms, self.form_group_value, *form_values)
+        self.menu_year_group.grid(row=4, column=1)
+
+        lbl_username = tk.Label(self.frame_edit_terms, text='Username:')
+        lbl_username.grid(row=5, column=0)
+
+        self.username_value = tk.StringVar(self.frame_edit_terms, value='Username')
+        self.ent_username = tk.Entry(self.frame_edit_terms, textvariable=self.username_value)
+        self.ent_username.grid(row=5, column=1)
+
+        lbl_password = tk.Label(self.frame_edit_terms, text='Password')
+        lbl_password.grid(row=6, column=0)
+
+        self.password_value = tk.StringVar(self.frame_edit_terms, value='Password')
+        self.ent_password = tk.Entry(self.frame_edit_terms, textvariable=self.password_value)
+        self.ent_password.grid(row=6, column=1)
 
 
 class SignIn(tk.Frame):
