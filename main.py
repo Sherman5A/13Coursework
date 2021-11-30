@@ -2,7 +2,7 @@
 
 import tkinter as tk
 from tkinter.constants import NW
-from typing import Text
+from typing import Sized, Text
 import logic
 
 
@@ -21,7 +21,7 @@ class Gui(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {} # dictionary to place classes into
-        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, SignSearch, SignIn, SignOut, SignHistory):
+        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, SignSearch, EditSearch, SignIn, SignOut, SignHistory):
             frame = F(parent=container, controller=self) # initialise frame and assign reference to frame
             self.frames[F.__name__] = frame # F.__name__ gets name of class, it then assgins the class reference to dictionary key
             frame.grid(row=0, column=0, sticky='nsew')
@@ -77,6 +77,9 @@ class StartPage(tk.Frame):
 
         btn_sign_history = tk.Button(self, text='Sign History', command=lambda: self.controller.show_frame('SignHistory'))
         btn_sign_history.pack(pady=3)
+
+        btn_edit_search = tk.Button(self, text='Edit Search', command=lambda:self.controller.show_frame('EditSearch'))
+        btn_edit_search.pack(pady=3)
      
 
 class TextLogin(tk.Frame):
@@ -485,53 +488,58 @@ class EditSearch(tk.Frame):
         self.frame_edit_terms = tk.Frame(self)
         self.frame_edit_terms.pack()
 
-        lbl_fname = tk.Label(self, text='First name')
-        lbl_fname.grid(row=0, column=0, columnspan=2)
 
-        
         lbl_fname = tk.Label(self.frame_edit_terms, text='First name:')
-        lbl_fname.grid(row=1, column=0)
+        lbl_fname.grid(row=0, column=0, pady=3)
 
         self.fname_value = tk.StringVar(self.frame_edit_terms, value='First name placeholder')
         self.ent_fname = tk.Entry(self.frame_edit_terms, textvariable=self.fname_value)
-        self.ent_fname.grid(row=1, column=1)
+        self.ent_fname.grid(row=0, column=1, pady=3)
 
         lbl_sname = tk.Label(self.frame_edit_terms, text='Second name:')
-        lbl_sname.grid(row=2, column=0)
+        lbl_sname.grid(row=1, column=0, pady=3)
 
         self.sname_value = tk.StringVar(self.frame_edit_terms, value='Second name placeholder')
         self.ent_fname = tk.Entry(self.frame_edit_terms, textvariable=self.sname_value)
-        self.ent_fname.grid(row=2, column=1)
+        self.ent_fname.grid(row=1, column=1, pady=3)
 
         lbl_year_group = tk.Label(self.frame_edit_terms, text='Year group:')
-        lbl_year_group.grid(row=3, column=0)
+        lbl_year_group.grid(row=2, column=0)
 
         self.year_group_value = tk.StringVar(self.frame_edit_terms, value='Year group placeholder')
         year_values = ['12', '13']
         self.menu_year_group = tk.OptionMenu(self.frame_edit_terms, self.year_group_value, *year_values)
-        self.menu_year_group.grid(row=3, column=0)
+        self.menu_year_group.config(width='20')
+        self.menu_year_group.grid(row=2, column=1)
 
         lbl_form_group = tk.Label(self.frame_edit_terms, text='Form group:')
-        lbl_form_group.grid(row=4, column=0)
+        lbl_form_group.grid(row=3, column=0)
 
         self.form_group_value = tk.StringVar(self.frame_edit_terms, value='Form group placeholder')
         form_values = ['A', 'B', 'C', 'D', 'E', 'F']
         self.menu_form_group = tk.OptionMenu(self.frame_edit_terms, self.form_group_value, *form_values)
-        self.menu_year_group.grid(row=4, column=1)
+        self.menu_form_group.config(width='20')
+        self.menu_form_group.grid(row=3, column=1)
 
         lbl_username = tk.Label(self.frame_edit_terms, text='Username:')
-        lbl_username.grid(row=5, column=0)
+        lbl_username.grid(row=4, column=0)
 
         self.username_value = tk.StringVar(self.frame_edit_terms, value='Username')
         self.ent_username = tk.Entry(self.frame_edit_terms, textvariable=self.username_value)
-        self.ent_username.grid(row=5, column=1)
+        self.ent_username.grid(row=4, column=1)
 
         lbl_password = tk.Label(self.frame_edit_terms, text='Password')
-        lbl_password.grid(row=6, column=0)
+        lbl_password.grid(row=5, column=0)
 
         self.password_value = tk.StringVar(self.frame_edit_terms, value='Password')
         self.ent_password = tk.Entry(self.frame_edit_terms, textvariable=self.password_value)
-        self.ent_password.grid(row=6, column=1)
+        self.ent_password.grid(row=5, column=1)
+
+        btn_confirm_edit = tk.Button(self.frame_edit_terms, text='Confirm edit', command='')
+        btn_confirm_edit.grid(row=6, column=0, columnspan=2, pady=10)
+
+        btn_exit = tk.Button(self.frame_edit_terms, text='Return to search:', command=lambda:self.controller.show_frame('UserSearch'))
+        btn_exit.grid(row=7, column=0, columnspan=2, pady=3)
 
 
 class SignIn(tk.Frame):
@@ -623,10 +631,6 @@ class SignHistory(tk.Frame):
             list_sign_history.insert(tk.END, "Geeks " + str(line))
         
         scroll_sign_history.config(command=list_sign_history.yview)
-
-
-
-
 
 
 
