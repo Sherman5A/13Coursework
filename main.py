@@ -500,8 +500,8 @@ class EditSearch(tk.Frame):
         lbl_sname.grid(row=1, column=0, pady=3)
 
         self.sname_value = tk.StringVar(self.frame_edit_terms, value='Second name placeholder')
-        self.ent_fname = tk.Entry(self.frame_edit_terms, textvariable=self.sname_value)
-        self.ent_fname.grid(row=1, column=1, pady=3)
+        self.ent_sname = tk.Entry(self.frame_edit_terms, textvariable=self.sname_value)
+        self.ent_sname.grid(row=1, column=1, pady=3)
 
         lbl_year_group = tk.Label(self.frame_edit_terms, text='Year group:')
         lbl_year_group.grid(row=2, column=0)
