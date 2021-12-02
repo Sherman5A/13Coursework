@@ -21,7 +21,7 @@ class Gui(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {} # dictionary to place classes into
-        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, SignSearch, EditSearch, SignIn, SignOut, SignHistory):
+        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, EditSearchUsers, SignSearch, EditUser, SignIn, SignOut, SignHistory):
             frame = F(parent=container, controller=self) # initialise frame and assign reference to frame
             self.frames[F.__name__] = frame # F.__name__ gets name of class, it then assgins the class reference to dictionary key
             frame.grid(row=0, column=0, sticky='nsew')
@@ -78,8 +78,11 @@ class StartPage(tk.Frame):
         btn_sign_history = tk.Button(self, text='Sign History', command=lambda: self.controller.show_frame('SignHistory'))
         btn_sign_history.pack(pady=3)
 
-        btn_edit_search = tk.Button(self, text='Edit Search', command=lambda:self.controller.show_frame('EditSearch'))
+        btn_edit_search = tk.Button(self, text='Edit Search', command=lambda:self.controller.show_frame('EditSearchUsers'))
         btn_edit_search.pack(pady=3)
+        
+        btn_EditSearchUsers = tk.Button(self, text='dafsa', command=lambda: self.controller.show_frame('EditSearchUsers'))
+        btn_EditSearchUsers.pack(pady=3)
      
 
 class TextLogin(tk.Frame):
@@ -233,7 +236,7 @@ class StudentMenu(tk.Frame):
         btn_school_sign_out = tk.Button(frame_student_actions, text='Sign out of school', command=lambda: self.controller.show_frame('SignOut'))
         btn_school_sign_out.grid(row=0, column=1, sticky='ew', pady=3, padx=3)
 
-        btn_view_attendence = tk.Button(frame_student_actions, text='View sign in / out history', command='')
+        btn_view_attendence = tk.Button(frame_student_actions, text='View sign in / out history', command=lambda: self.controller.show_frame('SignHistory'))
         btn_view_attendence.grid(row=1, column=0, sticky='ew', pady=3, padx= 3 )
 
         # may add function: 
@@ -406,6 +409,20 @@ class UserSearch(tk.Frame):
         btn_return_main.grid(row=7, column=0, columnspan=2, sticky='ew', pady=5)
 
 
+class EditSearchUsers(UserSearch):
+
+    def __init__(self, parent, controller):
+
+        self.controller = controller
+        UserSearch.__init__(self, parent, controller)
+        
+        frame_start_edit = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
+        frame_start_edit.pack(pady=3, expand=True, fill='both')
+    
+        btn_start_user_edit = tk.Button(frame_start_edit, text='Start User Search', command=lambda: self.controller.show_frame('EditUser'))
+        btn_start_user_edit.pack(pady=3, expand=True, fill='both')
+
+
 class SignSearch(tk.Frame):
     """Search for sign in / outs by ID, date, and time"""
 
@@ -471,7 +488,7 @@ class SignSearch(tk.Frame):
         btn_return_main.grid(row=5, column=0, columnspan=2, sticky='ew', pady=5)
 
 
-class EditSearch(tk.Frame):
+class EditUser(tk.Frame):
     """Edit search result"""
 
     def __init__(self, parent, controller):
