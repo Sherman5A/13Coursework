@@ -392,8 +392,8 @@ class UserSearch(tk.Frame):
         self.btn_begin_search = tk.Button(search_term_frame, text='Search', command='')
         self.btn_begin_search.grid(row=6, column=0, columnspan=2, sticky='ew', pady=3)
 
-        btn_return_main =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame('StudentMenu'))
-        btn_return_main.grid(row=7, column=0, columnspan=2, sticky='ew', pady=5)
+        btn_return =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_return.grid(row=7, column=0, columnspan=2, sticky='ew', pady=5)
 
 
 class SignSearch(tk.Frame):
