@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from tkinter.constants import NW
+from typing import Sized, Text
 import logic
 
 
@@ -12,25 +13,27 @@ class Gui(tk.Tk):
         """Creates gui, base container frame, inits class frames"""
         
         tk.Tk.__init__(self, *args, **kwargs)
+        # initialise tkinter
 
-        container = tk.Frame(self)
+        container = tk.Frame(self) # create a frame to fit the classes into 
         container.pack(side='top', fill='both', expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.frames = {}
-        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, SignSearch, SignIn, SignOut):
-            frame = F(parent=container, controller=self)
-            self.frames[F.__name__] = frame
+        self.frames = {} # dictionary to place classes into
+        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, EditSearchUsers, SignSearch, EditUser, SignIn, SignOut, SignHistory):
+            frame = F(parent=container, controller=self) # initialise frame and assign reference to frame
+            self.frames[F.__name__] = frame # F.__name__ gets name of class, it then assgins the class reference to dictionary key
             frame.grid(row=0, column=0, sticky='nsew')
 
+        # page setup
         self.title("6th Form Sign System")
         self.show_frame("StartPage")
 
     def show_frame(self, page_name):
         """Raise specified frame classs: page_name"""
         frame = self.frames[page_name]
-        frame.tkraise()
+        frame.tkraise() # raises frame of arguement
 
 
 class StartPage(tk.Frame):
@@ -39,9 +42,10 @@ class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         """Initialise class values and create GUI elements"""
         # initialse frame
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent) # start tk frame class
         self.controller = controller
 
+        # set background colour
         self.config(bg='#00ff93')
 
         # create GUI elements
@@ -70,6 +74,15 @@ class StartPage(tk.Frame):
 
         btn_sign_search_menu = tk.Button(self, text='Sign Search', command=lambda: self.controller.show_frame('SignSearch'))
         btn_sign_search_menu.pack(pady=3)
+
+        btn_sign_history = tk.Button(self, text='Sign History', command=lambda: self.controller.show_frame('SignHistory'))
+        btn_sign_history.pack(pady=3)
+
+        btn_edit_search = tk.Button(self, text='Edit Search', command=lambda:self.controller.show_frame('EditSearchUsers'))
+        btn_edit_search.pack(pady=3)
+        
+        btn_EditSearchUsers = tk.Button(self, text='dafsa', command=lambda: self.controller.show_frame('EditSearchUsers'))
+        btn_EditSearchUsers.pack(pady=3)
      
 
 class TextLogin(tk.Frame):
@@ -223,7 +236,7 @@ class StudentMenu(tk.Frame):
         btn_school_sign_out = tk.Button(frame_student_actions, text='Sign out of school', command=lambda: self.controller.show_frame('SignOut'))
         btn_school_sign_out.grid(row=0, column=1, sticky='ew', pady=3, padx=3)
 
-        btn_view_attendence = tk.Button(frame_student_actions, text='View sign in / out history', command='')
+        btn_view_attendence = tk.Button(frame_student_actions, text='View sign in / out history', command=lambda: self.controller.show_frame('SignHistory'))
         btn_view_attendence.grid(row=1, column=0, sticky='ew', pady=3, padx= 3 )
 
         # may add function: 
@@ -396,6 +409,20 @@ class UserSearch(tk.Frame):
         btn_return.grid(row=7, column=0, columnspan=2, sticky='ew', pady=5)
 
 
+class EditSearchUsers(UserSearch):
+
+    def __init__(self, parent, controller):
+
+        self.controller = controller
+        UserSearch.__init__(self, parent, controller)
+        
+        frame_start_edit = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
+        frame_start_edit.pack(pady=3, expand=True, fill='both')
+    
+        btn_start_user_edit = tk.Button(frame_start_edit, text='Start User Search', command=lambda: self.controller.show_frame('EditUser'))
+        btn_start_user_edit.pack(pady=3, expand=True, fill='both')
+
+
 class SignSearch(tk.Frame):
     """Search for sign in / outs by ID, date, and time"""
 
@@ -461,6 +488,77 @@ class SignSearch(tk.Frame):
         btn_return_main.grid(row=5, column=0, columnspan=2, sticky='ew', pady=5)
 
 
+class EditUser(tk.Frame):
+    """Edit search result"""
+
+    def __init__(self, parent, controller):
+        """"Initialise class values and creates GUI elements"""
+
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        # gui creation
+
+        lbl_edit_title = tk.Label(self, text='Edit Table Entry')
+        lbl_edit_title.pack()
+
+        self.frame_edit_terms = tk.Frame(self)
+        self.frame_edit_terms.pack()
+
+
+        lbl_fname = tk.Label(self.frame_edit_terms, text='First name:')
+        lbl_fname.grid(row=0, column=0, pady=3)
+
+        self.fname_value = tk.StringVar(self.frame_edit_terms, value='First name placeholder')
+        self.ent_fname = tk.Entry(self.frame_edit_terms, textvariable=self.fname_value)
+        self.ent_fname.grid(row=0, column=1, pady=3)
+
+        lbl_sname = tk.Label(self.frame_edit_terms, text='Second name:')
+        lbl_sname.grid(row=1, column=0, pady=3)
+
+        self.sname_value = tk.StringVar(self.frame_edit_terms, value='Second name placeholder')
+        self.ent_sname = tk.Entry(self.frame_edit_terms, textvariable=self.sname_value)
+        self.ent_sname.grid(row=1, column=1, pady=3)
+
+        lbl_year_group = tk.Label(self.frame_edit_terms, text='Year group:')
+        lbl_year_group.grid(row=2, column=0)
+
+        self.year_group_value = tk.StringVar(self.frame_edit_terms, value='Year group placeholder')
+        year_values = ['12', '13']
+        self.menu_year_group = tk.OptionMenu(self.frame_edit_terms, self.year_group_value, *year_values)
+        self.menu_year_group.config(width='20')
+        self.menu_year_group.grid(row=2, column=1)
+
+        lbl_form_group = tk.Label(self.frame_edit_terms, text='Form group:')
+        lbl_form_group.grid(row=3, column=0)
+
+        self.form_group_value = tk.StringVar(self.frame_edit_terms, value='Form group placeholder')
+        form_values = ['A', 'B', 'C', 'D', 'E', 'F']
+        self.menu_form_group = tk.OptionMenu(self.frame_edit_terms, self.form_group_value, *form_values)
+        self.menu_form_group.config(width='20')
+        self.menu_form_group.grid(row=3, column=1)
+
+        lbl_username = tk.Label(self.frame_edit_terms, text='Username:')
+        lbl_username.grid(row=4, column=0)
+
+        self.username_value = tk.StringVar(self.frame_edit_terms, value='Username')
+        self.ent_username = tk.Entry(self.frame_edit_terms, textvariable=self.username_value)
+        self.ent_username.grid(row=4, column=1)
+
+        lbl_password = tk.Label(self.frame_edit_terms, text='Password')
+        lbl_password.grid(row=5, column=0)
+
+        self.password_value = tk.StringVar(self.frame_edit_terms, value='Password')
+        self.ent_password = tk.Entry(self.frame_edit_terms, textvariable=self.password_value)
+        self.ent_password.grid(row=5, column=1)
+
+        btn_confirm_edit = tk.Button(self.frame_edit_terms, text='Confirm edit', command='')
+        btn_confirm_edit.grid(row=6, column=0, columnspan=2, pady=10)
+
+        btn_exit = tk.Button(self.frame_edit_terms, text='Return to search:', command=lambda:self.controller.show_frame('UserSearch'))
+        btn_exit.grid(row=7, column=0, columnspan=2, pady=3)
+
+
 class SignIn(tk.Frame):
     """Record sign into of school (not the program"""
 
@@ -481,7 +579,7 @@ class SignIn(tk.Frame):
         btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
         btn_cancel.pack(pady=10, padx=25, expand=True, fill='both')
 
-# troubleshooting
+
 class SignOut(tk.Frame):
     """Record sign out of school (not the program)"""
 
@@ -516,6 +614,40 @@ class SignOut(tk.Frame):
         btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
         btn_cancel.pack(pady=(15, 20), padx=50, expand=True, fill='both')     
 
+
+class SignHistory(tk.Frame):
+    """"Record history of sign ins and outs"""
+
+    def __init__(self, parent, controller):
+        """Initialise class values and creates GUI elements"""
+
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        # GUI creation
+
+        lbl_sign_history_title = tk.Label(self, text='Sign in / out history')
+        lbl_sign_history_title.pack()
+
+        frame_menu = tk.Frame(self)
+        frame_menu.pack()
+
+        btn_return = tk.Button(frame_menu, text='Return to menu', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_return.pack()
+
+        frame_sign_history = tk.Frame(self, relief='groove', borderwidth=2)
+        frame_sign_history.pack(expand=True, fill='both')
+
+        scroll_sign_history = tk.Scrollbar(frame_sign_history)
+        scroll_sign_history.pack(side='right', fill='y')
+
+        list_sign_history = tk.Listbox(frame_sign_history,  yscrollcommand=scroll_sign_history.set)
+        list_sign_history.pack(side='left', fill='both', expand=True)
+
+        for line in range(1, 26):
+            list_sign_history.insert(tk.END, "Geeks " + str(line))
+        
+        scroll_sign_history.config(command=list_sign_history.yview)
 
 
 
