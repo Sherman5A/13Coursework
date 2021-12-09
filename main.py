@@ -2,7 +2,6 @@
 
 import tkinter as tk
 from tkinter.constants import NW
-from typing import Sized, Text
 import logic
 
 
@@ -17,14 +16,19 @@ class Gui(tk.Tk):
 
         container = tk.Frame(self) # create a frame to fit the classes into 
         container.pack(side='top', fill='both', expand=True)
+        # allow frame to expand to classes
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {} # dictionary to place classes into
+
+        # iterate through a list of classes, intialising them
         for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, EditSearchUsers, SignSearch, EditUser, SignIn, SignOut, SignHistory):
-            frame = F(parent=container, controller=self) # initialise frame and assign reference to frame
+            
+            # initialise frame and assign reference 'frame' to frame
+            frame = F(parent=container, controller=self) 
             self.frames[F.__name__] = frame # F.__name__ gets name of class, it then assgins the class reference to dictionary key
-            frame.grid(row=0, column=0, sticky='nsew')
+            frame.grid(row=0, column=0, sticky='nsew') # grid and let expand
 
         # page setup
         self.title("6th Form Sign System")
@@ -32,6 +36,7 @@ class Gui(tk.Tk):
 
     def show_frame(self, page_name):
         """Raise specified frame classs: page_name"""
+
         frame = self.frames[page_name]
         frame.tkraise() # raises frame of arguement
 
@@ -144,18 +149,17 @@ class SignUp(tk.Frame):
         frame_user_input = tk.Frame(self)
         frame_user_input.pack()
 
-
         lbl_first_name = tk.Label(frame_user_input, text='First Name:')
-        lbl_first_name.grid(row=0, column=0, pady=4)
+        lbl_first_name.grid(row=0, column=0, pady=3)
 
         self.ent_first_name = tk.Entry(frame_user_input)
-        self.ent_first_name.grid(row=0, column=1, pady=4)
+        self.ent_first_name.grid(row=0, column=1, pady=3)
 
         lbl_second_name = tk.Label(frame_user_input, text='Last name:')
-        lbl_second_name.grid(row=1, column=0, pady=4)
+        lbl_second_name.grid(row=1, column=0, pady=3)
 
         self.ent_second_name = tk.Entry(frame_user_input)
-        self.ent_second_name.grid(row=1, column=1, pady=4)
+        self.ent_second_name.grid(row=1, column=1, pady=3)
 
         lbl_year_group = tk.Label(frame_user_input, text='Year group:')
         lbl_year_group.grid(row=2, column=0)
@@ -165,6 +169,7 @@ class SignUp(tk.Frame):
 
         self.menu_year_group = tk.OptionMenu(frame_user_input, year_value, *year_groups)
         self.menu_year_group.grid(row=2, column=1, sticky='ew', pady=3)
+        self.menu_year_group.config(width=16)
 
         lbl_form_group = tk.Label(frame_user_input, text='Form group:')
         lbl_form_group.grid(row=3, column=0)
@@ -174,6 +179,7 @@ class SignUp(tk.Frame):
         
         self.menu_form_group = tk.OptionMenu(frame_user_input, form_value, *form_list)
         self.menu_form_group.grid(row=3, column=1, sticky='ew', pady=3)
+        self.menu_form_group.config(width=16)
 
         lbl_username = tk.Label(frame_user_input, text='Username:')
         lbl_username.grid(row=4, column=0, pady=3)
@@ -229,7 +235,7 @@ class StudentMenu(tk.Frame):
         btn_school_sign_out.grid(row=0, column=1, sticky='ew', pady=3, padx=3)
 
         btn_view_attendence = tk.Button(frame_student_actions, text='View sign in / out history', command=lambda: self.controller.show_frame('SignHistory'))
-        btn_view_attendence.grid(row=1, column=0, sticky='ew', pady=3, padx= 3, columnspan=2)
+        btn_view_attendence.grid(row=1, column=0, sticky='ew', pady=3, padx=3, columnspan=2)
 
         # may add function: 
         # btn_view_permissions = tk.Button(frame_stuent_actions, text='View user permissions', command='')
@@ -267,10 +273,10 @@ class TeacherMenu(StudentMenu):
         self.btn_user_logout.destroy()
 
         frame_teacher_actions = tk.Frame(self)
-        frame_teacher_actions.pack(pady=3)
+        frame_teacher_actions.pack()
 
         btn_manual_sign = tk.Button(frame_teacher_actions, text='Manual sign students', command='')
-        btn_manual_sign.grid(row=2, column=0, sticky='ew', pady=3, padx=3)
+        btn_manual_sign.grid(row=2, column=0, sticky='ew', padx=3)
 
         btn_search_attendence = tk.Button(frame_teacher_actions, text='View student history', command='')
         btn_search_attendence.grid(row=2, column=1, sticky='ew', pady=3, padx=3)
