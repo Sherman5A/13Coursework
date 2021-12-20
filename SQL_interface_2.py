@@ -11,14 +11,12 @@ class SQL_inter():
         self.connection = None
         try:
             self.connection = sqlite3.connect(self.file)
+            self.cursor = self.connection.cursor()
         except Error as e:
             print(e)
-        return not self.connection == None
-        
-    
-    def create_table(self, sql_command):
+      
+    def execute_sql(self, sql_command):
         try:
-            cursor = self.connection.cursor()
-            cursor.execute(sql_command)
+            self.cursor.execute(sql_command)
         except Error as e:
             print(e)

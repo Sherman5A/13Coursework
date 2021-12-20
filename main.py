@@ -167,19 +167,19 @@ class SignUp(tk.Frame):
         lbl_year_group.grid(row=2, column=0)
 
         year_groups = ['12', '13']
-        year_value = tk.StringVar(frame_user_input, value='Select a year group')
+        self.year_value = tk.StringVar(frame_user_input, value='Select a year group')
 
-        self.menu_year_group = tk.OptionMenu(frame_user_input, year_value, *year_groups)
-        self.menu_year_group.grid(row=2, column=1, sticky='ew', pady=3)
+        menu_year_group = tk.OptionMenu(frame_user_input, self.year_value, *year_groups)
+        menu_year_group.grid(row=2, column=1, sticky='ew', pady=3)
 
         lbl_form_group = tk.Label(frame_user_input, text='Form group:')
         lbl_form_group.grid(row=3, column=0)
         
-        form_value = tk.StringVar(frame_user_input, value='Select a form group')
+        self.form_value = tk.StringVar(frame_user_input, value='Select a form group')
         form_list = ['A', 'B', 'C', 'D', 'E', 'D', 'F']
         
-        self.menu_form_group = tk.OptionMenu(frame_user_input, form_value, *form_list)
-        self.menu_form_group.grid(row=3, column=1, sticky='ew', pady=3)
+        menu_form_group = tk.OptionMenu(frame_user_input, self.form_value, *form_list)
+        menu_form_group.grid(row=3, column=1, sticky='ew', pady=3)
 
         lbl_username = tk.Label(frame_user_input, text='Username:')
         lbl_username.grid(row=4, column=0, pady=3)
@@ -206,6 +206,18 @@ class SignUp(tk.Frame):
 
         btn_return_start = tk.Button(self, text= 'Return to start page', command=lambda: self.controller.show_frame('StartPage'))
         btn_return_start.pack(pady=3)
+
+    def create_account(self):
+        account_variables = {}
+        account_variables['first_name'] = self.ent_first_name.get()
+        account_variables['second_name'] = self.ent_second_name.get()
+        account_variables['year_group'] = self.year_value.get()
+        account_variables['form_group'] = self.form_value.get()
+        account_variables['username'] = self.ent_username.get()
+        account_variables['password'] = self.ent_password.get()
+        account_variables['password_repreat'] = self.ent_password_repeat.get()
+        logic.create_user(account_variables)
+
 
 
 class StudentMenu(tk.Frame):
@@ -237,7 +249,7 @@ class StudentMenu(tk.Frame):
         btn_school_sign_out.grid(row=0, column=1, sticky='ew', pady=3, padx=3)
 
         btn_view_attendence = tk.Button(frame_student_actions, text='View sign in / out history', command=lambda: self.controller.show_frame('SignHistory'))
-        btn_view_attendence.grid(row=1, column=0, sticky='ew', pady=3, padx= 3 )
+        btn_view_attendence.grid(row=1, column=0, sticky='ew', pady=3, padx= 3, columnspan=2)
 
         # may add function: 
         # btn_view_permissions = tk.Button(frame_stuent_actions, text='View user permissions', command='')
