@@ -209,10 +209,10 @@ class SignUp(tk.Frame):
 
     def create_account(self):
         account_variables = {}
-        account_variables['first_name'] = self.ent_first_name.get()
-        account_variables['second_name'] = self.ent_second_name.get()
-        account_variables['year_group'] = self.year_value.get()
-        account_variables['form_group'] = self.form_value.get()
+        account_variables['first_name'] = self.ent_first_name.get().lower()
+        account_variables['second_name'] = self.ent_second_name.get().lower()
+        account_variables['year_group'] = self.year_value.get().lower()
+        account_variables['form_group'] = self.form_value.get().lower()
         account_variables['username'] = self.ent_username.get()
         account_variables['password'] = self.ent_password.get()
         account_variables['password_repreat'] = self.ent_password_repeat.get()

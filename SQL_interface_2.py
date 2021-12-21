@@ -15,8 +15,32 @@ class SQL_inter():
         except Error as e:
             print(e)
       
-    def execute_sql(self, sql_command):
+    def create_table(self, sql_command):       
         try:
             self.cursor.execute(sql_command)
         except Error as e:
             print(e)
+
+    
+    def get_data(self, sql_command, values=None):
+        if values == None:
+            try:
+                self.cursor.execute(sql_command)
+                return self.cursor.fetchall()
+            except Error as e:
+                print(e)
+        else:
+            try:
+                self.cursor.execute(sql_command, values)
+                return self.cursor.fetchall()
+            except Error as e:
+                print(e)
+
+    def insert_data(self, sql_command, values):
+        
+        try:
+            self.cursor.execute(sql_command, values)
+            self.connection.commit()
+        except Error as e:
+            print(e)
+            

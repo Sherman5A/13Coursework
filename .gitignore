@@ -5,3 +5,5 @@
 /.vscode/
 test.db
 /*Db.*
+test.py
+test.db-journal
