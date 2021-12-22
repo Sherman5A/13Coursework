@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3.dbapi2 import Cursor, Error
 
 
-class SQL_inter():
+class sqlInterface():
 
     def __init__(self, file):
         self.file = file

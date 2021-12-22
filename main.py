@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from tkinter.constants import NW
+
 import logic
 
 
@@ -122,6 +123,7 @@ class TextLogin(tk.Frame):
 
     def login_check(self):
         """Checks username and password"""
+
         input_username = self.ent_username.get()
         print(input_username)
         input_password = self.ent_password.get()
@@ -208,6 +210,7 @@ class SignUp(tk.Frame):
         btn_return_start.pack(pady=3)
 
     def create_account(self):
+
         account_variables = {}
         account_variables['first_name'] = self.ent_first_name.get().lower()
         account_variables['second_name'] = self.ent_second_name.get().lower()
@@ -217,7 +220,6 @@ class SignUp(tk.Frame):
         account_variables['password'] = self.ent_password.get()
         account_variables['password_repreat'] = self.ent_password_repeat.get()
         logic.create_user(account_variables)
-
 
 
 class StudentMenu(tk.Frame):
@@ -305,6 +307,7 @@ class TeacherMenu(StudentMenu):
 
     def teacher_configure(self, teacher_name):
         """Configure the TeacherMenu to the logged in student"""
+
         self.teacher_name.set(teacher_name)
 
 
@@ -370,56 +373,81 @@ class UserSearch(tk.Frame):
         search_term_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
         search_term_frame.pack(fill='both', anchor=NW)
 
-        lbl_id_search = tk.Label(search_term_frame, text='Student ID:')
-        lbl_id_search.grid(row=0, column=0, sticky='nsew', pady=(10, 3))
+        lbl_search_info = tk.Label(search_term_frame, text="Leave entries you don't want to search empty")
+        lbl_search_info.grid(row=0, column=0, sticky='nsew', pady=(10,3), columnspan=2)
 
+        self.entries = [] # list to store variables to .get() later
+
+        lbl_id_search = tk.Label(search_term_frame, text='Student ID:')
+        lbl_id_search.grid(row=1, column=0, sticky='nsew', pady=3)
+        
         self.ent_id_search = tk.Entry(search_term_frame)
-        self.ent_id_search.grid(row=0, column=1, sticky='nsew', pady=(10, 3))
+        self.ent_id_search.grid(row=1, column=1, sticky='nsew', pady=3)
+        self.entries.append(self.ent_id_search)
 
         lbl_fname_search = tk.Label(search_term_frame, text='First name:')
-        lbl_fname_search.grid(row=1, column=0, sticky='nsew', pady=3)
+        lbl_fname_search.grid(row=2, column=0, sticky='nsew', pady=3)
 
         self.ent_fname_search = tk.Entry(search_term_frame)
-        self.ent_fname_search.grid(row=1, column=1, sticky='nsew', pady=3)
+        self.ent_fname_search.grid(row=2, column=1, sticky='nsew', pady=3)
+        self.entries.append(self.ent_fname_search)
 
         lbl_sec_name_search = tk.Label(search_term_frame, text='Second name:')
-        lbl_sec_name_search.grid(row=2, column=0, sticky='nsew', pady=3)
+        lbl_sec_name_search.grid(row=3, column=0, sticky='nsew', pady=3)
 
         self.ent_sec_name_search = tk.Entry(search_term_frame)
-        self.ent_sec_name_search.grid(row=2, column=1, sticky='nsew', pady=3)
+        self.ent_sec_name_search.grid(row=3, column=1, sticky='nsew', pady=3)
+        self.entries.append(self.ent_sec_name_search)
 
         lbl_year_search = tk.Label(search_term_frame, text='Year group:')
-        lbl_year_search.grid(row=3, column=0, sticky='nsew', pady=3)
+        lbl_year_search.grid(row=4, column=0, sticky='nsew', pady=3)
 
-        self.year_value = tk.StringVar(search_term_frame, value='Select a year group')
-        year_list = ['12', '13']
+        self.year_value = tk.StringVar(search_term_frame, value='')
+        self.entries.append(self.year_value)
+        year_list = ['','12', '13']
 
         self.menu_year_search = tk.OptionMenu(search_term_frame, self.year_value, *year_list)
         self.menu_year_search.config(width='17')
-        self.menu_year_search.grid(row=3, column=1, sticky='nsew', pady=3)
+        self.menu_year_search.grid(row=4, column=1, sticky='nsew', pady=3)
 
         lbl_form_search = tk.Label(search_term_frame, text='Form group:')
-        lbl_form_search.grid(row=4, column=0, sticky='nsew', pady=3)
+        lbl_form_search.grid(row=5, column=0, sticky='nsew', pady=3)
 
-        self.form_value = tk.StringVar(search_term_frame, value='Select a form group')
-        form_list = ['A', 'B', 'C', 'D', 'E', 'D', 'F']
+        self.form_value = tk.StringVar(search_term_frame, value='')
+        self.entries.append(self.form_value)
+        form_list = ['', 'A', 'B', 'C', 'D', 'E', 'D', 'F']
         
         self.menu_form_search = tk.OptionMenu(search_term_frame, self.form_value, *form_list)
         self.menu_form_search.config(width='17')
-        self.menu_form_search.grid(row=4, column=1, sticky='ew', pady=3)
+        self.menu_form_search.grid(row=5, column=1, sticky='ew', pady=3)
 
         lbl_username_search = tk.Label(search_term_frame, text='Username:')
-        lbl_username_search.grid(row=5, column=0, sticky='nsew', pady=3)
+        lbl_username_search.grid(row=6, column=0, sticky='nsew', pady=3)
 
         self.ent_username_search = tk.Entry(search_term_frame)
-        self.ent_username_search.grid(row=5, column=1, sticky='nsew', pady=3)
+        self.ent_username_search.grid(row=6, column=1, sticky='nsew', pady=3)
+        self.entries.append(self.ent_username_search)
 
-        self.btn_begin_search = tk.Button(search_term_frame, text='Search', command='')
-        self.btn_begin_search.grid(row=6, column=0, columnspan=2, sticky='ew', pady=3)
+        self.btn_begin_search = tk.Button(search_term_frame, text='Search', command=lambda: self.search_users())
+        self.btn_begin_search.grid(row=7, column=0, columnspan=2, sticky='ew', pady=3)
 
         btn_return_main =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame('StudentMenu'))
-        btn_return_main.grid(row=7, column=0, columnspan=2, sticky='ew', pady=5)
+        btn_return_main.grid(row=8, column=0, columnspan=2, sticky='ew', pady=5)
 
+    def search_users(self):
+        """Searches using input terms from GUI"""
+        
+        # tuple to manage key names
+        search_keys = ('id', 'first_name', 'second_name', 'year_group', 'form_group', 'username', 'password')
+        search_terms = {}
+        for count, i in enumerate(self.entries):
+            if (i.get()) == '': # if input is empty, do not create dictionary entry
+                continue
+            search_terms[search_keys[count]] = i.get()
+        
+        search_results = logic.search_users(search_terms)
+        print(search_results)
+            
 
 class EditSearchUsers(UserSearch):
 

@@ -1,4 +1,4 @@
-import SQL_interface_2
+import SQL_interface
 import re
 from datetime import datetime
 
@@ -6,8 +6,8 @@ from datetime import datetime
 def create_user(account_variables):
     """"Create a new user, performs validation, then adds to sql table"""
 
-    sql_interface = SQL_interface_2.SQL_inter('test.db')
-    sql_interface.create_connection()
+    sql_database = SQL_interface.sqlInterface('test.db')
+    sql_database.create_connection()
 
     def create_table():
         """Creates user table"""
@@ -22,15 +22,13 @@ def create_user(account_variables):
                                 password TEXT NOT NULL,
 	                            PRIMARY KEY("id" AUTOINCREMENT)
                             ); """
-        sql_interface.execute_sql(sql_create_user_table)
+        sql_database.execute_sql(sql_create_user_table)
 
     def write_user():
         """Write variable to database table"""
 
-        sql_interface.insert_data("INSERT INTO users(first_name, second_name, year_group, form_group, username, password) VALUES(?, ?, ?, ?, ?, ?);", (
+        sql_database.insert_data("INSERT INTO users(first_name, second_name, year_group, form_group, username, password) VALUES(?, ?, ?, ?, ?, ?);", (
             account_variables['first_name'], account_variables['second_name'], account_variables['year_group'], account_variables['form_group'], account_variables['username'], account_variables['password']))
-
-
 
     for key, value in account_variables.items():
 
@@ -46,7 +44,7 @@ def create_user(account_variables):
 
     create_table()
 
-    common_usernames = sql_interface.get_data(
+    common_usernames = sql_database.get_data(
         "SELECT username FROM users WHERE username=?", (account_variables['username'],))
     if len(common_usernames != 0):
         return False, 'username', 'Username is not unique'
@@ -57,6 +55,24 @@ def create_user(account_variables):
 
 def check_login_creds(input_username, input_password):
     pass
+
+def search_users(search_terms):
+    """Searches the user tables with the dictonary provided in args"""
+
+    # if no terms are provided, return all users
+    if len(search_terms) != 0:
+        sql_search = "SELECT * FROM users WHERE "
+        # takes keys, values, formats value, joins them with '=', and then adds AND between dict keys
+        # adds ; to end sql statment
+        sql_search += ' AND '.join('='.join((key, "'{}'".format(value))) for key, value in search_terms.items()) + ';'
+    else: 
+        sql_search = "SELECT * FROM users;"
+
+    # create SQL connection
+    sql_database = SQL_interface.sqlInterface('test.db')
+    sql_database.create_connection()
+    # execute and return sql search
+    return sql_database.get_data(sql_search)
 
 
 class validation():
