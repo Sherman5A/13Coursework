@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from tkinter.constants import NW
+from tkinter import messagebox
 
 import logic
 
@@ -154,20 +155,25 @@ class SignUp(tk.Frame):
         lbl_first_name = tk.Label(frame_user_input, text='First Name:')
         lbl_first_name.grid(row=0, column=0, pady=3)
 
+        self.entries = []
+
         self.ent_first_name = tk.Entry(frame_user_input)
         self.ent_first_name.grid(row=0, column=1, pady=3)
+        self.entries.append(self.ent_first_name)
 
         lbl_second_name = tk.Label(frame_user_input, text='Last name:')
         lbl_second_name.grid(row=1, column=0, pady=3)
 
         self.ent_second_name = tk.Entry(frame_user_input)
         self.ent_second_name.grid(row=1, column=1, pady=3)
+        self.entries.append(self.ent_second_name)
 
         lbl_year_group = tk.Label(frame_user_input, text='Year group:')
         lbl_year_group.grid(row=2, column=0)
 
         year_groups = ['12', '13']
-        self.year_value = tk.StringVar(frame_user_input, value='Select a year group')
+        self.year_value = tk.StringVar(frame_user_input, value='')
+        self.entries.append(self.year_value)
 
         self.menu_year_group = tk.OptionMenu(frame_user_input, self.year_value, *year_groups)
         self.menu_year_group.grid(row=2, column=1, sticky='ew', pady=3)
@@ -176,8 +182,9 @@ class SignUp(tk.Frame):
         lbl_form_group = tk.Label(frame_user_input, text='Form group:')
         lbl_form_group.grid(row=3, column=0)
         
-        self.form_value = tk.StringVar(frame_user_input, value='Select a form group')
         form_list = ['A', 'B', 'C', 'D', 'E', 'D', 'F']
+        self.form_value = tk.StringVar(frame_user_input, value='')
+        self.entries.append(self.form_value)
         
         self.menu_form_group = tk.OptionMenu(frame_user_input, self.form_value, *form_list)
         self.menu_form_group.grid(row=3, column=1, sticky='ew', pady=3)
@@ -188,6 +195,7 @@ class SignUp(tk.Frame):
 
         self.ent_username = tk.Entry(frame_user_input)
         self.ent_username.grid(row=4, column=1, pady=3)
+        self.entries.append(self.ent_username)
 
         # <3 <3
 
@@ -196,14 +204,16 @@ class SignUp(tk.Frame):
 
         self.ent_password = tk.Entry(frame_user_input, show='*')
         self.ent_password.grid(row=5, column=1, pady=3)
+        self.entries.append(self.ent_password)
 
         lbl_password_repeat = tk.Label(frame_user_input, text='Repeat Password:')
         lbl_password_repeat.grid(row=6, column=0, pady=3)
 
         self.ent_password_repeat = tk.Entry(frame_user_input, show='*')
         self.ent_password_repeat.grid(row=6, column=1, pady=3)
+        self.entries.append(self.ent_password_repeat)
 
-        btn_confirm = tk.Button(self, text='Confirm sign up', command='')
+        btn_confirm = tk.Button(self, text='Confirm sign up', command=lambda: self.create_account())
         btn_confirm.pack(pady=5)
 
         btn_return_start = tk.Button(self, text= 'Return to start page', command=lambda: self.controller.show_frame('StartPage'))
@@ -212,14 +222,18 @@ class SignUp(tk.Frame):
     def create_account(self):
 
         account_variables = {}
-        account_variables['first_name'] = self.ent_first_name.get().lower()
-        account_variables['second_name'] = self.ent_second_name.get().lower()
-        account_variables['year_group'] = self.year_value.get().lower()
-        account_variables['form_group'] = self.form_value.get().lower()
-        account_variables['username'] = self.ent_username.get()
-        account_variables['password'] = self.ent_password.get()
-        account_variables['password_repreat'] = self.ent_password_repeat.get()
-        logic.create_user(account_variables)
+        account_dict_keys = ('first_name', 'second_name', 'year_group', 'form_group', 'username', 'password', 'password_repeat')
+        for count, i in enumerate(self.entries):
+            if count <= 3:
+                account_variables[account_dict_keys[count]] = i.get().lower()
+            else:
+                account_variables[account_dict_keys[count]] = i.get()
+        create_user_result = logic.create_user(account_variables)
+        print(create_user_result)
+        if create_user_result == True:
+            messagebox.showinfo('Success', 'User was created')
+        else:
+            messagebox.showerror('Failure', 'Field: {} \n{}'.format(create_user_result[1], create_user_result[2]))
 
 
 class StudentMenu(tk.Frame):
@@ -428,11 +442,30 @@ class UserSearch(tk.Frame):
         self.ent_username_search.grid(row=6, column=1, sticky='nsew', pady=3)
         self.entries.append(self.ent_username_search)
 
-        self.btn_begin_search = tk.Button(search_term_frame, text='Search', command=lambda: self.search_users())
-        self.btn_begin_search.grid(row=7, column=0, columnspan=2, sticky='ew', pady=3)
+        btn_begin_search = tk.Button(search_term_frame, text='Search', command=lambda: self.search_users())
+        btn_begin_search.grid(row=7, column=0, columnspan=2, sticky='ew', pady=3)
 
-        btn_return_main =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame('StudentMenu'))
-        btn_return_main.grid(row=8, column=0, columnspan=2, sticky='ew', pady=5)
+        btn_clear_results = tk.Button(search_term_frame, text='Clear', command=lambda: self.clear_listbox())
+        btn_clear_results.grid(row=8, column=0, columnspan=2, sticky='ew', pady=5)
+
+        btn_return_main = tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_return_main.grid(row=9, column=0, columnspan=2, sticky='ew', pady=5)
+
+        search_result_frame = tk.Frame(self, relief='groove', borderwidth=2)
+        search_result_frame.pack(side='left', anchor='ne', fill='both', expand=True, padx=(0, 5), pady=(3,5))
+
+        lbl_format_explanation = tk.Label(search_result_frame, text='Order of elements: \n ID, First Name, Second Name, Year Group, Form Group, Username, Password')
+        lbl_format_explanation.pack()
+        scroll_sign_history = tk.Scrollbar(search_result_frame)
+        scroll_sign_history.pack(side='right', fill='y', padx=(0,2))
+
+        self.list_sign_history = tk.Listbox(search_result_frame, yscrollcommand=scroll_sign_history.set)
+        self.list_sign_history.pack(side='left', fill='both', expand=True, padx=(2,2))
+
+
+    def clear_listbox(self):
+        """Clears the list box of all entries"""
+        self.list_sign_history.delete(0, tk.END)
 
     def search_users(self):
         """Searches using input terms from GUI"""
@@ -446,8 +479,9 @@ class UserSearch(tk.Frame):
             search_terms[search_keys[count]] = i.get()
         
         search_results = logic.search_users(search_terms)
-        print(search_results)
-            
+        for i in search_results:
+            self.list_sign_history.insert(tk.END, ', '.join(map(str, i)))
+  
 
 class EditSearchUsers(UserSearch):
 

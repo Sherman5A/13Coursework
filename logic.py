@@ -22,7 +22,7 @@ def create_user(account_variables):
                                 password TEXT NOT NULL,
 	                            PRIMARY KEY("id" AUTOINCREMENT)
                             ); """
-        sql_database.execute_sql(sql_create_user_table)
+        sql_database.create_table(sql_create_user_table)
 
     def write_user():
         """Write variable to database table"""
@@ -32,21 +32,23 @@ def create_user(account_variables):
 
     for key, value in account_variables.items():
 
-        if validation.len_check() == False:
-            return False, key, 'Length check'
+        if validation.len_check(value, 20) == False:
+            return False, key, 'Length check, check field is not empty and is under 20 characters '
 
         if key == 'first_name' or key == 'second_name':
             if validation.string_check(value) == False:
                 return False, key, 'Alpha check'
-
-    if account_variables['password'] == account_variables['password_repeat']:
+    if account_variables['password'] != account_variables['password_repeat']:
         return False, 'password', "Passwords don't match"
 
+    if validation.password_strength(account_variables['password']) == False:
+        return False, 'password', 'Password not strong enough. Use >= 7 characters and both upper and lower case letters'
+    
     create_table()
 
     common_usernames = sql_database.get_data(
         "SELECT username FROM users WHERE username=?", (account_variables['username'],))
-    if len(common_usernames != 0):
+    if len(common_usernames) != 0:
         return False, 'username', 'Username is not unique'
 
     write_user()
