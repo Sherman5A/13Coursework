@@ -1,17 +1,21 @@
-import SQL_interface
 import re
 from datetime import datetime
+
+import SQL_interface
 
 
 def create_user(account_variables):
     """"Create a new user, performs validation, then adds to sql table"""
 
+    # creating class interfaces, passing in db to connect to
     sql_database = SQL_interface.sqlInterface('test.db')
+    # create connection to database
     sql_database.create_connection()
 
     def create_table():
         """Creates user table"""
 
+        # SQL command to create table if it does not exist
         sql_create_user_table = """ CREATE TABLE IF NOT EXISTS users (
                                 "id" INTEGER,
                                 first_name TEXT NOT NULL,
@@ -20,43 +24,60 @@ def create_user(account_variables):
                                 form_group TEXT NOT NULL,
                                 username TEXT NOT NULL,
                                 password TEXT NOT NULL,
-	                            PRIMARY KEY("id" AUTOINCREMENT)
+                                PRIMARY KEY("id" AUTOINCREMENT)
                             ); """
         sql_database.create_table(sql_create_user_table)
 
     def write_user():
         """Write variable to database table"""
 
-        sql_database.insert_data("INSERT INTO users(first_name, second_name, year_group, form_group, username, password) VALUES(?, ?, ?, ?, ?, ?);", (
-            account_variables['first_name'], account_variables['second_name'], account_variables['year_group'], account_variables['form_group'], account_variables['username'], account_variables['password']))
+        # inserts data into table
+        sql_database.insert_data(
+            "INSERT INTO users(first_name, second_name, year_group, form_group, username, password) VALUES(?, ?, ?, ?, ?, ?);",
+            (
+                account_variables['first_name'],
+                account_variables['second_name'],
+                account_variables['year_group'],
+                account_variables['form_group'], account_variables['username'],
+                account_variables['password']))
 
+    # validation
     for key, value in account_variables.items():
 
-        if validation.len_check(value, 20) == False:
+        # if value is empty or above 20 characters, decline
+        if not validation.len_check(value, 20):
             return False, key, 'Length check, check field is not empty and is under 20 characters '
 
+        # names require string checks as no symbols should be accepted
         if key == 'first_name' or key == 'second_name':
-            if validation.string_check(value) == False:
+            if not validation.string_check(value):
                 return False, key, 'Alpha check'
+
+    # check if passwords match           
     if account_variables['password'] != account_variables['password_repeat']:
         return False, 'password', "Passwords don't match"
 
-    if validation.password_strength(account_variables['password']) == False:
+    # check if password is strong enough
+    if not validation.password_strength(account_variables['password']):
         return False, 'password', 'Password not strong enough. Use >= 7 characters and both upper and lower case letters'
-    
+
     create_table()
 
+    # check for duplicate usernames. Usernames must be unique as they are
+    # used to log in
     common_usernames = sql_database.get_data(
-        "SELECT username FROM users WHERE username=?", (account_variables['username'],))
+        "SELECT username FROM users WHERE username=?",
+        (account_variables['username'],))
     if len(common_usernames) != 0:
         return False, 'username', 'Username is not unique'
 
     write_user()
-    return True
+    return True  # returns everything successful flag
 
 
 def check_login_creds(input_username, input_password):
     pass
+
 
 def search_users(search_terms):
     """Searches the user tables with the dictonary provided in args"""
@@ -64,10 +85,12 @@ def search_users(search_terms):
     # if no terms are provided, return all users
     if len(search_terms) != 0:
         sql_search = "SELECT * FROM users WHERE "
-        # takes keys, values, formats value, joins them with '=', and then adds AND between dict keys
-        # adds ; to end sql statment
-        sql_search += ' AND '.join('='.join((key, "'{}'".format(value))) for key, value in search_terms.items()) + ';'
-    else: 
+        # takes keys, values, formats value, joins them with '=', and then
+        # adds AND between dict keys adds ; to end sql statement
+        sql_search += ' AND '.join(
+            '='.join((key, "'{}'".format(value))) for key, value in
+            search_terms.items()) + ';'
+    else:
         sql_search = "SELECT * FROM users;"
 
     # create SQL connection
@@ -83,10 +106,11 @@ class validation():
     def string_check(input):
         """Checks if a string contains digits or special characters"""
 
-        regex_arguement = re.compile('\d+|[@;:()]')
+        # create regex searching for digits and symbols
+        regex_argument = re.compile('\d+|[@;:()]')
         try:
-            regex_return = re.search(regex_arguement, input)
-            if regex_return:
+            regex_return = re.search(regex_argument, input)
+            if regex_return:  # string contains symbols or digits
                 return False
             return True
         except TypeError:
@@ -98,6 +122,7 @@ class validation():
             input: variable to check
             max_len: int maximum length to return true
         """
+
         if len(input) <= 0 or len(input) > max_len:
             return False
         return True
@@ -105,10 +130,12 @@ class validation():
     def validate_num(input, min_num=None):
         """Checks if input is int
             input: variable to check
-            min_num: optionial, input can not be lower than value"""
+            min_num: optionial, input can not be lower than value
+        """
+
         try:
             converted_input = int(input)
-            if min_num == None:
+            if min_num is None:
                 return True
             return converted_input > min_num
         except ValueError:
@@ -116,10 +143,12 @@ class validation():
 
     def password_strength(input):
         """Check password is >= 7 characters, contains lower and upper case """
+
         if len(input) < 7:
             return False
 
-        if input.isupper() == False and input.islower() == False:
+        # contains both lower and upper case characters
+        if input.isupper() is False and input.islower() is False:
             return True
         return False
 

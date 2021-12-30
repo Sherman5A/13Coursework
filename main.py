@@ -1,7 +1,6 @@
 """Init, GUI construction"""
 
 import tkinter as tk
-from tkinter.constants import NW
 from tkinter import messagebox
 
 import logic
@@ -22,14 +21,15 @@ class Gui(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.frames = {} # dictionary to place classes into
+        self.frames = {}  # dictionary to place classes into
 
-        # iterate through a list of classes, intialising them
+        # iterate through a list of classes, initialising them
         for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, EditSearchUsers, SignSearch, EditUser, SignIn, SignOut, SignHistory):
             
             # initialise frame and assign reference 'frame' to frame
             frame = F(parent=container, controller=self) 
-            self.frames[F.__name__] = frame # F.__name__ gets name of class, it then assgins the class reference to dictionary key
+            self.frames[F.__name__] = frame  # F.__name__ gets name of class,
+            # it then assigns the class reference to dictionary key
             frame.grid(row=0, column=0, sticky='nsew') # grid and let expand
 
         # page setup
@@ -37,10 +37,10 @@ class Gui(tk.Tk):
         self.show_frame("StartPage")
 
     def show_frame(self, page_name):
-        """Raise specified frame classs: page_name"""
+        """Raise specified frame class: page_name"""
 
         frame = self.frames[page_name]
-        frame.tkraise() # raises frame of arguement
+        frame.tkraise()  # raises frame of argument
 
 
 class StartPage(tk.Frame):
@@ -48,7 +48,7 @@ class StartPage(tk.Frame):
 
     def __init__(self, parent, controller):
         """Initialise class values and create GUI elements"""
-        # initialse frame
+        # initialise frame
         tk.Frame.__init__(self, parent) # start tk frame class
         self.controller = controller
 
@@ -155,7 +155,7 @@ class SignUp(tk.Frame):
         lbl_first_name = tk.Label(frame_user_input, text='First Name:')
         lbl_first_name.grid(row=0, column=0, pady=3)
 
-        self.entries = []
+        self.entries = [] # Entries, StringVars stored in list for easier .get()
 
         self.ent_first_name = tk.Entry(frame_user_input)
         self.ent_first_name.grid(row=0, column=1, pady=3)
@@ -220,16 +220,20 @@ class SignUp(tk.Frame):
         btn_return_start.pack(pady=3)
 
     def create_account(self):
+        """Collects user inputs and creates user account"""
 
         account_variables = {}
+        # tuple to hold dict keys
         account_dict_keys = ('first_name', 'second_name', 'year_group', 'form_group', 'username', 'password', 'password_repeat')
-        for count, i in enumerate(self.entries):
+        
+        for count, i in enumerate(self.entries): # get values and place in dictionary
             if count <= 3:
                 account_variables[account_dict_keys[count]] = i.get().lower()
             else:
                 account_variables[account_dict_keys[count]] = i.get()
         create_user_result = logic.create_user(account_variables)
-        print(create_user_result)
+
+        # show error / success message
         if create_user_result == True:
             messagebox.showinfo('Success', 'User was created')
         else:
@@ -373,10 +377,10 @@ class UserSearch(tk.Frame):
         # gui creation
 
         self.search_config_frame = tk.Frame(self)
-        self.search_config_frame.pack(side='left', anchor=NW, padx=10)
+        self.search_config_frame.pack(side='left', anchor='nw', padx=10)
 
         title_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
-        title_frame.pack(fill='both', anchor=NW, pady=(3, 15))
+        title_frame.pack(fill='both', anchor='nw', pady=(3, 15))
 
         lbl_search_title = tk.Label(title_frame, text='User Search')
         lbl_search_title.pack()
@@ -385,7 +389,7 @@ class UserSearch(tk.Frame):
         self.btn_change_sign_search.pack(pady=3)
 
         search_term_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
-        search_term_frame.pack(fill='both', anchor=NW)
+        search_term_frame.pack(fill='both', anchor='nw')
 
         lbl_search_info = tk.Label(search_term_frame, text="Leave entries you don't want to search empty")
         lbl_search_info.grid(row=0, column=0, sticky='nsew', pady=(10,3), columnspan=2)
@@ -462,15 +466,15 @@ class UserSearch(tk.Frame):
         self.list_sign_history = tk.Listbox(search_result_frame, yscrollcommand=scroll_sign_history.set)
         self.list_sign_history.pack(side='left', fill='both', expand=True, padx=(2,2))
 
-
     def clear_listbox(self):
         """Clears the list box of all entries"""
+
         self.list_sign_history.delete(0, tk.END)
 
     def search_users(self):
         """Searches using input terms from GUI"""
         
-        # tuple to manage key names
+        # tuple to hold dict keys
         search_keys = ('id', 'first_name', 'second_name', 'year_group', 'form_group', 'username', 'password')
         search_terms = {}
         for count, i in enumerate(self.entries):
@@ -509,10 +513,10 @@ class SignSearch(tk.Frame):
         # gui creation
 
         self.search_config_frame = tk.Frame(self)
-        self.search_config_frame.pack(side='left', anchor=NW, padx=10)
+        self.search_config_frame.pack(side='left', anchor='nw', padx=10)
 
         title_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
-        title_frame.pack(fill='both', anchor=NW, pady=(3, 15))
+        title_frame.pack(fill='both', anchor='nw', pady=(3, 15))
 
         lbl_search_title = tk.Label(title_frame, text='Sign Search')
         lbl_search_title.pack()
@@ -521,7 +525,7 @@ class SignSearch(tk.Frame):
         self.btn_change_sign_search.pack(pady=3)
 
         search_term_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
-        search_term_frame.pack(fill='both', anchor=NW)
+        search_term_frame.pack(fill='both', anchor='nw')
 
         lbl_sign_in_out = tk.Label(search_term_frame, text='Sign type:')
         lbl_sign_in_out.grid(row=0, column=0, sticky='nsew', pady=(5, 3))
@@ -578,7 +582,6 @@ class EditUser(tk.Frame):
 
         self.frame_edit_terms = tk.Frame(self)
         self.frame_edit_terms.pack()
-
 
         lbl_fname = tk.Label(self.frame_edit_terms, text='First name:')
         lbl_fname.grid(row=0, column=0, pady=3)
