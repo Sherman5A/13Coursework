@@ -74,6 +74,60 @@ def create_user(account_variables):
     write_user()
     return True  # returns everything successful flag
 
+def create_sign_in():
+
+    # creating class interfaces, passing in db to connect to
+    sql_database = SQL_interface.sqlInterface('test.db')
+    # create connection to database
+    sql_database.create_connection()
+
+    sql_create_table = """CREATE TABLE IF NOT EXISTS sign_in (
+	"sign_in_id" INTEGER,
+	"date" TEXT NOT NULL,
+    "time" TEXT NOT NULL,
+	"student_id" INTEGER NOT NULL,
+	FOREIGN KEY("student_id") REFERENCES "users"("id") ON UPDATE CASCADE ON DELETE CASCADE,
+	PRIMARY KEY("sign_in_id" AUTOINCREMENT)
+    );"""
+    sql_database.create_table(sql_create_table)
+
+    sql_database.insert_data("INSERT INTO sign_in(date_time, student_id) VALUES(date('now'), time('now'), ?)", '2')
+
+def create_sign_out(sign_out_type):
+
+    # creating class interfaces, passing in db to connect to
+    sql_database = SQL_interface.sqlInterface('test.db')
+    # create connection to database
+    sql_database.create_connection()
+
+    sql_create_table = """CREATE TABLE IF NOT EXISTS sign_out (
+        "sign_out_id" INTEGER,
+        "date" TEXT NOT NULL,
+        "time" TEXT NOT NULL,
+        "sign_out_type" TEXT NOT NULL,
+        "student_id" INTEGER NOT NULL,
+        FOREIGN KEY("student_id") REFERENCES "users"("id") ON UPDATE CASCADE ON DELETE CASCADE,
+        PRIMARY KEY("sign_out_id" AUTOINCREMENT)
+        );"""
+
+    sql_database.create_table(sql_create_table)
+    sql_database.insert_data("INSERT INTO sign_out(date_time, sign_out_type, student_id) VALUES(date('now'), time('now'), ?, ?)", (sign_out_type, '2'))
+
+def search_signs(search_terms):
+
+    if len(search_terms) != 0:
+        sql_search = 'SELECT * FROM sign_in, sign_out'
+    else:
+        if search_terms['sign_type'] == 'both' or search_terms['sign_type'] == '':
+            sql_search = "SELECT * FROM sign_in, sign_out WHERE "
+        elif search_terms['sign_type'] == 'sign in':
+            sql_search = "SELECT * FROM sign_in WHERE"
+        else:
+            sql_search = "SELECT * FROM sign_out WHERE"
+
+        sql_search += ' AND '.join('='.join((key, "'{}'".format(value))) for key, value in search_terms.items()) + ';'
+    print(sql_search)
+
 
 def check_login_creds(input_username, input_password):
     pass
