@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, time
 
 import SQL_interface
 
@@ -45,12 +45,12 @@ def create_user(account_variables):
     for key, value in account_variables.items():
 
         # if value is empty or above 20 characters, decline
-        if not validation.len_check(value, 20):
+        if not Validation.len_check(value, 20):
             return False, key, 'Length check, check field is not empty and is under 20 characters '
 
         # names require string checks as no symbols should be accepted
         if key == 'first_name' or key == 'second_name':
-            if not validation.string_check(value):
+            if not Validation.string_check(value):
                 return False, key, 'Alpha check'
 
     # check if passwords match           
@@ -58,7 +58,7 @@ def create_user(account_variables):
         return False, 'password', "Passwords don't match"
 
     # check if password is strong enough
-    if not validation.password_strength(account_variables['password']):
+    if not Validation.password_strength(account_variables['password']):
         return False, 'password', 'Password not strong enough. Use >= 7 characters and both upper and lower case letters'
 
     create_table()
@@ -73,6 +73,7 @@ def create_user(account_variables):
 
     write_user()
     return True  # returns everything successful flag
+
 
 def create_sign_in():
 
@@ -93,6 +94,7 @@ def create_sign_in():
 
     sql_database.insert_data("INSERT INTO sign_in(date_time, student_id) VALUES(date('now'), time('now'), ?)", '2')
 
+
 def create_sign_out(sign_out_type):
 
     # creating class interfaces, passing in db to connect to
@@ -104,8 +106,8 @@ def create_sign_out(sign_out_type):
         "sign_out_id" INTEGER,
         "date" TEXT NOT NULL,
         "time" TEXT NOT NULL,
-        "sign_out_type" TEXT NOT NULL,
         "student_id" INTEGER NOT NULL,
+        "sign_out_type" TEXT NOT NULL,
         FOREIGN KEY("student_id") REFERENCES "users"("id") ON UPDATE CASCADE ON DELETE CASCADE,
         PRIMARY KEY("sign_out_id" AUTOINCREMENT)
         );"""
@@ -113,20 +115,34 @@ def create_sign_out(sign_out_type):
     sql_database.create_table(sql_create_table)
     sql_database.insert_data("INSERT INTO sign_out(date_time, sign_out_type, student_id) VALUES(date('now'), time('now'), ?, ?)", (sign_out_type, '2'))
 
-def search_signs(search_terms):
 
-    if len(search_terms) != 0:
-        sql_search = 'SELECT * FROM sign_in, sign_out'
-    else:
-        if search_terms['sign_type'] == 'both' or search_terms['sign_type'] == '':
-            sql_search = "SELECT * FROM sign_in, sign_out WHERE "
-        elif search_terms['sign_type'] == 'sign in':
-            sql_search = "SELECT * FROM sign_in WHERE"
-        else:
-            sql_search = "SELECT * FROM sign_out WHERE"
+def search_signs(sign_in_or_out, search_terms, time_tuple=None):
+    """Searches the sign tables with the args provided."""
 
-        sql_search += ' AND '.join('='.join((key, "'{}'".format(value))) for key, value in search_terms.items()) + ';'
-    print(sql_search)
+    # if sign_in_or_out == '' or sign_in_or_out == 'both':
+    #     sql_search = "SELECT * FROM sign_in, sign_out"
+    if sign_in_or_out == 'sign out':
+        sql_search = "SELECT * FROM sign_out"
+    elif sign_in_or_out == 'sign in':
+        sql_search = "SELECT * FROM sign_in"
+
+    if len(search_terms) != 0 or time_tuple != None:
+        sql_search += " WHERE "
+        if time_tuple != None:
+            sql_search += "time BETWEEN '{}' AND '{}'".format(time_tuple[0], time_tuple[1])
+            if len(search_terms) != 0:
+                sql_search += ' AND '
+
+        if len(search_terms) != 0:
+            sql_search += ' AND '.join('='.join((key, "'{}'".format(value))) for key, value in search_terms.items())
+        sql_search += ';'
+
+    # create SQL connection
+    sql_database = SQL_interface.sqlInterface('test.db')
+    sql_database.create_connection()
+    # execute and return sql search
+    return sql_database.get_data(sql_search)
+
 
 
 def check_login_creds(input_username, input_password):
@@ -134,7 +150,7 @@ def check_login_creds(input_username, input_password):
 
 
 def search_users(search_terms):
-    """Searches the user tables with the dictonary provided in args"""
+    """Searches the user tables with the dictonary provided in args."""
 
     # if no terms are provided, return all users
     if len(search_terms) != 0:
@@ -154,7 +170,7 @@ def search_users(search_terms):
     return sql_database.get_data(sql_search)
 
 
-class validation():
+class Validation:
     """Class containing validation"""
 
     def string_check(input):
