@@ -144,6 +144,14 @@ def search_signs(sign_in_or_out, search_terms, time_tuple=None):
     return sql_database.get_data(sql_search)
 
 
+def sign_history():
+
+    sign_history = []
+    sign_history.extend(search_signs('sign out', {}))
+    sign_history.extend(search_signs('sign in', {}))
+    return sorted(sign_history, key=lambda x: datetime.strptime('{} {}'.format(x[1], x[2]), '%d/%m/%Y %H:%M:%S'), reverse=True)
+
+sign_history()
 
 def check_login_creds(input_username, input_password):
     pass

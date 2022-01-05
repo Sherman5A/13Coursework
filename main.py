@@ -842,7 +842,13 @@ class SignHistory(tk.Frame):
         frame_menu.pack()
 
         btn_return = tk.Button(frame_menu, text='Return to menu', command=lambda: self.controller.show_frame('StudentMenu'))
-        btn_return.pack(pady=3)
+        btn_return.grid(row=0, column=0, pady=3, padx=2)
+
+        btn_view_history = tk.Button(frame_menu, text='View Sign History', command=lambda: self.view_history())
+        btn_view_history.grid(row=0, column=1, pady=3, padx=2)
+
+        lbl_result_format = tk.Label(self, text='Format:\nSign in / out, Sign ID, Sign date, Sign time, Student ID, Sign out type (if applicable)')
+        lbl_result_format.pack(pady=2)
 
         frame_sign_history = tk.Frame(self, relief='groove', borderwidth=2)
         frame_sign_history.pack(expand=True, fill='both')
@@ -850,14 +856,24 @@ class SignHistory(tk.Frame):
         scroll_sign_history = tk.Scrollbar(frame_sign_history)
         scroll_sign_history.pack(side='right', fill='y')
 
-        list_sign_history = tk.Listbox(frame_sign_history,  yscrollcommand=scroll_sign_history.set)
-        list_sign_history.pack(side='left', fill='both', expand=True)
+        self.list_sign_history = tk.Listbox(frame_sign_history,  yscrollcommand=scroll_sign_history.set)
+        self.list_sign_history.pack(side='left', fill='both', expand=True)
 
-        for line in range(1, 26):
-            list_sign_history.insert(tk.END, "Geeks " + str(line))
+        scroll_sign_history.config(command=self.list_sign_history.yview)
 
-        scroll_sign_history.config(command=list_sign_history.yview)
+    def view_history(self):
+        """View all sign in / outs"""
 
+        history_list = logic.sign_history()
+        for i in  history_list:
+            i = list(i)
+            if len(i) == 4:
+                i.insert(0, 'Sign In')
+                self.list_sign_history.insert(tk.END, '  ,  '.join(map(str, i)))    
+            elif len(i) == 5:
+                i.insert(0, 'Sign Out')
+                self.list_sign_history.insert(tk.END, '  ,  '.join(map(str, i)))  
+            
 
 if __name__ == '__main__':
 
