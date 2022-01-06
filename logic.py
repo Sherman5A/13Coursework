@@ -18,6 +18,7 @@ def create_user(account_variables):
         # SQL command to create table if it does not exist
         sql_create_user_table = """ CREATE TABLE IF NOT EXISTS users (
                                 "id" INTEGER,
+                                access_level TEXT NOT NULL,
                                 first_name TEXT NOT NULL,
                                 second_name TEXT NOT NULL,
                                 year_group TEXT NOT NULL,
@@ -33,12 +34,16 @@ def create_user(account_variables):
 
         # inserts data into table
         sql_database.insert_data(
-            "INSERT INTO users(first_name, second_name, year_group, form_group, username, password) VALUES(?, ?, ?, ?, ?, ?);",
+            "INSERT INTO users(first_name, access_level, second_name, "
+            "year_group, form_group, username, password) VALUES(?, ?, ?, ?, "
+            "?, ?, ?);",
             (
                 account_variables['first_name'],
+                account_variables['access_level'],
                 account_variables['second_name'],
                 account_variables['year_group'],
-                account_variables['form_group'], account_variables['username'],
+                account_variables['form_group'],
+                account_variables['username'],
                 account_variables['password']))
 
     # validation
@@ -82,13 +87,20 @@ def login(input_username, input_password):
     """Login to SQL"""
     
     sql_database = SQL_interface.sqlInterface('test.db')
-    sql_search_login_details = sql_database.get_data("""SELECT username FROM users WHERE username=? AND password=?""", (input_username, input_password))
+    sql_database.create_connection()
+    sql_search_login_details = sql_database.get_data(
+        """SELECT id, access_level, first_name, second_name, year_group, 
+        form_group, username FROM users WHERE username=? AND password=?""",
+        (input_username, input_password))
+        
     if len(sql_search_login_details) == 1:
         return True, sql_search_login_details
     else:   
         return False
 
-def create_sign_in():
+
+def create_sign_in(student_id):
+    """"Create sign in in database using student_id"""
 
     # creating class interfaces, passing in db to connect to
     sql_database = SQL_interface.sqlInterface('test.db')
@@ -96,19 +108,21 @@ def create_sign_in():
     sql_database.create_connection()
 
     sql_create_table = """CREATE TABLE IF NOT EXISTS sign_in (
-	"sign_in_id" INTEGER,
-	"date" TEXT NOT NULL,
+    "sign_in_id" INTEGER,
+    "date" TEXT NOT NULL,
     "time" TEXT NOT NULL,
-	"student_id" INTEGER NOT NULL,
-	FOREIGN KEY("student_id") REFERENCES "users"("id") ON UPDATE CASCADE ON DELETE CASCADE,
-	PRIMARY KEY("sign_in_id" AUTOINCREMENT)
+    "student_id" INTEGER NOT NULL,
+    FOREIGN KEY("student_id") REFERENCES "users"("id") ON UPDATE CASCADE ON DELETE CASCADE,
+    PRIMARY KEY("sign_in_id" AUTOINCREMENT)
     );"""
 
     sql_database.create_table(sql_create_table)
-    sql_database.insert_data("INSERT INTO sign_in(date, time, student_id) VALUES(date('now'), time('now'), ?)", '2')
+    sql_database.insert_data("INSERT INTO sign_in(date, time, student_id) "
+                             "VALUES(date('now'), time('now'), ?)", student_id)
 
 
-def create_sign_out(sign_out_type):
+def create_sign_out(student_id, sign_out_type):
+    """"Create sign out in database using args: student_id and sign_out_type"""
 
     # creating class interfaces, passing in db to connect to
     sql_database = SQL_interface.sqlInterface('test.db')
@@ -124,9 +138,12 @@ def create_sign_out(sign_out_type):
         FOREIGN KEY("student_id") REFERENCES "users"("id") ON UPDATE CASCADE ON DELETE CASCADE,
         PRIMARY KEY("sign_out_id" AUTOINCREMENT)
         );"""
-
     sql_database.create_table(sql_create_table)
-    sql_database.insert_data("INSERT INTO sign_out(date, time, student_id, sign_out_type VALUES(date('now'), time('now'), ?, ?)", (sign_out_type, '2'))
+
+    sql_database.insert_data(
+        "INSERT INTO sign_out(date, time, student_id, sign_out_type) VALUES("
+        "date('now'), time('now'), ?, ?)",
+        (student_id, sign_out_type))
 
 
 def search_signs(sign_in_or_out, search_terms, time_tuple=None):
@@ -165,7 +182,7 @@ def sign_history():
     all_signs = []
     all_signs.extend(search_signs('sign out', {}))
     all_signs.extend(search_signs('sign in', {}))
-    return sorted(all_signs, key=lambda x: datetime.strptime('{} {}'.format(x[1], x[2]), '%d/%m/%Y %H:%M:%S'), reverse=True)
+    return sorted(all_signs, key=lambda x: datetime.strptime('{} {}'.format(x[1], x[2]), '%Y-%m-%d %H:%M:%S'), reverse=True)
 
 
 def check_login_creds(input_username, input_password):
@@ -195,6 +212,13 @@ def search_users(search_terms):
 
 class Validation:
     """Class containing validation"""
+
+    def date_format_check(input):
+        try:
+            datetime.strptime(input, '%Y-%m-%d')
+            return True
+        except ValueError:
+            return False
 
     def string_check(input):
         """Checks if a string contains digits or special characters"""

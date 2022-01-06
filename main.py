@@ -199,8 +199,10 @@ class SignUp(tk.Frame):
                 account_variables[account_dict_keys[count]] = i.get().lower()
             else:
                 account_variables[account_dict_keys[count]] = i.get()
-        create_user_result = logic.create_user(account_variables)
 
+        account_variables['access_level'] = 'student'
+
+        create_user_result = logic.create_user(account_variables)
         # show error / success message
         if create_user_result:
             messagebox.showinfo('Success', 'User was created')
@@ -235,7 +237,7 @@ class Login(tk.Frame):
 
         self.ent_password = tk.Entry(self.input_frame, show='*')
         self.ent_password.grid(column=1, row=1, pady=3)
-        btn_login = tk.Button(self, text='Login', command='')
+        btn_login = tk.Button(self, text='Login', command=lambda: self.login_check())
         btn_login.pack(pady=3)
 
         btn_return_start_page = tk.Button(self, text='Return to start page', command=lambda: self.controller.show_frame('StartPage'))
@@ -247,9 +249,29 @@ class Login(tk.Frame):
         input_username = self.ent_username.get()
         input_password = self.ent_password.get()
         login_result = logic.login(input_username, input_password)
-        
-        if login_result == False:
+        print(login_result)
+        if not login_result:
             messagebox.showerror('Failure', 'Incorrect username or password')
+        else:
+            account_info = {}
+            account_dict_keys = ('id', 'access_level', 'first_name',
+                                 'second_name', 'year_group',
+                                 'form_group', 'username', 'password')
+            
+            for count, i in enumerate(login_result[1][0]):
+                account_info[account_dict_keys[count]] = i
+
+            print(account_info)
+            self.controller.set_session_id(account_info['id'])
+            print(self.controller.session_id)
+
+            if account_info['access_level'] == 'student':
+                self.controller.frames['StudentMenu'].user_configure(account_info)
+                self.controller.show_frame('StudentMenu')
+            else:
+                self.controller.frames['TeacherMenu'].user_configure(account_info)
+                self.controller.show_frame('TeacherMenu')
+                
 
 
 class StudentMenu(tk.Frame):
@@ -287,9 +309,10 @@ class StudentMenu(tk.Frame):
         self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.logout())
         self.btn_user_logout.pack(pady=3)
 
-    def student_configure(self, student_name):
+    def user_configure(self, user_info):
         """Configures the StudentMenu to the logged in student"""
-        self.student_name.set(value=student_name)
+        self.student_name.set('{} {}'.format(user_info['first_name'], 
+                                             user_info['second_name']).title())
 
     def logout(self):
         """Logs out of sql database"""
@@ -334,11 +357,6 @@ class TeacherMenu(StudentMenu):
 
         self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.logout())
         self.btn_user_logout.pack(pady=3)
-
-    def teacher_configure(self, teacher_name):
-        """Configure the TeacherMenu to the logged in student"""
-
-        self.teacher_name.set(teacher_name)
 
 
 class LogoutMenu(tk.Frame):
@@ -579,7 +597,7 @@ class SignSearch(tk.Frame):
         menu_sign_out_type.config(width='17')
         menu_sign_out_type.grid(row=3, column=1, sticky='ew', pady=3)
 
-        lbl_date_search = tk.Label(search_term_frame, text='Date:')
+        lbl_date_search = tk.Label(search_term_frame, text='Date:\n(format YYYY-MM-DD)')
         lbl_date_search.grid(row=4, column=0, sticky='nsew', pady=3)
 
         ent_date_search = tk.Entry(search_term_frame)
@@ -664,6 +682,11 @@ class SignSearch(tk.Frame):
         """Start sign search with defined parameters"""
 
         self.clear_listbox()
+
+        if len(self.entries[3].get()) != 0:
+            if logic.Validation.date_format_check(self.entries[3].get()) == False:
+                messagebox.showerror('Failure', 'Date format incorrect')
+                return
 
         sign_in_or_out = self.sign_value.get().lower()
         if sign_in_or_out == '' or sign_in_or_out == 'both':
@@ -801,7 +824,7 @@ class SignIn(tk.Frame):
     def start_sign_in(self):
         """"Start a sign in"""
 
-        logic.create_sign_in()
+        logic.create_sign_in(str(self.controller.session_id))
 
 
 class SignOut(tk.Frame):
@@ -824,7 +847,7 @@ class SignOut(tk.Frame):
         lbl_sign_out_type = tk.Label(frame_sign_out_type, text='Sign out reason:')
         lbl_sign_out_type.grid(row=0, column=0)
 
-        self.sign_value = tk.StringVar(frame_sign_out_type, value='Sign out type')
+        self.sign_value = tk.StringVar(frame_sign_out_type, value='')
 
         sign_out_types = ['Breaktime', 'Lunchtime', 'Going home']
 
@@ -840,8 +863,9 @@ class SignOut(tk.Frame):
 
     def start_sign_out(self):
         """"Start sign out"""
-
-        logic.create_sign_out(self.sign_value.get())
+        if self.sign_value.get() == '':
+            messagebox.showerror('Failure', 'Fill in the sign out reason')
+        logic.create_sign_out(str(self.controller.session_id), self.sign_value.get())
 
 
 class SignHistory(tk.Frame):
