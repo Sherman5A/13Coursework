@@ -75,6 +75,16 @@ def create_user(account_variables):
     return True  # returns everything successful flag
 
 
+def login(input_username, input_password):
+    """Login to SQL"""
+    
+    sql_database = SQL_interface.sqlInterface('test.db')
+    sql_search_login_details = sql_database.get_data("""SELECT username FROM users WHERE username=? AND password=?""", (input_username, input_password))
+    if len(sql_search_login_details) == 1:
+        return True, sql_search_login_details
+    else:   
+        return False
+
 def create_sign_in():
 
     # creating class interfaces, passing in db to connect to
@@ -90,9 +100,9 @@ def create_sign_in():
 	FOREIGN KEY("student_id") REFERENCES "users"("id") ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY("sign_in_id" AUTOINCREMENT)
     );"""
-    sql_database.create_table(sql_create_table)
 
-    sql_database.insert_data("INSERT INTO sign_in(date_time, student_id) VALUES(date('now'), time('now'), ?)", '2')
+    sql_database.create_table(sql_create_table)
+    sql_database.insert_data("INSERT INTO sign_in(date, time, student_id) VALUES(date('now'), time('now'), ?)", '2')
 
 
 def create_sign_out(sign_out_type):
@@ -113,7 +123,7 @@ def create_sign_out(sign_out_type):
         );"""
 
     sql_database.create_table(sql_create_table)
-    sql_database.insert_data("INSERT INTO sign_out(date_time, sign_out_type, student_id) VALUES(date('now'), time('now'), ?, ?)", (sign_out_type, '2'))
+    sql_database.insert_data("INSERT INTO sign_out(date, time, student_id, sign_out_type VALUES(date('now'), time('now'), ?, ?)", (sign_out_type, '2'))
 
 
 def search_signs(sign_in_or_out, search_terms, time_tuple=None):
@@ -151,7 +161,6 @@ def sign_history():
     sign_history.extend(search_signs('sign in', {}))
     return sorted(sign_history, key=lambda x: datetime.strptime('{} {}'.format(x[1], x[2]), '%d/%m/%Y %H:%M:%S'), reverse=True)
 
-sign_history()
 
 def check_login_creds(input_username, input_password):
     pass
@@ -238,7 +247,3 @@ def get_date_time():
     date_str = unformatted_datetime.strftime('%d/%m/%Y')
     time_str = unformatted_datetime.strftime('%H:%M:%S')
     return date_str, time_str
-
-
-def sign_in_school():
-    date_str, time_str = get_date_time()

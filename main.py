@@ -28,7 +28,7 @@ class Gui(tk.Tk):
         self.frames = {}  # dictionary to place classes into
 
         # iterate through a list of classes, initialising them
-        for F in (StartPage, TextLogin, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, EditSearchUsers, SignSearch, EditUser, SignIn, SignOut, SignHistory):
+        for F in (StartPage, Login, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, EditSearchUsers, SignSearch, EditUser, SignIn, SignOut, SignHistory):
 
             # initialise frame and assign reference 'frame' to frame
             frame = F(parent=container, controller=self)
@@ -45,6 +45,11 @@ class Gui(tk.Tk):
 
         frame = self.frames[page_name]
         frame.tkraise()  # raises frame of argument
+
+    def set_session_id(self, session_id):
+        """"Assign id to session, used for when signing in and out"""
+
+        self.session_id = session_id
 
 
 class StartPage(tk.Frame):
@@ -93,7 +98,7 @@ class StartPage(tk.Frame):
         btn_edit_search_users.pack(pady=3)
 
 
-class TextLogin(tk.Frame):
+class Login(tk.Frame):
     """Page to log in to system"""
 
     def __init__(self, parent, controller):
@@ -130,12 +135,10 @@ class TextLogin(tk.Frame):
         """Checks username and password"""
 
         input_username = self.ent_username.get()
-        print(input_username)
         input_password = self.ent_password.get()
-        print(input_username)
-        if logic.check_login_creds(input_username, input_password):
-            self.controller.show_frame('StudentMenu')
-        else:
+        login_result = logic.login(input_username, input_password)
+        
+        if login_result == False:
             pass
 
 
@@ -503,7 +506,7 @@ class EditSearchUsers(UserSearch):
         frame_start_edit = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
         frame_start_edit.pack(pady=3, expand=True, fill='both')
 
-        btn_start_user_edit = tk.Button(frame_start_edit, text='Start User Search', command=lambda: self.controller.show_frame('EditUser'))
+        btn_start_user_edit = tk.Button(frame_start_edit, text='Start edit', command=lambda: self.controller.show_frame('EditUser'))
         btn_start_user_edit.pack(pady=3, expand=True, fill='both')
 
 
@@ -782,11 +785,16 @@ class SignIn(tk.Frame):
         lbl_sign_in_title = tk.Label(self, text='Sign In')
         lbl_sign_in_title.pack(pady=20)
 
-        btn_sign_in = tk.Button(self, text='Sign In', command='')
+        btn_sign_in = tk.Button(self, text='Sign In', command=lambda: self.start_sign_in())
         btn_sign_in.pack(pady=10, padx=25, expand=True, fill='both')
 
         btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
         btn_cancel.pack(pady=10, padx=25, expand=True, fill='both')
+
+    def start_sign_in(self):
+        """"Start a sign in"""
+
+        logic.create_sign_in()
 
 
 class SignOut(tk.Frame):
@@ -811,17 +819,22 @@ class SignOut(tk.Frame):
 
         self.sign_value = tk.StringVar(frame_sign_out_type, value='Sign out type')
 
-        sign_out_types = ['Break time / Lunchtime', 'Going home']
+        sign_out_types = ['Breaktime', 'Lunchtime', 'Going home']
 
         self.menu_sign_out_type = tk.OptionMenu(frame_sign_out_type, self.sign_value, *sign_out_types)
         self.menu_sign_out_type.config(width='17')
         self.menu_sign_out_type.grid(row=0, column=1)
 
-        btn_sign_out = tk.Button(self, text='Sign out', command='')
+        btn_sign_out = tk.Button(self, text='Sign out', command=lambda: self.start_sign_out())
         btn_sign_out.pack(pady=(15, 0), padx=50, expand=True, fill='both')
 
         btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
         btn_cancel.pack(pady=(15, 20), padx=50, expand=True, fill='both')
+
+    def start_sign_out(self):
+        """"Start sign out"""
+
+        logic.create_sign_out(self.sign_value.get())
 
 
 class SignHistory(tk.Frame):
