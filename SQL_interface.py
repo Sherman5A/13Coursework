@@ -20,7 +20,6 @@ class sqlInterface():
             self.cursor.execute(sql_command)
         except Error as e:
             print(e)
-
     
     def get_data(self, sql_command, values=None):
         if values == None:

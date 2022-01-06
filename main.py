@@ -16,25 +16,28 @@ class Gui(tk.Tk):
     def __init__(self, *args, **kwargs):
         """Creates gui, base container frame, inits class frames"""
 
+        # Initialise tkinter
         tk.Tk.__init__(self, *args, **kwargs)
-        # initialise tkinter
 
-        container = tk.Frame(self) # create a frame to fit the classes into
+        self.session_id = None
+        container = tk.Frame(self) # Create a frame to fit the classes into
         container.pack(side='top', fill='both', expand=True)
-        # allow frame to expand to classes
+        # Allow frame to expand to classes
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        self.frames = {}  # dictionary to place classes into
+        self.frames = {}  # Dictionary to place classes into
 
-        # iterate through a list of classes, initialising them
-        for F in (StartPage, Login, SignUp, StudentMenu, TeacherMenu, LogoutMenu, UserSearch, EditSearchUsers, SignSearch, EditUser, SignIn, SignOut, SignHistory):
+        # Iterate through a list of classes, initialising them
+        for F in (StartPage, Login, SignUp, StudentMenu, TeacherMenu,
+                  LogoutMenu, UserSearch, EditSearchUsers, SignSearch,
+                  EditUser, SignIn, SignOut, SignHistory):
 
-            # initialise frame and assign reference 'frame' to frame
+            # Initialise frame and assign reference 'frame' to frame
             frame = F(parent=container, controller=self)
             self.frames[F.__name__] = frame  # F.__name__ gets name of class,
             # it then assigns the class reference to dictionary key
-            frame.grid(row=0, column=0, sticky='nsew') # grid and let expand
+            frame.grid(row=0, column=0, sticky='nsew')  # Grid and let expand
 
         # page setup
         self.title("6th Form Sign System")
@@ -65,7 +68,7 @@ class StartPage(tk.Frame):
         lbl_title = tk.Label(self, text='Start Page:')
         lbl_title.pack(pady=10)
 
-        self.btn_start_login = tk.Button(self, text='Login Page', command=lambda: self.controller.show_frame('TextLogin'))
+        self.btn_start_login = tk.Button(self, text='Login Page', command=lambda: self.controller.show_frame('Login'))
         self.btn_start_login.pack(pady=3)
 
         self.btn_signup = tk.Button(self, text='Sign up', command=lambda: self.controller.show_frame('SignUp'))
@@ -98,50 +101,6 @@ class StartPage(tk.Frame):
         btn_edit_search_users.pack(pady=3)
 
 
-class Login(tk.Frame):
-    """Page to log in to system"""
-
-    def __init__(self, parent, controller):
-        """Initialise class values and create GUI elements"""
-
-        # initialise frame
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-        # Create GUI elements
-        lbl_page_title = tk.Label(self, text='Login')
-        lbl_page_title.pack()
-        self.input_frame = tk.Frame(self)
-        self.input_frame.pack()
-
-        lbl_username = tk.Label(self.input_frame, text='Username:')
-        lbl_username.grid(column=0, row=0, pady=3)
-
-        self.ent_username = tk.Entry(self.input_frame)
-        self.ent_username.grid(column=1, row=0, pady=3)
-
-        lbl_password = tk.Label(self.input_frame, text='Password:')
-        lbl_password.grid(column=0, row=1, pady=3)
-
-        self.ent_password = tk.Entry(self.input_frame, show='*')
-        self.ent_password.grid(column=1, row=1, pady=3)
-        btn_login = tk.Button(self, text='Login', command='')
-        btn_login.pack(pady=3)
-
-        btn_return_start_page = tk.Button(self, text='Return to start page', command=lambda: self.controller.show_frame('StartPage'))
-        btn_return_start_page.pack(pady=3)
-
-    def login_check(self):
-        """Checks username and password"""
-
-        input_username = self.ent_username.get()
-        input_password = self.ent_password.get()
-        login_result = logic.login(input_username, input_password)
-        
-        if login_result == False:
-            pass
-
-
 class SignUp(tk.Frame):
     """Page for students to sign up to login system"""
 
@@ -162,7 +121,7 @@ class SignUp(tk.Frame):
         lbl_first_name = tk.Label(frame_user_input, text='First Name:')
         lbl_first_name.grid(row=0, column=0, pady=3)
 
-        self.entries = [] # Entries, StringVars stored in list for easier .get()
+        self.entries = []  # Entries, StringVars stored in list for easier .get()
 
         self.ent_first_name = tk.Entry(frame_user_input)
         self.ent_first_name.grid(row=0, column=1, pady=3)
@@ -231,9 +190,11 @@ class SignUp(tk.Frame):
 
         account_variables = {}
         # tuple to hold dict keys
-        account_dict_keys = ('first_name', 'second_name', 'year_group', 'form_group', 'username', 'password', 'password_repeat')
+        account_dict_keys = ('first_name', 'second_name', 'year_group',
+                             'form_group', 'username', 'password',
+                             'password_repeat')
 
-        for count, i in enumerate(self.entries): # get values and place in dictionary
+        for count, i in enumerate(self.entries):  # get values and place in dictionary
             if count <= 3:
                 account_variables[account_dict_keys[count]] = i.get().lower()
             else:
@@ -241,10 +202,54 @@ class SignUp(tk.Frame):
         create_user_result = logic.create_user(account_variables)
 
         # show error / success message
-        if create_user_result == True:
+        if create_user_result:
             messagebox.showinfo('Success', 'User was created')
         else:
             messagebox.showerror('Failure', 'Field: {} \n{}'.format(create_user_result[1], create_user_result[2]))
+
+
+class Login(tk.Frame):
+    """Page to log in to system"""
+
+    def __init__(self, parent, controller):
+        """Initialise class values and create GUI elements"""
+
+        # initialise frame
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        # Create GUI elements
+        lbl_page_title = tk.Label(self, text='Login')
+        lbl_page_title.pack()
+        self.input_frame = tk.Frame(self)
+        self.input_frame.pack()
+
+        lbl_username = tk.Label(self.input_frame, text='Username:')
+        lbl_username.grid(column=0, row=0, pady=3)
+
+        self.ent_username = tk.Entry(self.input_frame)
+        self.ent_username.grid(column=1, row=0, pady=3)
+
+        lbl_password = tk.Label(self.input_frame, text='Password:')
+        lbl_password.grid(column=0, row=1, pady=3)
+
+        self.ent_password = tk.Entry(self.input_frame, show='*')
+        self.ent_password.grid(column=1, row=1, pady=3)
+        btn_login = tk.Button(self, text='Login', command='')
+        btn_login.pack(pady=3)
+
+        btn_return_start_page = tk.Button(self, text='Return to start page', command=lambda: self.controller.show_frame('StartPage'))
+        btn_return_start_page.pack(pady=3)
+
+    def login_check(self):
+        """Checks username and password"""
+
+        input_username = self.ent_username.get()
+        input_password = self.ent_password.get()
+        login_result = logic.login(input_username, input_password)
+        
+        if login_result == False:
+            messagebox.showerror('Failure', 'Incorrect username or password')
 
 
 class StudentMenu(tk.Frame):
@@ -487,7 +492,7 @@ class UserSearch(tk.Frame):
         search_keys = ('id', 'first_name', 'second_name', 'year_group', 'form_group', 'username', 'password')
         search_terms = {}
         for count, i in enumerate(self.entries):
-            if (i.get()) == '': # If input is empty, do not create dictionary entry.
+            if (i.get()) == '':  # If input is empty, do not create dictionary entry.
                 continue
             search_terms[search_keys[count]] = i.get()
 
@@ -569,7 +574,8 @@ class SignSearch(tk.Frame):
         self.entries.append(sign_out_value)
         sign_out_list = ['', 'Going home', 'Lunch / Break']
 
-        menu_sign_out_type = tk.OptionMenu(search_term_frame, sign_out_value, *sign_out_list)
+        menu_sign_out_type = tk.OptionMenu(search_term_frame, sign_out_value,
+                                           *sign_out_list)
         menu_sign_out_type.config(width='17')
         menu_sign_out_type.grid(row=3, column=1, sticky='ew', pady=3)
 
@@ -599,7 +605,8 @@ class SignSearch(tk.Frame):
         from_hour_value = tk.StringVar(frame_from_time, value='')
         from_minute_value = tk.StringVar(frame_from_time, value='')
         from_second_value = tk.StringVar(frame_from_time, value='')
-        self.from_time.extend((from_hour_value, from_minute_value, from_second_value))
+        self.from_time.extend((from_hour_value, from_minute_value,
+                               from_second_value))
 
         lbl_time_format = tk.Label(frame_from_time, text='HH:MM:SS')
         lbl_time_format.grid(row=0, column=0, columnspan=3, sticky='nsew')
@@ -882,11 +889,11 @@ class SignHistory(tk.Frame):
             i = list(i)
             if len(i) == 4:
                 i.insert(0, 'Sign In')
-                self.list_sign_history.insert(tk.END, '  ,  '.join(map(str, i)))    
+                self.list_sign_history.insert(tk.END, '  ,  '.join(map(str, i)))
             elif len(i) == 5:
                 i.insert(0, 'Sign Out')
-                self.list_sign_history.insert(tk.END, '  ,  '.join(map(str, i)))  
-            
+                self.list_sign_history.insert(tk.END, '  ,  '.join(map(str, i)))
+
 
 if __name__ == '__main__':
 

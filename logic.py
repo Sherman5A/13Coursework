@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, time
+from datetime import datetime
 
 import SQL_interface
 
@@ -46,7 +46,8 @@ def create_user(account_variables):
 
         # if value is empty or above 20 characters, decline
         if not Validation.len_check(value, 20):
-            return False, key, 'Length check, check field is not empty and is under 20 characters '
+            return False, key, 'Length check, check field is not empty and is ' \
+                               'under 20 characters '
 
         # names require string checks as no symbols should be accepted
         if key == 'first_name' or key == 'second_name':
@@ -59,12 +60,14 @@ def create_user(account_variables):
 
     # check if password is strong enough
     if not Validation.password_strength(account_variables['password']):
-        return False, 'password', 'Password not strong enough. Use >= 7 characters and both upper and lower case letters'
+        return False, 'password', 'Password not strong enough. Use >= 7 ' \
+                                  'characters and both upper and lower case ' \
+                                  'letters'
 
     create_table()
 
     # check for duplicate usernames. Usernames must be unique as they are
-    # used to log in
+    # used for log in
     common_usernames = sql_database.get_data(
         "SELECT username FROM users WHERE username=?",
         (account_variables['username'],))
@@ -136,15 +139,18 @@ def search_signs(sign_in_or_out, search_terms, time_tuple=None):
     elif sign_in_or_out == 'sign in':
         sql_search = "SELECT * FROM sign_in"
 
-    if len(search_terms) != 0 or time_tuple != None:
+    if len(search_terms) != 0 or time_tuple is not None:
         sql_search += " WHERE "
-        if time_tuple != None:
-            sql_search += "time BETWEEN '{}' AND '{}'".format(time_tuple[0], time_tuple[1])
+        if time_tuple is not None:
+            sql_search += "time BETWEEN '{}' AND '{}'".format(time_tuple[0],
+                                                              time_tuple[1])
             if len(search_terms) != 0:
                 sql_search += ' AND '
 
         if len(search_terms) != 0:
-            sql_search += ' AND '.join('='.join((key, "'{}'".format(value))) for key, value in search_terms.items())
+            sql_search += ' AND '.join(
+                '='.join((key, "'{}'".format(value))) for key, value in
+                search_terms.items())
         sql_search += ';'
 
     # create SQL connection
@@ -156,10 +162,10 @@ def search_signs(sign_in_or_out, search_terms, time_tuple=None):
 
 def sign_history():
 
-    sign_history = []
-    sign_history.extend(search_signs('sign out', {}))
-    sign_history.extend(search_signs('sign in', {}))
-    return sorted(sign_history, key=lambda x: datetime.strptime('{} {}'.format(x[1], x[2]), '%d/%m/%Y %H:%M:%S'), reverse=True)
+    all_signs = []
+    all_signs.extend(search_signs('sign out', {}))
+    all_signs.extend(search_signs('sign in', {}))
+    return sorted(all_signs, key=lambda x: datetime.strptime('{} {}'.format(x[1], x[2]), '%d/%m/%Y %H:%M:%S'), reverse=True)
 
 
 def check_login_creds(input_username, input_password):
@@ -167,7 +173,7 @@ def check_login_creds(input_username, input_password):
 
 
 def search_users(search_terms):
-    """Searches the user tables with the dictonary provided in args."""
+    """Searches the user tables with the dictionary provided in args."""
 
     # if no terms are provided, return all users
     if len(search_terms) != 0:
