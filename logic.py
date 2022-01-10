@@ -90,7 +90,7 @@ def login(input_username, input_password):
     sql_database.create_connection()
     sql_search_login_details = sql_database.get_data(
         """SELECT id, access_level, first_name, second_name, year_group, 
-        form_group, username FROM users WHERE username=? AND password=?""",
+        form_group, username, password FROM users WHERE username=? AND password=?""",
         (input_username, input_password))
         
     if len(sql_search_login_details) == 1:
