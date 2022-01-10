@@ -39,7 +39,7 @@ class Gui(tk.Tk):
             # it then assigns the class reference to dictionary key
             frame.grid(row=0, column=0, sticky='nsew')  # Grid and let expand
 
-        # page setup
+        # Page setup
         self.title("6th Form Sign System")
         self.show_frame("StartPage")
 
@@ -97,9 +97,6 @@ class StartPage(tk.Frame):
         btn_edit_search = tk.Button(self, text='Edit Search', command=lambda:self.controller.show_frame('EditSearchUsers'))
         btn_edit_search.pack(pady=3)
 
-        btn_edit_search_users = tk.Button(self, text='dafsa', command=lambda: self.controller.show_frame('EditSearchUsers'))
-        btn_edit_search_users.pack(pady=3)
-
 
 class SignUp(tk.Frame):
     """Page for students to sign up to login system"""
@@ -107,11 +104,11 @@ class SignUp(tk.Frame):
     def __init__(self, parent, controller):
         """Initialise class values and create GUI elements"""
 
-        # initialise frame
+        # Initialise frame
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        # gui creation
+        # GUI creation
         lbl_signup_title = tk.Label(self, text='Sign up')
         lbl_signup_title.pack(pady=10)
 
@@ -189,12 +186,12 @@ class SignUp(tk.Frame):
         """Collects user inputs and creates user account"""
 
         account_variables = {}
-        # tuple to hold dict keys
+        # Tuple to hold dict keys
         account_dict_keys = ('first_name', 'second_name', 'year_group',
                              'form_group', 'username', 'password',
                              'password_repeat')
 
-        for count, i in enumerate(self.entries):  # get values and place in dictionary
+        for count, i in enumerate(self.entries):  # Get values and place in dictionary.
             if count <= 3:
                 account_variables[account_dict_keys[count]] = i.get().lower()
             else:
@@ -203,7 +200,7 @@ class SignUp(tk.Frame):
         account_variables['access_level'] = 'student'
 
         create_user_result = logic.create_user(account_variables)
-        # show error / success message
+        # Show error / success message
         if create_user_result:
             messagebox.showinfo('Success', 'User was created')
         else:
@@ -216,7 +213,7 @@ class Login(tk.Frame):
     def __init__(self, parent, controller):
         """Initialise class values and create GUI elements"""
 
-        # initialise frame
+        # Initialise frame
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
@@ -270,8 +267,7 @@ class Login(tk.Frame):
                 self.controller.show_frame('StudentMenu')
             else:
                 self.controller.frames['TeacherMenu'].user_configure(account_info)
-                self.controller.show_frame('TeacherMenu')
-                
+                self.controller.show_frame('TeacherMenu')            
 
 
 class StudentMenu(tk.Frame):
@@ -280,12 +276,12 @@ class StudentMenu(tk.Frame):
     def __init__(self, parent, controller):
         """Initialise class values and create initial GUI elements"""
 
-        # initialise frame 
+        # Initialise frame 
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        # gui creation
-        # string var for student name, allows text to change
+        # GUI creation
+        # String var for student name, allows text to change.
         self.student_name = tk.StringVar(self, value='Student Name')
 
         lbl_student_title = tk.Label(self, textvariable=self.student_name)
@@ -303,7 +299,7 @@ class StudentMenu(tk.Frame):
         btn_view_attendence = tk.Button(frame_student_actions, text='View sign in / out history', command=lambda: self.controller.show_frame('SignHistory'))
         btn_view_attendence.grid(row=1, column=0, sticky='ew', pady=3, padx=3, columnspan=2)
 
-        # may add function: btn_view_permissions = tk.Button(
+        # May add function: btn_view_permissions = tk.Button(
         # frame_student_actions, text='View user permissions', command='')
 
         self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.logout())
@@ -330,13 +326,9 @@ class TeacherMenu(StudentMenu):
 
         self.controller = controller
         StudentMenu.__init__(self, parent, controller)
-        # gui creation
-        # string var for student name, allows text to change
 
-        # self.teacher_name = tk.StringVar(self, value='Teacher Name')
+        # GUI creation
 
-        # lbl_teacher_title = tk.Label(self, textvariable=self.teacher_name)
-        # lbl_teacher_title.pack(pady=5)
         self.btn_user_logout.destroy()
 
         frame_teacher_actions = tk.Frame(self)
@@ -351,7 +343,6 @@ class TeacherMenu(StudentMenu):
         btn_edit_student = tk.Button(frame_teacher_actions, text='Edit student info', command='')
         btn_edit_student.grid(row=3, column=0, sticky='ew', pady=3, padx=3)
 
-        # may add function: 
         btn_view_permissions = tk.Button(frame_teacher_actions, text='View user permissions', command='')
         btn_view_permissions.grid(row=3, column=1, sticky='ew', pady=3, padx=3)
 
@@ -368,7 +359,7 @@ class LogoutMenu(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        # gui creation
+        # GUI creation
 
         lbl_logout_confirm_title = tk.Label(self, text='Are you sure you want to logout:')
         lbl_logout_confirm_title.pack(pady=(10,0))
@@ -391,7 +382,8 @@ class LogoutMenu(tk.Frame):
 
     def logout(self):
         """Logs out of sql database"""
-        # log out of sql
+
+        # Log out of SQL.
         self.controller.show_frame('StartPage')
 
 
@@ -404,7 +396,7 @@ class UserSearch(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        # gui creation
+        # GUI creation
 
         self.search_config_frame = tk.Frame(self)
         self.search_config_frame.pack(side='left', anchor='nw', padx=10)
@@ -424,7 +416,7 @@ class UserSearch(tk.Frame):
         lbl_search_info = tk.Label(search_term_frame, text="Leave entries you don't want to search empty")
         lbl_search_info.grid(row=0, column=0, sticky='nsew', pady=(10,3), columnspan=2)
 
-        self.entries = [] # list to store variables to .get() later
+        self.entries = [] # List to store variables to .get() later.
 
         lbl_id_search = tk.Label(search_term_frame, text='Student ID:')
         lbl_id_search.grid(row=1, column=0, sticky='nsew', pady=3)
@@ -542,7 +534,7 @@ class SignSearch(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        # gui creation
+        # GUI creation
 
         self.search_config_frame = tk.Frame(self)
         self.search_config_frame.pack(side='left', anchor='nw', padx=10)
@@ -696,6 +688,7 @@ class SignSearch(tk.Frame):
             self.search_signs(sign_in_or_out)
 
     def search_signs(self, sign_in_or_out):
+        """"Search and show sign ins"""
 
         # Tuple to hold dict keys.
         search_keys = ('sign_out_id', 'student_id', 'sign_out_type', 'date')
@@ -704,7 +697,7 @@ class SignSearch(tk.Frame):
         for count, i in enumerate(self.entries):
             if (i.get()) == '':  # If search term empty, do not include in dict.
                 continue
-            search_terms[search_keys[count]] = i.get()  # Add to dict
+            search_terms[search_keys[count]] = i.get()  # Add to dict.
 
         # If date is empty, skip entering dates into dict.
         if '' not in [i.get() for i in self.to_time] and '' not in [t.get() for t in self.from_time]:
@@ -722,7 +715,7 @@ class SignSearch(tk.Frame):
             if dt_to_time <= dt_from_time:
                 messagebox.showerror('Error', 'From is greater than to time')
 
-            time_tuple = (from_time, to_time) # Add times to dict
+            time_tuple = (from_time, to_time) # Add times to dict.
             search_results = logic.search_signs(sign_in_or_out, search_terms, time_tuple)
         else:
             search_results = logic.search_signs(sign_in_or_out, search_terms)
