@@ -201,7 +201,8 @@ class SignUp(tk.Frame):
 
         create_user_result = logic.create_user(account_variables)
         # Show error / success message
-        if create_user_result:
+        print(create_user_result)
+        if create_user_result == True:
             messagebox.showinfo('Success', 'User was created')
         else:
             messagebox.showerror('Failure', 'Field: {} \n{}'.format(create_user_result[1], create_user_result[2]))
@@ -666,7 +667,7 @@ class SignSearch(tk.Frame):
         search_result_frame = tk.Frame(self, relief='groove', borderwidth=2)
         search_result_frame.pack(side='left', anchor='ne', fill='both', expand=True, padx=(0, 5), pady=(3, 5))
 
-        lbl_format_explanation = tk.Label(search_result_frame, text='Order of elements: \n Sign ID, Date, Time, Student ID, Sign Out Type (If applicable)')
+        lbl_format_explanation = tk.Label(search_result_frame, text='Order of elements: \nSign Type, Sign ID, Date, Time, Student ID, Sign Out Type (If applicable)')
         lbl_format_explanation.pack()
         scroll_sign_history = tk.Scrollbar(search_result_frame)
         scroll_sign_history.pack(side='right', fill='y', padx=(0,2))
@@ -731,7 +732,14 @@ class SignSearch(tk.Frame):
             search_results = logic.search_signs(sign_in_or_out, search_terms)
 
         for i in search_results:
-            self.list_search_results.insert(tk.END, ', '.join(map(str, i)))
+            # self.list_search_results.insert(tk.END, ', '.join(map(str, i)))
+            i = list(i)  # Convert tuple to list.
+            if len(i) == 4:
+                i.insert(0, 'Sign In')
+                self.list_search_results.insert(tk.END, '  ,  '.join(map(str, i)))
+            elif len(i) == 5:
+                i.insert(0, 'Sign Out')
+                self.list_search_results.insert(tk.END, '  ,  '.join(map(str, i)))
 
 
 class EditUser(tk.Frame):
@@ -829,7 +837,6 @@ class EditUser(tk.Frame):
         self.form_group_value.set(user_info['form_group'])
         self.username_value.set(user_info['username'])
         self.password_value.set(user_info['password'])
-
 
 
 class SignIn(tk.Frame):

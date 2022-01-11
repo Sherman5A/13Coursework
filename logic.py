@@ -100,7 +100,7 @@ def login(input_username, input_password):
 
 
 def create_sign_in(student_id):
-    """"Create sign in in database using student_id"""
+    """Create sign in in database using student_id"""
 
     # creating class interfaces, passing in db to connect to
     sql_database = SQL_interface.sqlInterface('test.db')
