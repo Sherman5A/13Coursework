@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3.dbapi2 import Cursor, Error
 
 
-class sqlInterface():
+class sqlInterface:
 
     def __init__(self, file):
         self.file = file
@@ -22,7 +22,7 @@ class sqlInterface():
             print(e)
     
     def get_data(self, sql_command, values=None):
-        if values == None:
+        if values is None:
             try:
                 self.cursor.execute(sql_command)
                 return self.cursor.fetchall()
@@ -36,7 +36,7 @@ class sqlInterface():
                 print(e)
 
     def insert_data(self, sql_command, values=None):
-        if values == None:
+        if values is None:
             try:
                 self.cursor.execute(sql_command)
                 self.connection.commit()

@@ -235,7 +235,7 @@ class Login(tk.Frame):
 
         self.ent_password = tk.Entry(self.input_frame, show='*')
         self.ent_password.grid(column=1, row=1, pady=3)
-        
+
         btn_login = tk.Button(self, text='Login', command=lambda: self.login_check())
         btn_login.pack(pady=3)
 
@@ -256,7 +256,7 @@ class Login(tk.Frame):
             account_dict_keys = ('id', 'access_level', 'first_name',
                                  'second_name', 'year_group',
                                  'form_group', 'username', 'password')
-            
+
             for count, i in enumerate(login_result[1][0]):
                 account_info[account_dict_keys[count]] = i
 
@@ -269,7 +269,7 @@ class Login(tk.Frame):
                 self.controller.show_frame('StudentMenu')
             else:
                 self.controller.frames['TeacherMenu'].user_configure(account_info)
-                self.controller.show_frame('TeacherMenu')            
+                self.controller.show_frame('TeacherMenu')
 
 
 class StudentMenu(tk.Frame):
@@ -315,7 +315,7 @@ class StudentMenu(tk.Frame):
         """Changes the StudentMenu name field to the currently logged in 
         student's name"""
         self.user_info = user_info
-        self.student_name.set('{} {}'.format(user_info['first_name'], 
+        self.student_name.set('{} {}'.format(user_info['first_name'],
                                              user_info['second_name']).title())
 
     def logout(self):
@@ -377,7 +377,7 @@ class LogoutMenu(tk.Frame):
         self.btn_logout_confim.grid(row=0, column=0, sticky='nsew', padx=(25,5), pady=(6,5))
 
         self.btn_logout_cancel = tk.Button(logout_btn_frame, text='Cancel', command=lambda: self.controller.show_frame(self.caller))
-        self.btn_logout_cancel.grid(row=0, column=1, sticky='nsew', padx=(5,25), pady=(6,5))
+        self.btn_logout_cancel.grid(row=0, column=1, sticky='nsew', padx=(5, 25), pady=(6, 5))
 
     def set_calling_class(self, caller):
         self.caller = caller
@@ -496,8 +496,7 @@ class SignHistory(tk.Frame):
     def clear_search_results(self):
         """Clears the list box of all entries"""
 
-        self.list_search_results.delete(0, tk.END)
-
+        self.list_sign_history.delete(0, tk.END)
 
     def view_history(self):
         """View all sign in / outs"""
@@ -636,7 +635,7 @@ class UserSearch(tk.Frame):
         self.clear_search_results()
 
         # Tuple to hold dict keys.
-        search_keys = ('id', 'access_level', 'first_name', 'second_name', 'year_group', 
+        search_keys = ('id', 'access_level', 'first_name', 'second_name', 'year_group',
                        'form_group', 'username', 'password')
         search_terms = {}
         for count, i in enumerate(self.entries):
@@ -669,14 +668,14 @@ class EditSearchUsers(UserSearch):
         """Get's info of selected user and passes it to the EditUser class"""
 
         line_selected = self.list_search_results.curselection()
-        
+
         if len(line_selected) == 0:
             messagebox.showerror('Failure', 'Please select a user before editing entry.')
         else:
-            
+
             selected_user = self.list_search_results.get(line_selected[0], line_selected[0])[0]
-            search_keys = ('id', 'access_level', 'first_name', 'second_name', 'year_group', 
-                           'form_group', 'username', 'password') 
+            search_keys = ('id', 'access_level', 'first_name', 'second_name', 'year_group',
+                           'form_group', 'username', 'password')
             user_info = {}
             for (key, value) in zip(search_keys, selected_user.split(', ')):
                 user_info[key] = value
@@ -815,7 +814,10 @@ class SignSearch(tk.Frame):
         search_result_frame = tk.Frame(self, relief='groove', borderwidth=2)
         search_result_frame.pack(side='left', anchor='ne', fill='both', expand=True, padx=(0, 5), pady=(3, 5))
 
-        lbl_format_explanation = tk.Label(search_result_frame, text='Order of elements: \n Sign ID, Date, Time, Student ID, Sign Out Type (If applicable)')
+        lbl_format_explanation = tk.Label(search_result_frame,
+                                          text='Order of elements: \n Sign '
+                                               'ID, Date, Time, Student ID, '
+                                               'Sign Out Type (If applicable)')
         lbl_format_explanation.pack()
         scroll_sign_history = tk.Scrollbar(search_result_frame)
         scroll_sign_history.pack(side='right', fill='y', padx=(0,2))
@@ -835,7 +837,7 @@ class SignSearch(tk.Frame):
         self.clear_search_results()
 
         if len(self.entries[3].get()) != 0:
-            if validation.date_format_check(self.entries[3].get()) == False:
+            if not validation.date_format_check(self.entries[3].get()):
                 messagebox.showerror('Failure', 'Date format incorrect')
                 return
 
@@ -890,6 +892,7 @@ class EditUser(tk.Frame):
         """"Initialise class values and creates GUI elements"""
 
         tk.Frame.__init__(self, parent)
+        self.user_info = None
         self.controller = controller
 
         # gui creation
@@ -994,7 +997,7 @@ class EditUser(tk.Frame):
         edited_values = {}
         user_id = self.user_info['id']
         # Tuple to hold dict keys
-        account_dict_keys = ('access_level', 'first_name', 'second_name', 
+        account_dict_keys = ('access_level', 'first_name', 'second_name',
                              'year_group', 'form_group', 'username', 'password')
 
         for count, i in enumerate(self.entries):  # Get values and place in dictionary.
@@ -1003,13 +1006,6 @@ class EditUser(tk.Frame):
             else:
                 edited_values[account_dict_keys[count]] = i.get()
         logic.edit_user(user_id, edited_values)
-
-        # create_user_result = logic.create_user(account_variables)
-        # # Show error / success message
-        # if create_user_result:
-        #     messagebox.showinfo('Success', 'User was created')
-        # else:
-        #     messagebox.showerror('Failure', 'Field: {} \n{}'.format(create_user_result[1], create_user_result[2]))
 
 
 if __name__ == '__main__':
