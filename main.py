@@ -302,9 +302,6 @@ class StudentMenu(tk.Frame):
         btn_edit_user = tk.Button(frame_student_actions, text='Edit User', command=lambda: self.edit_user())
         btn_edit_user.grid(row=2, column=0, sticky='ew', pady=3, padx=3, columnspan=2)
 
-        # May add function: btn_view_permissions = tk.Button(
-        # frame_student_actions, text='View user permissions', command='')
-
         self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.logout())
         self.btn_user_logout.pack(pady=3)
 
