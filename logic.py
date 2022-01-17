@@ -51,7 +51,7 @@ def create_user(account_variables):
 
         # if value is empty or above 20 characters, decline
         if not Validation.len_check(value, 20):
-            return False, key, 'Length check, check field is not empty and is ' \
+            return False, key, 'Length check, check that field is not empty and is ' \
                                'under 20 characters '
 
         # names require string checks as no symbols should be accepted
@@ -185,10 +185,6 @@ def sign_history():
     return sorted(all_signs, key=lambda x: datetime.strptime('{} {}'.format(x[1], x[2]), '%Y-%m-%d %H:%M:%S'), reverse=True)
 
 
-def check_login_creds(input_username, input_password):
-    pass
-
-
 def search_users(search_terms):
     """Searches the user tables with the dictionary provided in args."""
 
@@ -210,6 +206,16 @@ def search_users(search_terms):
     return sql_database.get_data(sql_search)
 
 
+def edit_user(user_id, edited_terms):
+
+    sql_statement = """UPDATE users """ \
+                    """SET """
+    sql_statement += ', '.join('='.join((key, "'{}'".format(value))) for key, value in
+                                  edited_terms.items()) + f' WHERE id = {user_id};'
+    sql_database = SQL_interface.sqlInterface('test.db')
+    sql_database.create_connection()
+    sql_database.insert_data(sql_statement)
+
 class Validation:
     """Class containing validation"""
 
@@ -226,8 +232,8 @@ class Validation:
         # create regex searching for digits and symbols
         regex_argument = re.compile('\d+|[@;:()]')
         try:
-            regex_return = re.search(regex_argument, input)
-            if regex_return:  # string contains symbols or digits
+            regex_result = re.search(regex_argument, input)
+            if regex_result:  # string contains symbols or digits
                 return False
             return True
         except TypeError:
@@ -269,11 +275,3 @@ class Validation:
             return True
         return False
 
-
-def get_date_time():
-    """Returns date and time"""
-
-    unformatted_datetime = datetime.now()
-    date_str = unformatted_datetime.strftime('%d/%m/%Y')
-    time_str = unformatted_datetime.strftime('%H:%M:%S')
-    return date_str, time_str

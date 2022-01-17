@@ -35,11 +35,17 @@ class sqlInterface():
             except Error as e:
                 print(e)
 
-    def insert_data(self, sql_command, values):
-        
-        try:
-            self.cursor.execute(sql_command, values)
-            self.connection.commit()
-        except Error as e:
-            print(e)
+    def insert_data(self, sql_command, values=None):
+        if values == None:
+            try:
+                self.cursor.execute(sql_command)
+                self.connection.commit()
+            except Error as e:
+                print(e)
+        else:
+            try:
+                self.cursor.execute(sql_command, values)
+                self.connection.commit()
+            except Error as e:
+                print(e)
             
