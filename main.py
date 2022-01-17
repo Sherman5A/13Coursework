@@ -6,6 +6,7 @@ from tkinter import messagebox
 from tkinter import ttk
 
 import logic
+import validation
 
 
 class Gui(tk.Tk):
@@ -834,7 +835,7 @@ class SignSearch(tk.Frame):
         self.clear_search_results()
 
         if len(self.entries[3].get()) != 0:
-            if logic.Validation.date_format_check(self.entries[3].get()) == False:
+            if validation.date_format_check(self.entries[3].get()) == False:
                 messagebox.showerror('Failure', 'Date format incorrect')
                 return
 

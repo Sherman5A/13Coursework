@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-
+import validation
 import SQL_interface
 
 
@@ -50,13 +50,13 @@ def create_user(account_variables):
     for key, value in account_variables.items():
 
         # if value is empty or above 20 characters, decline
-        if not Validation.len_check(value, 20):
+        if not validation.len_check(value, 20):
             return False, key, 'Length check, check that field is not empty and is ' \
                                'under 20 characters '
 
         # names require string checks as no symbols should be accepted
         if key == 'first_name' or key == 'second_name':
-            if not Validation.string_check(value):
+            if not validation.string_check(value):
                 return False, key, 'Alpha check'
 
     # check if passwords match           
@@ -64,7 +64,7 @@ def create_user(account_variables):
         return False, 'password', "Passwords don't match"
 
     # check if password is strong enough
-    if not Validation.password_strength(account_variables['password']):
+    if not validation.password_strength(account_variables['password']):
         return False, 'password', 'Password not strong enough. Use >= 7 ' \
                                   'characters and both upper and lower case ' \
                                   'letters'
@@ -215,63 +215,3 @@ def edit_user(user_id, edited_terms):
     sql_database = SQL_interface.sqlInterface('test.db')
     sql_database.create_connection()
     sql_database.insert_data(sql_statement)
-
-class Validation:
-    """Class containing validation"""
-
-    def date_format_check(input):
-        try:
-            datetime.strptime(input, '%Y-%m-%d')
-            return True
-        except ValueError:
-            return False
-
-    def string_check(input):
-        """Checks if a string contains digits or special characters"""
-
-        # create regex searching for digits and symbols
-        regex_argument = re.compile('\d+|[@;:()]')
-        try:
-            regex_result = re.search(regex_argument, input)
-            if regex_result:  # string contains symbols or digits
-                return False
-            return True
-        except TypeError:
-            print('Variable is not string')
-            return False
-
-    def len_check(input, max_len):
-        """Checks length of string
-            input: variable to check
-            max_len: int maximum length to return true
-        """
-
-        if len(input) <= 0 or len(input) > max_len:
-            return False
-        return True
-
-    def validate_num(input, min_num=None):
-        """Checks if input is int
-            input: variable to check
-            min_num: optionial, input can not be lower than value
-        """
-
-        try:
-            converted_input = int(input)
-            if min_num is None:
-                return True
-            return converted_input > min_num
-        except ValueError:
-            return False
-
-    def password_strength(input):
-        """Check password is >= 7 characters, contains lower and upper case """
-
-        if len(input) < 7:
-            return False
-
-        # contains both lower and upper case characters
-        if input.isupper() is False and input.islower() is False:
-            return True
-        return False
-
