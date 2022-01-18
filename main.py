@@ -19,12 +19,12 @@ class Gui(tk.Tk):
         # Initialise tkinter
         tk.Tk.__init__(self, *args, **kwargs)
 
-        self.session_id = None
-        container = tk.Frame(self) # Create a frame to fit the classes into
-        container.pack(side='top', fill='both', expand=True)
+        self.session_id, self.user_info = None, None
+        self.container = tk.Frame(self) # Create a frame to fit the classes into
+        self.container.pack(side='top', fill='both', expand=True)
         # Allow frame to expand to classes
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}  # Dictionary to place classes into
 
@@ -34,7 +34,7 @@ class Gui(tk.Tk):
                   EditUser, SignIn, SignOut, SignHistory):
 
             # Initialise frame and assign reference 'frame' to frame
-            frame = F(parent=container, controller=self)
+            frame = F(parent=self.container, controller=self)
             self.frames[F.__name__] = frame  # F.__name__ gets name of class,
             # it then assigns the class reference to dictionary key
             frame.grid(row=0, column=0, sticky='nsew')  # Grid and let expand
@@ -53,6 +53,28 @@ class Gui(tk.Tk):
         """"Assign id to session, used for when signing in and out"""
 
         self.session_id, self.user_info  = session_id, user_info
+        if self.user_info['access_level'] == 'student':
+            self.default_menu = 'StudentMenu'
+        else:
+            self.default_menu = 'TeacherMenu'
+
+    def reset_pages(self):
+        """Resets all frames, making their fields blank"""
+
+        self.session_id, self.user_info, self.default_menu = None, None, None
+        self.frames = {}
+
+        for F in (StartPage, Login, SignUp, StudentMenu, TeacherMenu,
+                  LogoutMenu, UserSearch, EditSearchUsers, SignSearch,
+                  EditUser, SignIn, SignOut, SignHistory):
+
+            # Initialise frame and assign reference 'frame' to frame
+            frame = F(parent=self.container, controller=self)
+            self.frames[F.__name__] = frame  # F.__name__ gets name of class,
+            # it then assigns the class reference to dictionary key
+            frame.grid(row=0, column=0, sticky='nsew')  # Grid and let expand
+
+        self.show_frame('StartPage')
 
 
 class StartPage(tk.Frame):
@@ -68,34 +90,11 @@ class StartPage(tk.Frame):
         lbl_title = tk.Label(self, text='Start Page:')
         lbl_title.pack(pady=10)
 
-        self.btn_start_login = tk.Button(self, text='Login Page', command=lambda: self.controller.show_frame('Login'))
-        self.btn_start_login.pack(pady=3)
+        self.btn_start_login = tk.Button(self, text='Login', command=lambda: self.controller.show_frame('Login'))
+        self.btn_start_login.pack(pady=10, padx=25, expand=True, fill='both')
 
         self.btn_signup = tk.Button(self, text='Sign up', command=lambda: self.controller.show_frame('SignUp'))
-        self.btn_signup.pack(pady=3)
-
-        # temp for debugging
-
-        btn_student_menu = tk.Button(self, text='Student Menu', command=lambda: self.controller.show_frame('StudentMenu'))
-        btn_student_menu.pack(pady=3)
-
-        btn_teacher_menu = tk.Button(self, text='Teacher Menu', command=lambda: self.controller.show_frame('TeacherMenu'))
-        btn_teacher_menu.pack(pady=3)
-
-        btn_logout_menu = tk.Button(self, text='Logout', command=lambda: self.controller.show_frame('LogoutMenu'))
-        btn_logout_menu.pack(pady=3)
-
-        btn_user_search_menu = tk.Button(self, text='User Search', command=lambda: self.controller.show_frame('UserSearch'))
-        btn_user_search_menu.pack(pady=3)
-
-        btn_sign_search_menu = tk.Button(self, text='Sign Search', command=lambda: self.controller.show_frame('SignSearch'))
-        btn_sign_search_menu.pack(pady=3)
-
-        btn_sign_history = tk.Button(self, text='Sign History', command=lambda: self.controller.show_frame('SignHistory'))
-        btn_sign_history.pack(pady=3)
-
-        btn_edit_search = tk.Button(self, text='Edit Search', command=lambda:self.controller.show_frame('EditSearchUsers'))
-        btn_edit_search.pack(pady=3)
+        self.btn_signup.pack(pady=10, padx=25, expand=True, fill='both')
 
 
 class SignUp(tk.Frame):
@@ -304,7 +303,7 @@ class StudentMenu(tk.Frame):
         btn_edit_user = tk.Button(frame_student_actions, text='Edit User', command=lambda: self.edit_user())
         btn_edit_user.grid(row=2, column=0, sticky='ew', pady=3, padx=3, columnspan=2)
 
-        self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.logout())
+        self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('LogoutMenu'))
         self.btn_user_logout.pack(pady=3)
 
     def edit_user(self):
@@ -317,13 +316,6 @@ class StudentMenu(tk.Frame):
         self.user_info = user_info
         self.student_name.set('{} {}'.format(user_info['first_name'],
                                              user_info['second_name']).title())
-
-    def logout(self):
-        """Logs out of sql database"""
-
-        class_name = type(self).__name__
-        self.controller.frames['LogoutMenu'].set_calling_class(class_name)
-        self.controller.show_frame('LogoutMenu')
 
 
 class TeacherMenu(StudentMenu):
@@ -345,10 +337,10 @@ class TeacherMenu(StudentMenu):
         btn_manual_sign = tk.Button(frame_teacher_actions, text='Manual sign students', command='')
         btn_manual_sign.grid(row=2, column=0, sticky='ew', padx=3)
 
-        btn_edit_student = tk.Button(frame_teacher_actions, text='Edit student info', command='')
+        btn_edit_student = tk.Button(frame_teacher_actions, text='Edit student info', command=lambda: self.controller.show_frame('EditSearchUsers'))
         btn_edit_student.grid(row=2, column=1, sticky='ew', pady=3, padx=3)
 
-        self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.logout())
+        self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('LogoutMenu'))
         self.btn_user_logout.pack(pady=3)
 
 
@@ -379,14 +371,11 @@ class LogoutMenu(tk.Frame):
         self.btn_logout_cancel = tk.Button(logout_btn_frame, text='Cancel', command=lambda: self.controller.show_frame(self.caller))
         self.btn_logout_cancel.grid(row=0, column=1, sticky='nsew', padx=(5, 25), pady=(6, 5))
 
-    def set_calling_class(self, caller):
-        self.caller = caller
-
     def logout(self):
         """Logs out of sql database"""
 
         # Log out of SQL.
-        self.controller.show_frame('StartPage')
+        self.controller.reset_pages()
 
 
 class SignIn(tk.Frame):
@@ -406,7 +395,7 @@ class SignIn(tk.Frame):
         btn_sign_in = tk.Button(self, text='Sign In', command=lambda: self.start_sign_in())
         btn_sign_in.pack(pady=10, padx=25, expand=True, fill='both')
 
-        btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame(self.controller.default_menu))
         btn_cancel.pack(pady=10, padx=25, expand=True, fill='both')
 
     def start_sign_in(self):
@@ -446,7 +435,7 @@ class SignOut(tk.Frame):
         btn_sign_out = tk.Button(self, text='Sign out', command=lambda: self.start_sign_out())
         btn_sign_out.pack(pady=(15, 0), padx=50, expand=True, fill='both')
 
-        btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_cancel = tk.Button(self, text='Cancel', command=lambda: self.controller.show_frame(self.controller.default_menu))
         btn_cancel.pack(pady=(15, 20), padx=50, expand=True, fill='both')
 
     def start_sign_out(self):
@@ -473,7 +462,7 @@ class SignHistory(tk.Frame):
         frame_menu = tk.Frame(self)
         frame_menu.pack()
 
-        btn_return = tk.Button(frame_menu, text='Return to menu', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_return = tk.Button(frame_menu, text='Return to menu', command=lambda: self.controller.show_frame(self.controller.default_menu))
         btn_return.grid(row=0, column=0, pady=3, padx=2)
 
         btn_view_history = tk.Button(frame_menu, text='View Sign History', command=lambda: self.view_history())
@@ -532,7 +521,7 @@ class UserSearch(tk.Frame):
         lbl_search_title = tk.Label(title_frame, text='User Search')
         lbl_search_title.pack()
 
-        self.btn_change_sign_search = tk.Button(title_frame, text='Go to sign search', command=lambda: self.controller.show_frame('SignSearch'))
+        self.btn_change_sign_search = tk.Button(title_frame, text='Go to sign search', command=lambda: self.controller.show_frame(self.controller.default_menu))
         self.btn_change_sign_search.pack(pady=3)
 
         search_term_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
@@ -610,7 +599,7 @@ class UserSearch(tk.Frame):
         btn_clear_results = tk.Button(search_term_frame, text='Clear', command=lambda: self.clear_search_results())
         btn_clear_results.grid(row=9, column=0, columnspan=2, sticky='ew', pady=5)
 
-        btn_return_main = tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_return_main = tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame(self.controller.default_menu))
         btn_return_main.grid(row=10, column=0, columnspan=2, sticky='ew', pady=5)
 
         search_result_frame = tk.Frame(self, relief='groove', borderwidth=2)
@@ -808,7 +797,7 @@ class SignSearch(tk.Frame):
         btn_begin_search = tk.Button(search_term_frame, text='Search', command=lambda: self.start_sign_search())
         btn_begin_search.grid(row=7, column=0, columnspan=2, sticky='ew', pady=3)
 
-        btn_return_main =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame('StudentMenu'))
+        btn_return_main =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame(self.controller.default_menu))
         btn_return_main.grid(row=8, column=0, columnspan=2, sticky='ew', pady=5)
 
         search_result_frame = tk.Frame(self, relief='groove', borderwidth=2)
@@ -974,7 +963,7 @@ class EditUser(tk.Frame):
         btn_confirm_edit = tk.Button(self.frame_edit_terms, text='Confirm edit', command=lambda: self.edit_account())
         btn_confirm_edit.grid(row=8, column=0, columnspan=2, pady=3)
 
-        btn_exit = tk.Button(self.frame_edit_terms, text='Return to search:', command=lambda:self.controller.show_frame('UserSearch'))
+        btn_exit = tk.Button(self.frame_edit_terms, text='Return to search:', command=lambda:self.controller.show_frame(self.controller.default_menu))
         btn_exit.grid(row=9, column=0, columnspan=2, pady=3)
 
     def fill_string_vars(self, user_info):
