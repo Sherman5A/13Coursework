@@ -31,7 +31,7 @@ class Gui(tk.Tk):
         # Iterate through a list of classes, initialising them
         for F in (StartPage, Login, SignUp, StudentMenu, TeacherMenu,
                   LogoutMenu, UserSearch, EditSearchUsers, SignSearch,
-                  EditUser, SignIn, SignOut, SignHistory):
+                  EditUser, SignIn, SignOut, SignHistory, EditSignSearch):
 
             # Initialise frame and assign reference 'frame' to frame
             frame = F(parent=self.container, controller=self)
@@ -307,7 +307,7 @@ class StudentMenu(tk.Frame):
         self.btn_user_logout.pack(pady=3)
 
     def edit_user(self):
-        self.controller.frames['EditUser'].fill_string_vars(self.user_info)
+        self.controller.frames['EditUser'].fill_string_vars(self.user_info, 'StudentMenu')
         self.controller.show_frame('EditUser')
 
     def user_configure(self, user_info):
@@ -340,6 +340,9 @@ class TeacherMenu(StudentMenu):
         btn_edit_student = tk.Button(frame_teacher_actions, text='Edit student info', command=lambda: self.controller.show_frame('EditSearchUsers'))
         btn_edit_student.grid(row=2, column=1, sticky='ew', pady=3, padx=3)
 
+        btn_edit_signs = tk.Button(frame_teacher_actions, text='Edit sings', command=lambda: self.controller.show_frame('EditSignSearch'))
+        btn_edit_signs.grid(row=3, column=0, columnspan=2, pady=3, padx=3, sticky='ew')
+
         self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('LogoutMenu'))
         self.btn_user_logout.pack(pady=3)
 
@@ -368,7 +371,7 @@ class LogoutMenu(tk.Frame):
         self.btn_logout_confim = tk.Button(logout_btn_frame, text='Logout', command=lambda: self.logout())
         self.btn_logout_confim.grid(row=0, column=0, sticky='nsew', padx=(25,5), pady=(6,5))
 
-        self.btn_logout_cancel = tk.Button(logout_btn_frame, text='Cancel', command=lambda: self.controller.show_frame(self.caller))
+        self.btn_logout_cancel = tk.Button(logout_btn_frame, text='Cancel', command=lambda: self.controller.show_frame(self.controller.default_menu))
         self.btn_logout_cancel.grid(row=0, column=1, sticky='nsew', padx=(5, 25), pady=(6, 5))
 
     def logout(self):
@@ -442,7 +445,8 @@ class SignOut(tk.Frame):
         """"Start sign out"""
         if self.sign_value.get() == '':
             messagebox.showerror('Failure', 'Fill in the sign out reason')
-        logic.create_sign_out(str(self.controller.session_id), self.sign_value.get())
+        else: 
+            logic.create_sign_out(str(self.controller.session_id), self.sign_value.get())
 
 
 class SignHistory(tk.Frame):
@@ -493,6 +497,8 @@ class SignHistory(tk.Frame):
         history_list = logic.sign_history()
         for i in  history_list:
             i = list(i)
+            # The length of sign out lists is 5, whereas sign in lists have a
+            # a length of 4. Can tell the difference between lists
             if len(i) == 4:
                 i.insert(0, 'Sign In')
                 self.list_sign_history.insert(tk.END, '  ,  '.join(map(str, i)))
@@ -668,8 +674,145 @@ class EditSearchUsers(UserSearch):
             user_info = {}
             for (key, value) in zip(search_keys, selected_user.split(', ')):
                 user_info[key] = value
-            self.controller.frames['EditUser'].fill_string_vars(user_info)
+            self.controller.frames['EditUser'].fill_string_vars(user_info, 'EditSearchUsers')
             self.controller.show_frame('EditUser')
+
+
+class EditUser(tk.Frame):
+    """Edit search result"""
+
+    def __init__(self, parent, controller):
+        """"Initialise class values and creates GUI elements"""
+
+        tk.Frame.__init__(self, parent)
+        self.user_info = None
+        self.controller = controller
+
+        # gui creation
+
+        lbl_edit_title = tk.Label(self, text='Edit Table Entry')
+        lbl_edit_title.pack()
+
+        self.frame_edit_terms = tk.Frame(self)
+        self.frame_edit_terms.pack()
+
+        self.entries = []
+
+        self.account_id = tk.StringVar(self.frame_edit_terms)
+        lbl_id = tk.Label(self.frame_edit_terms, textvariable=self.account_id)
+        lbl_id.grid(row=0, column=0, columnspan=2, pady=3)
+
+        lbl_access_level = tk.Label(self.frame_edit_terms, text='Access Level:')
+        lbl_access_level.grid(row=1, column=0, pady=3)
+
+        self.access_value = tk.StringVar(self.frame_edit_terms)
+        self.entries.append(self.access_value)
+        access_values = ['teacher', 'student']
+        menu_access_value = tk.OptionMenu(self.frame_edit_terms, self.access_value, *access_values)
+        menu_access_value.config(width='20')
+        menu_access_value.grid(row=1, column=1, pady=3)
+
+        lbl_fname = tk.Label(self.frame_edit_terms, text='First name:')
+        lbl_fname.grid(row=2, column=0, pady=3)
+
+        self.fname_value = tk.StringVar(self.frame_edit_terms)
+        self.entries.append(self.fname_value)
+        ent_fname = tk.Entry(self.frame_edit_terms, textvariable=self.fname_value)
+        ent_fname.grid(row=2, column=1, pady=3, sticky='nsew')
+
+        lbl_sname = tk.Label(self.frame_edit_terms, text='Second name:')
+        lbl_sname.grid(row=3, column=0, pady=3)
+
+        self.sname_value = tk.StringVar(self.frame_edit_terms)
+        self.entries.append(self.sname_value)
+        ent_sname = tk.Entry(self.frame_edit_terms, textvariable=self.sname_value)
+        ent_sname.grid(row=3, column=1, pady=3, sticky='nsew')
+
+        lbl_year_group = tk.Label(self.frame_edit_terms, text='Year group:')
+        lbl_year_group.grid(row=4, column=0, pady=3)
+
+        self.year_group_value = tk.StringVar(self.frame_edit_terms)
+        self.entries.append(self.year_group_value)
+        year_values = ['12', '13']
+        menu_year_group = tk.OptionMenu(self.frame_edit_terms, self.year_group_value, *year_values)
+        menu_year_group.config(width='20')
+        menu_year_group.grid(row=4, column=1, pady=3)
+
+        lbl_form_group = tk.Label(self.frame_edit_terms, text='Form group:')
+        lbl_form_group.grid(row=5, column=0, pady=3)
+
+        self.form_group_value = tk.StringVar(self.frame_edit_terms)
+        self.entries.append(self.form_group_value)
+        form_values = ['A', 'B', 'C', 'D', 'E', 'F']
+        menu_form_group = tk.OptionMenu(self.frame_edit_terms, self.form_group_value, *form_values)
+        menu_form_group.config(width='20')
+        menu_form_group.grid(row=5, column=1, pady=3)
+
+        lbl_username = tk.Label(self.frame_edit_terms, text='Username:')
+        lbl_username.grid(row=6, column=0, pady=3)
+
+        self.username_value = tk.StringVar(self.frame_edit_terms)
+        self.entries.append(self.username_value)
+        ent_username = tk.Entry(self.frame_edit_terms, textvariable=self.username_value)
+        ent_username.grid(row=6, column=1, pady=3, sticky='nsew')
+
+        lbl_password = tk.Label(self.frame_edit_terms, text='Password')
+        lbl_password.grid(row=7, column=0, pady=3)
+
+        self.password_value = tk.StringVar(self.frame_edit_terms)
+        self.entries.append(self.password_value)
+        ent_password = tk.Entry(self.frame_edit_terms, textvariable=self.password_value)
+        ent_password.grid(row=7, column=1, pady=3, sticky='nsew')
+
+        btn_confirm_edit = tk.Button(self.frame_edit_terms, text='Confirm edit', command=lambda: self.edit_account())
+        btn_confirm_edit.grid(row=8, column=0, columnspan=2, pady=3)
+
+        btn_delete_user = tk.Button(self.frame_edit_terms, text='Delete', command=lambda: self.delete_user())
+        btn_delete_user.grid(row=9, column=0, columnspan=2, pady=3)
+
+        btn_exit = tk.Button(self.frame_edit_terms, text='Return to search:', command=lambda:self.controller.show_frame(self.controller.default_menu))
+        btn_exit.grid(row=10, column=0, columnspan=2, pady=3)
+
+    def fill_string_vars(self, user_info, caller):
+        """Fill string variables with selected user"""
+
+        self.user_info = user_info
+        self.caller = caller
+        # Setting string var values.
+        self.account_id.set('Account ID: {}'.format(user_info['id']))
+        self.access_value.set(user_info['access_level'])
+        self.fname_value.set(user_info['first_name'])
+        self.sname_value.set(user_info['second_name'])
+        self.year_group_value.set(user_info['year_group'])
+        self.form_group_value.set(user_info['form_group'])
+        self.username_value.set(user_info['username'])
+        self.password_value.set(user_info['password'])
+
+    def edit_account(self):
+        """Collects user inputs and edits the user's account"""
+
+        edited_values = {}
+        user_id = self.user_info['id']
+        # Tuple to hold dict keys
+        account_dict_keys = ('access_level', 'first_name', 'second_name',
+                             'year_group', 'form_group', 'username', 'password')
+
+        if self.access_value.get() == 'teacher' and self.user_info['access_level'] == 'student' and self.caller == 'StudentMenu':
+            messagebox.showerror('Insufficient Permissions', 'Students cannot change their permissions to teacher level.')
+        
+        else:
+            for count, i in enumerate(self.entries):  # Get values and place in dictionary.
+                if count <= 3:  # converts first and second name to lowercase
+                    edited_values[account_dict_keys[count]] = i.get().lower()
+                else:
+                    edited_values[account_dict_keys[count]] = i.get()
+            logic.edit_user(user_id, edited_values)
+
+    def delete_user(self):
+
+        user_id = self.user_info['id']
+        logic.delete_user(user_id)
+        self.controller.show_frame('EditSearchUsers')
 
 
 class SignSearch(tk.Frame):
@@ -692,8 +835,8 @@ class SignSearch(tk.Frame):
         lbl_search_title = tk.Label(title_frame, text='Sign Search')
         lbl_search_title.pack()
 
-        btn_change_sign_search = tk.Button(title_frame, text='Go to user search', command=lambda: self.controller.show_frame('UserSearch'))
-        btn_change_sign_search.pack(pady=3)
+        self.btn_change_sign_search = tk.Button(title_frame, text='Go to user search', command=lambda: self.controller.show_frame('UserSearch'))
+        self.btn_change_sign_search.pack(pady=3)
 
         search_term_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
         search_term_frame.pack(fill='both', anchor='nw')
@@ -745,11 +888,11 @@ class SignSearch(tk.Frame):
 
         # Create list of values to 24, single digits have an extra 0 on the
         # left.
-        hour_list = [f"{i:02}" for i in range(24)]
+        hour_list = [f'{i:02}' for i in range(24)]
         hour_list.insert(0, '')
         # Create list of values to 60, single digits have an extra 0 on the
         # left.
-        minute_second_list = [f"{i:02}" for i in range(60)]
+        minute_second_list = [f'{i:02}' for i in range(60)]
         minute_second_list.insert(0, '')
 
         lbl_time_from = tk.Label(search_term_frame, text='From time:')
@@ -874,127 +1017,51 @@ class SignSearch(tk.Frame):
             self.list_search_results.insert(tk.END, ', '.join(map(str, i)))
 
 
-class EditUser(tk.Frame):
-    """Edit search result"""
+class EditSignSearch(SignSearch):
 
     def __init__(self, parent, controller):
-        """"Initialise class values and creates GUI elements"""
+
+        self.controller = controller
+        SignSearch.__init__(self, parent, controller)
+
+        self.btn_change_sign_search.destroy()
+
+        frame_start_edit = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
+        frame_start_edit.pack(pady=3, expand=True, fill='both')
+
+        btn_start_user_edit = tk.Button(frame_start_edit, text='Start edit', command=lambda: self.prepare_edit())
+        btn_start_user_edit.pack(pady=3, expand=True, fill='both')
+
+    def prepare_edit(self):
+        """Get's info of selected user and passes it to the EditUser class"""
+
+        line_selected = self.list_search_results.curselection()
+
+        if len(line_selected) == 0:
+            messagebox.showerror('Failure', 'Please select a sign before editing entry.')
+        else:
+
+            selected_user = self.list_search_results.get(line_selected[0], line_selected[0])[0]
+            search_keys = ('id', 'access_level', 'first_name', 'second_name', 'year_group',
+                           'form_group', 'username', 'password')
+            sign_info = {}
+            for (key, value) in zip(search_keys, selected_user.split(', ')):
+                sign_info[key] = value
+
+            if len(sign_info) == 4:
+                pass
+            else:
+                pass
+            # self.controller.frames['EditUser'].fill_string_vars(user_info, 'EditSearchUsers')
+            # self.controller.show_frame('EditUser')
+
+class EditSignIn(tk.Frame):
+
+    def __init__(self, parent, controller):
 
         tk.Frame.__init__(self, parent)
-        self.user_info = None
         self.controller = controller
 
-        # gui creation
-
-        lbl_edit_title = tk.Label(self, text='Edit Table Entry')
-        lbl_edit_title.pack()
-
-        self.frame_edit_terms = tk.Frame(self)
-        self.frame_edit_terms.pack()
-
-        self.entries = []
-
-        self.account_id = tk.StringVar(self.frame_edit_terms)
-        lbl_id = tk.Label(self.frame_edit_terms, textvariable=self.account_id)
-        lbl_id.grid(row=0, column=0, columnspan=2, pady=3)
-
-        lbl_access_level = tk.Label(self.frame_edit_terms, text='Access Level:')
-        lbl_access_level.grid(row=1, column=0, pady=3)
-
-        self.access_value = tk.StringVar(self.frame_edit_terms)
-        self.entries.append(self.access_value)
-        access_values = ['teacher', 'student']
-        menu_access_value = tk.OptionMenu(self.frame_edit_terms, self.access_value, *access_values)
-        menu_access_value.config(width='20')
-        menu_access_value.grid(row=1, column=1, pady=3)
-
-        lbl_fname = tk.Label(self.frame_edit_terms, text='First name:')
-        lbl_fname.grid(row=2, column=0, pady=3)
-
-        self.fname_value = tk.StringVar(self.frame_edit_terms)
-        self.entries.append(self.fname_value)
-        ent_fname = tk.Entry(self.frame_edit_terms, textvariable=self.fname_value)
-        ent_fname.grid(row=2, column=1, pady=3, sticky='nsew')
-
-        lbl_sname = tk.Label(self.frame_edit_terms, text='Second name:')
-        lbl_sname.grid(row=3, column=0, pady=3)
-
-        self.sname_value = tk.StringVar(self.frame_edit_terms)
-        self.entries.append(self.sname_value)
-        ent_sname = tk.Entry(self.frame_edit_terms, textvariable=self.sname_value)
-        ent_sname.grid(row=3, column=1, pady=3, sticky='nsew')
-
-        lbl_year_group = tk.Label(self.frame_edit_terms, text='Year group:')
-        lbl_year_group.grid(row=4, column=0, pady=3)
-
-        self.year_group_value = tk.StringVar(self.frame_edit_terms)
-        self.entries.append(self.year_group_value)
-        year_values = ['12', '13']
-        menu_year_group = tk.OptionMenu(self.frame_edit_terms, self.year_group_value, *year_values)
-        menu_year_group.config(width='20')
-        menu_year_group.grid(row=4, column=1, pady=3)
-
-        lbl_form_group = tk.Label(self.frame_edit_terms, text='Form group:')
-        lbl_form_group.grid(row=5, column=0, pady=3)
-
-        self.form_group_value = tk.StringVar(self.frame_edit_terms)
-        self.entries.append(self.form_group_value)
-        form_values = ['A', 'B', 'C', 'D', 'E', 'F']
-        menu_form_group = tk.OptionMenu(self.frame_edit_terms, self.form_group_value, *form_values)
-        menu_form_group.config(width='20')
-        menu_form_group.grid(row=5, column=1, pady=3)
-
-        lbl_username = tk.Label(self.frame_edit_terms, text='Username:')
-        lbl_username.grid(row=6, column=0, pady=3)
-
-        self.username_value = tk.StringVar(self.frame_edit_terms)
-        self.entries.append(self.username_value)
-        ent_username = tk.Entry(self.frame_edit_terms, textvariable=self.username_value)
-        ent_username.grid(row=6, column=1, pady=3, sticky='nsew')
-
-        lbl_password = tk.Label(self.frame_edit_terms, text='Password')
-        lbl_password.grid(row=7, column=0, pady=3)
-
-        self.password_value = tk.StringVar(self.frame_edit_terms)
-        self.entries.append(self.password_value)
-        ent_password = tk.Entry(self.frame_edit_terms, textvariable=self.password_value)
-        ent_password.grid(row=7, column=1, pady=3, sticky='nsew')
-
-        btn_confirm_edit = tk.Button(self.frame_edit_terms, text='Confirm edit', command=lambda: self.edit_account())
-        btn_confirm_edit.grid(row=8, column=0, columnspan=2, pady=3)
-
-        btn_exit = tk.Button(self.frame_edit_terms, text='Return to search:', command=lambda:self.controller.show_frame(self.controller.default_menu))
-        btn_exit.grid(row=9, column=0, columnspan=2, pady=3)
-
-    def fill_string_vars(self, user_info):
-        """Fill string variables with selected user"""
-
-        self.user_info = user_info
-        # Setting string var values.
-        self.account_id.set('Account ID: {}'.format(user_info['id']))
-        self.access_value.set(user_info['access_level'])
-        self.fname_value.set(user_info['first_name'])
-        self.sname_value.set(user_info['second_name'])
-        self.year_group_value.set(user_info['year_group'])
-        self.form_group_value.set(user_info['form_group'])
-        self.username_value.set(user_info['username'])
-        self.password_value.set(user_info['password'])
-
-    def edit_account(self):
-        """Collects user inputs and edits the user's account"""
-
-        edited_values = {}
-        user_id = self.user_info['id']
-        # Tuple to hold dict keys
-        account_dict_keys = ('access_level', 'first_name', 'second_name',
-                             'year_group', 'form_group', 'username', 'password')
-
-        for count, i in enumerate(self.entries):  # Get values and place in dictionary.
-            if count <= 3:
-                edited_values[account_dict_keys[count]] = i.get().lower()
-            else:
-                edited_values[account_dict_keys[count]] = i.get()
-        logic.edit_user(user_id, edited_values)
 
 
 if __name__ == '__main__':

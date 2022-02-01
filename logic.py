@@ -215,3 +215,13 @@ def edit_user(user_id, edited_terms):
     sql_database = SQL_interface.sqlInterface('test.db')
     sql_database.create_connection()
     sql_database.insert_data(sql_statement)
+
+
+def delete_user(user_id):
+
+    sql_statement = f"""DELETE FROM users WHERE id = {user_id};"""
+
+    sql_databasae = SQL_interface.sqlInterface('test.db')
+    sql_databasae.create_connection()
+    sql_databasae.insert_data(sql_statement)
+
