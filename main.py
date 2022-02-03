@@ -797,8 +797,11 @@ class SignSearch(tk.Frame):
         btn_begin_search = tk.Button(search_term_frame, text='Search', command=lambda: self.start_sign_search())
         btn_begin_search.grid(row=7, column=0, columnspan=2, sticky='ew', pady=3)
 
+        btn_clear_search_results = tk.Button(search_term_frame, text='Clear', command=lambda: self.clear_search_results())
+        btn_clear_search_results.grid(row=8, column=0, columnspan=2, sticky='ew', pady=3)
+
         btn_return_main =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame(self.controller.default_menu))
-        btn_return_main.grid(row=8, column=0, columnspan=2, sticky='ew', pady=5)
+        btn_return_main.grid(row=9, column=0, columnspan=2, sticky='ew', pady=5)
 
         search_result_frame = tk.Frame(self, relief='groove', borderwidth=2)
         search_result_frame.pack(side='left', anchor='ne', fill='both', expand=True, padx=(0, 5), pady=(3, 5))
@@ -808,10 +811,10 @@ class SignSearch(tk.Frame):
                                                'ID, Date, Time, Student ID, '
                                                'Sign Out Type (If applicable)')
         lbl_format_explanation.pack()
-        scroll_sign_history = tk.Scrollbar(search_result_frame)
-        scroll_sign_history.pack(side='right', fill='y', padx=(0,2))
+        scroll_sign_results = tk.Scrollbar(search_result_frame)
+        scroll_sign_results.pack(side='right', fill='y', padx=(0,2))
 
-        self.list_search_results = tk.Listbox(search_result_frame, yscrollcommand=scroll_sign_history.set)
+        self.list_search_results = tk.Listbox(search_result_frame, yscrollcommand=scroll_sign_results.set)
         self.list_search_results.pack(side='left', fill='both', expand=True,
                                       padx=(2, 2))
 
