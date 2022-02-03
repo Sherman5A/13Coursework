@@ -1,6 +1,5 @@
 """Init, GUI construction"""
 
-from cgitb import text
 import tkinter as tk
 from datetime import datetime
 from tkinter import messagebox
@@ -33,7 +32,7 @@ class Gui(tk.Tk):
         for F in (StartPage, Login, SignUp, StudentMenu, TeacherMenu,
                   LogoutMenu, UserSearch, EditSearchUsers, SignSearch,
                   EditUser, SignIn, SignOut, SignHistory, EditSignSearch, 
-                    EditSignIn):
+                  EditSignIn):
 
             # Initialise frame and assign reference 'frame' to frame
             frame = F(parent=self.container, controller=self)
@@ -342,7 +341,7 @@ class TeacherMenu(StudentMenu):
         btn_edit_student = tk.Button(frame_teacher_actions, text='Edit student info', command=lambda: self.controller.show_frame('EditSearchUsers'))
         btn_edit_student.grid(row=2, column=1, sticky='ew', pady=3, padx=3)
 
-        btn_edit_signs = tk.Button(frame_teacher_actions, text='Edit sings', command=lambda: self.controller.show_frame('EditSignSearch'))
+        btn_edit_signs = tk.Button(frame_teacher_actions, text='Edit sign ins/outs', command=lambda: self.controller.show_frame('EditSignSearch'))
         btn_edit_signs.grid(row=3, column=0, columnspan=2, pady=3, padx=3, sticky='ew')
 
         self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('LogoutMenu'))
@@ -524,7 +523,7 @@ class UserSearch(tk.Frame):
         self.search_config_frame.pack(side='left', anchor='nw', padx=10)
 
         title_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
-        title_frame.pack(fill='both', anchor='nw', pady=(3, 15))
+        title_frame.pack(fill='both', anchor='nw', pady=(3, 6))
 
         lbl_search_title = tk.Label(title_frame, text='User Search')
         lbl_search_title.pack()
@@ -536,7 +535,7 @@ class UserSearch(tk.Frame):
         search_term_frame.pack(fill='both', anchor='nw')
 
         lbl_search_info = tk.Label(search_term_frame, text="Leave entries you don't want to search empty")
-        lbl_search_info.grid(row=0, column=0, sticky='nsew', pady=(10,3), columnspan=2)
+        lbl_search_info.grid(row=0, column=0,columnspan=2, sticky='nsew', pady=3)
 
         self.entries = [] # List to store variables to .get() later.
 
@@ -832,7 +831,7 @@ class SignSearch(tk.Frame):
         self.search_config_frame.pack(side='left', anchor='nw', padx=10)
 
         title_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
-        title_frame.pack(fill='both', anchor='nw', pady=(3, 15))
+        title_frame.pack(fill='both', anchor='nw', pady=(3, 6))
 
         lbl_search_title = tk.Label(title_frame, text='Sign Search')
         lbl_search_title.pack()
@@ -849,7 +848,7 @@ class SignSearch(tk.Frame):
         lbl_sign_in_out.grid(row=0, column=0, sticky='nsew', pady=(5, 3))
 
         self.sign_value = tk.StringVar(search_term_frame, value='Both')
-        sign_types = ['', 'Both', 'Sign in', 'Sign out']
+        sign_types = ['Both', 'Sign in', 'Sign out']
 
         menu_sign_in_out = tk.OptionMenu(search_term_frame, self.sign_value, *sign_types)
         menu_sign_in_out.config(width='17')
@@ -1106,7 +1105,7 @@ class EditSignIn(tk.Frame):
         btn_delete_user = tk.Button(edit_values_frame, text='Delete', command=lambda: self.delete_sign_in())
         btn_delete_user.grid(row=5, column=0, columnspan=2, sticky='nsew', pady=3)
 
-        btn_exit = tk.Button(edit_values_frame, text='Return to search:', command=lambda:self.controller.show_frame(self.controller.default_menu))
+        btn_exit = tk.Button(edit_values_frame, text='Return to search:', command=lambda:self.controller.show_frame(self.controller.show_frame('EditSignSearch')))
         btn_exit.grid(row=6, column=0, columnspan=2, sticky='nsew', pady=3)
 
     def fill_string_vars(self, sign_in_info):
@@ -1133,9 +1132,11 @@ class EditSignIn(tk.Frame):
     def delete_sign_in(self):
         """Delete the sign in entry from the database"""
 
-        sign_in_id = self.sign_in_info['id']
-        logic.delete_user(sign_in_id)
-        self.controller.show_frame('EditSearchUsers')
+        sign_in_id = self.sign_in_info['sign_in_id']
+        logic.delete_sign_in(sign_in_id)
+        self.controller.show_frame('EditSignSearch')
+
+    
 
 
 if __name__ == '__main__':
