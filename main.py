@@ -1,5 +1,6 @@
 """Init, GUI construction"""
 
+from cgitb import text
 import tkinter as tk
 from datetime import datetime
 from tkinter import messagebox
@@ -31,7 +32,8 @@ class Gui(tk.Tk):
         # Iterate through a list of classes, initialising them
         for F in (StartPage, Login, SignUp, StudentMenu, TeacherMenu,
                   LogoutMenu, UserSearch, EditSearchUsers, SignSearch,
-                  EditUser, SignIn, SignOut, SignHistory, EditSignSearch):
+                  EditUser, SignIn, SignOut, SignHistory, EditSignSearch, 
+                    EditSignIn):
 
             # Initialise frame and assign reference 'frame' to frame
             frame = F(parent=self.container, controller=self)
@@ -1042,18 +1044,18 @@ class EditSignSearch(SignSearch):
         else:
 
             selected_user = self.list_search_results.get(line_selected[0], line_selected[0])[0]
-            search_keys = ('id', 'access_level', 'first_name', 'second_name', 'year_group',
-                           'form_group', 'username', 'password')
+            search_keys = ('sign_in_id', 'date', 'time', 'student_id')
             sign_info = {}
             for (key, value) in zip(search_keys, selected_user.split(', ')):
                 sign_info[key] = value
 
             if len(sign_info) == 4:
-                pass
+                print(sign_info)
+                self.controller.frames['EditSignIn'].fill_string_vars(sign_info)
+                self.controller.show_frame('EditSignIn')
             else:
                 pass
-            # self.controller.frames['EditUser'].fill_string_vars(user_info, 'EditSearchUsers')
-            # self.controller.show_frame('EditUser')
+
 
 class EditSignIn(tk.Frame):
 
@@ -1061,7 +1063,76 @@ class EditSignIn(tk.Frame):
 
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        self.entries = []
 
+        edit_values_frame = tk.Frame(self)
+        edit_values_frame.pack()
+
+        self.sign_in_id = tk.StringVar(edit_values_frame)
+
+        lbl_sign_in_id = tk.Label(edit_values_frame, textvariable=self.sign_in_id)
+        lbl_sign_in_id.grid(row=0, column=0, columnspan=2, sticky='nsew', pady=3)
+
+        lbl_student_id = tk.Label(edit_values_frame, text='Student ID')
+        lbl_student_id.grid(row=1, column=0, sticky='nsew', pady=3)
+
+        self.student_id_value = tk.StringVar(edit_values_frame)
+        self.entries.append(self.student_id_value)
+        ent_student_id = tk.Entry(edit_values_frame, textvariable=self.student_id_value)
+        ent_student_id.grid(row=1, column=1, sticky='nsew', pady=3)
+
+        lbl_date = tk.Label(edit_values_frame, text='Date:')
+        lbl_date.grid(row=2, column=0, sticky='nsew', pady=3)
+
+        self.date = tk.StringVar(edit_values_frame)
+        self.entries.append(self.student_id_value)
+        ent_date = tk.Entry(edit_values_frame, textvariable=self.date)
+        ent_date.grid(row=2, column=1, sticky='nsew', pady=3)
+
+        lbl_time = tk.Label(edit_values_frame, text='Time:')
+        lbl_time.grid(row=3, column=0, sticky='nsew', pady=3)
+
+        self.time = tk.StringVar(self)
+        self.entries.append(self.time)
+        ent_time = tk.Entry(edit_values_frame, textvariable=self.time)
+        ent_time.grid(row=3, column=1, sticky='nsew', pady=3)
+
+        btn_confirm_edit = tk.Button(edit_values_frame, text='Confirm edit', command=lambda: self.edit_sign_in())
+        btn_confirm_edit.grid(row=4, column=0, columnspan=2, sticky='nsew', pady=3)
+
+        btn_delete_user = tk.Button(edit_values_frame, text='Delete', command=lambda: self.delete_sign_in())
+        btn_delete_user.grid(row=5, column=0, columnspan=2, sticky='nsew', pady=3)
+
+        btn_exit = tk.Button(edit_values_frame, text='Return to search:', command=lambda:self.controller.show_frame(self.controller.default_menu))
+        btn_exit.grid(row=6, column=0, columnspan=2, sticky='nsew', pady=3)
+
+    def fill_string_vars(self, sign_in_info):
+        
+        self.sign_in_info = sign_in_info
+        self.sign_in_id.set('Sign In ID: {}'.format(sign_in_info['sign_in_id']))
+        self.student_id_value.set(sign_in_info['student_id'])
+        self.date.set(sign_in_info['date'])
+        self.time.set(sign_in_info['time'])
+
+    def edit_sign_in(self):
+        """Collects user inputs and edits the user's account"""
+
+        edited_values = {}
+        sign_in_id = self.sign_in_info['sign_in_id']
+        # Tuple to hold dict keys
+        account_dict_keys = ('student_id', 'date', 'time')
+
+        for count, i in enumerate(self.entries):  # Get values and place in dictionary
+                edited_values[account_dict_keys[count]] = i.get()
+
+        logic.edit_sign_in(sign_in_id, edited_values)
+
+    def delete_sign_in(self):
+        """Delete the sign in entry from the database"""
+
+        sign_in_id = self.sign_in_info['id']
+        logic.delete_user(sign_in_id)
+        self.controller.show_frame('EditSearchUsers')
 
 
 if __name__ == '__main__':

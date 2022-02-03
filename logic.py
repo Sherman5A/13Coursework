@@ -1,4 +1,4 @@
-import re
+
 from datetime import datetime
 import validation
 import SQL_interface
@@ -221,7 +221,25 @@ def delete_user(user_id):
 
     sql_statement = f"""DELETE FROM users WHERE id = {user_id};"""
 
-    sql_databasae = SQL_interface.sqlInterface('test.db')
-    sql_databasae.create_connection()
-    sql_databasae.insert_data(sql_statement)
+    sql_database = SQL_interface.sqlInterface('test.db')
+    sql_database.create_connection()
+    sql_database.insert_data(sql_statement)
+
+
+def edit_sign_in(sign_in_id, edited_terms):
+    
+    sql_statement = 'UPDATE users SET'
+    sql_statement += ', '.join('='.join((key, "'{}'".format(value))) 
+                               for key, value in edited_terms.items()) + f' WHERE id = {sign_in_id};'
+    sql_database = SQL_interface.sqlInterface('test.db')
+    sql_database.create_connection()
+    sql_database.insert_data(sql_statement)
+
+
+def delete_sign_in(sign_in_id):
+
+    sql_statement = f'DELETE FROM sign_in WHERE sign_in_id = {sign_in_id}'
+    sql_database = SQL_interface.sqlInterface('test.db')
+    sql_database.create_connection()
+    sql_database.insert_data(sql_statement)
 
