@@ -32,7 +32,7 @@ class Gui(tk.Tk):
         for F in (StartPage, Login, SignUp, StudentMenu, TeacherMenu,
                   LogoutMenu, UserSearch, EditSearchUsers, SignSearch,
                   EditUser, SignIn, SignOut, SignHistory, EditSignSearch, 
-                  EditSignIn):
+                  EditSignIn, EditSignOut):
 
             # Initialise frame and assign reference 'frame' to frame
             frame = F(parent=self.container, controller=self)

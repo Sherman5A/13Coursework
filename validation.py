@@ -10,6 +10,14 @@ def date_format_check(input):
         return False
 
 
+def time_format_check(input):
+    try:
+        datetime.strptime(input, '%H:%M:%S')
+        return True
+    except ValueError:
+        return False
+
+
 def string_check(input):
     """Checks if a string contains digits or special characters"""
 

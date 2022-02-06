@@ -1,5 +1,6 @@
 """Main menus for navigation"""
 
+from cgitb import text
 from main import tk
 
 class StartPage(tk.Frame):
@@ -51,10 +52,10 @@ class StudentMenu(tk.Frame):
         btn_view_attendence = tk.Button(frame_student_actions, text='View sign in / out history', command=lambda: self.controller.show_frame('SignHistory'))
         btn_view_attendence.grid(row=1, column=0, sticky='ew', pady=3, padx=3, columnspan=2)
 
-        btn_edit_user = tk.Button(frame_student_actions, text='Edit User', command=lambda: self.edit_user())
+        btn_edit_user = tk.Button(frame_student_actions, text='Edit My Details', command=lambda: self.edit_user())
         btn_edit_user.grid(row=2, column=0, sticky='ew', pady=3, padx=3, columnspan=2)
 
-        self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('LogoutMenu'))
+        self.btn_user_logout = tk.Button(self, text='Logout of manager', command=lambda: self.controller.show_frame('LogoutMenu'))
         self.btn_user_logout.pack(pady=3)
 
     def edit_user(self):
@@ -65,7 +66,7 @@ class StudentMenu(tk.Frame):
         """Changes the StudentMenu name field to the currently logged in 
         student's name"""
         self.user_info = user_info
-        self.student_name.set('{} {}'.format(user_info['first_name'],
+        self.student_name.set('ID: {}\nName: {} {}'.format(user_info['id'], user_info['first_name'],
                                              user_info['second_name']).title())
 
 
@@ -85,14 +86,17 @@ class TeacherMenu(StudentMenu):
         frame_teacher_actions = tk.Frame(self)
         frame_teacher_actions.pack()
 
-        btn_manual_sign = tk.Button(frame_teacher_actions, text='Manual sign students', command='')
-        btn_manual_sign.grid(row=2, column=0, sticky='ew', padx=3)
+        btn_user_search = tk.Button(frame_teacher_actions, text='User Search', command=lambda: self.controller.show_frame('UserSearch'))
+        btn_user_search.grid(row=2, column=0, sticky='ew', pady=3, padx=3)
 
-        btn_edit_student = tk.Button(frame_teacher_actions, text='Edit student info', command=lambda: self.controller.show_frame('EditSearchUsers'))
+        btn_edit_student = tk.Button(frame_teacher_actions, text='Edit user info', command=lambda: self.controller.show_frame('EditSearchUsers'))
         btn_edit_student.grid(row=2, column=1, sticky='ew', pady=3, padx=3)
 
+        btn_sign_search = tk.Button(frame_teacher_actions, text='Sign in / out search', command=lambda: self.controller.show_frame('SignSearch'))
+        btn_sign_search.grid(row=3, column=0, sticky='ew', pady=3, padx=3)
+
         btn_edit_signs = tk.Button(frame_teacher_actions, text='Edit sign ins/outs', command=lambda: self.controller.show_frame('EditSignSearch'))
-        btn_edit_signs.grid(row=3, column=0, columnspan=2, pady=3, padx=3, sticky='ew')
+        btn_edit_signs.grid(row=3, column=1, sticky='ew', pady=3, padx=3)
 
         self.btn_user_logout = tk.Button(self, text='Logout of program', command=lambda: self.controller.show_frame('LogoutMenu'))
         self.btn_user_logout.pack(pady=3)

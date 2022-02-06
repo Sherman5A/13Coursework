@@ -262,13 +262,13 @@ class EditUser(tk.Frame):
         ent_password.grid(row=7, column=1, pady=3, sticky='nsew')
 
         btn_confirm_edit = tk.Button(self.frame_edit_terms, text='Confirm edit', command=lambda: self.edit_account())
-        btn_confirm_edit.grid(row=8, column=0, columnspan=2, pady=3)
+        btn_confirm_edit.grid(row=8, column=0, columnspan=2, pady=3, sticky='nsew')
 
         btn_delete_user = tk.Button(self.frame_edit_terms, text='Delete', command=lambda: self.delete_user())
-        btn_delete_user.grid(row=9, column=0, columnspan=2, pady=3)
+        btn_delete_user.grid(row=9, column=0, columnspan=2, pady=3, sticky='nsew')
 
         btn_exit = tk.Button(self.frame_edit_terms, text='Return to search:', command=lambda:self.controller.show_frame(self.controller.default_menu))
-        btn_exit.grid(row=10, column=0, columnspan=2, pady=3)
+        btn_exit.grid(row=10, column=0, columnspan=2, pady=3, sticky='nsew')
 
     def fill_string_vars(self, user_info, caller):
         """Fill string variables with selected user"""

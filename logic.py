@@ -228,9 +228,9 @@ def delete_user(user_id):
 
 def edit_sign_in(sign_in_id, edited_terms):
     
-    sql_statement = 'UPDATE users SET'
+    sql_statement = 'UPDATE sign_in SET '
     sql_statement += ', '.join('='.join((key, "'{}'".format(value))) 
-                               for key, value in edited_terms.items()) + f' WHERE id = {sign_in_id};'
+                               for key, value in edited_terms.items()) + f' WHERE sign_in_id = {sign_in_id};'
     sql_database = SQL_interface.sqlInterface('test.db')
     sql_database.create_connection()
     sql_database.insert_data(sql_statement)
@@ -243,3 +243,21 @@ def delete_sign_in(sign_in_id):
     sql_database.create_connection()
     sql_database.insert_data(sql_statement)
 
+
+def edit_sign_out(sign_out_id, edited_terms):
+
+    sql_statement = 'UPDATE sign_out SET '
+    sql_statement += ', '.join('='.join((key, "'{}'".format(value))) 
+                               for key, value in edited_terms.items()) + f' WHERE sign_out_id = {sign_out_id};'
+    sql_database = SQL_interface.sqlInterface('test.db')
+    sql_database.create_connection()
+    sql_database.insert_data(sql_statement)
+
+
+def delete_sign_out(sign_out_id):
+
+    sql_statement = f'DELETE FROM sign_out WHERE sign_out_id = {sign_out_id}'
+    print(sql_statement)
+    sql_database = SQL_interface.sqlInterface('test.db')
+    sql_database.create_connection()
+    sql_database.insert_data(sql_statement)

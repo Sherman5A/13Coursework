@@ -166,7 +166,7 @@ class SignSearch(tk.Frame):
 
         if len(self.entries[3].get()) != 0:
             if not validation.date_format_check(self.entries[3].get()):
-                messagebox.showerror('Failure', 'Date format incorrect')
+                messagebox.showerror('Failure', 'Date format incorrect or non-existent date')
                 return
 
         sign_in_or_out = self.sign_value.get().lower()
@@ -188,7 +188,7 @@ class SignSearch(tk.Frame):
                 continue
             search_terms[search_keys[count]] = i.get()  # Add to dict.
 
-        # If date is empty, skip entering dates into dict.
+        # If time is empty, skip entering time into dict.
         if '' not in [i.get() for i in self.to_time] and '' not in [t.get() for t in self.from_time]:
 
             # Create strings of times.
@@ -238,7 +238,11 @@ class EditSignSearch(SignSearch):
         else:
 
             selected_user = self.list_search_results.get(line_selected[0], line_selected[0])[0]
-            search_keys = ('sign_in_id', 'date', 'time', 'student_id')
+            if len(selected_user.split(', ')) == 4:
+                search_keys = ('sign_in_id', 'date', 'time', 'student_id')
+            else: 
+                search_keys = ('sign_out_id', 'date', 'time', 'student_id', 'sign_out_type')
+            
             sign_info = {}
             for (key, value) in zip(search_keys, selected_user.split(', ')):
                 sign_info[key] = value
@@ -248,7 +252,9 @@ class EditSignSearch(SignSearch):
                 self.controller.frames['EditSignIn'].fill_string_vars(sign_info)
                 self.controller.show_frame('EditSignIn')
             else:
-                pass
+                print(sign_info)
+                self.controller.frames['EditSignOut'].fill_string_vars(sign_info)
+                self.controller.show_frame('EditSignOut')
 
 
 class EditSignIn(tk.Frame):
@@ -278,17 +284,17 @@ class EditSignIn(tk.Frame):
         lbl_date = tk.Label(edit_values_frame, text='Date:')
         lbl_date.grid(row=2, column=0, sticky='nsew', pady=3)
 
-        self.date = tk.StringVar(edit_values_frame)
-        self.entries.append(self.student_id_value)
-        ent_date = tk.Entry(edit_values_frame, textvariable=self.date)
+        self.date_value = tk.StringVar(edit_values_frame)
+        self.entries.append(self.date_value)
+        ent_date = tk.Entry(edit_values_frame, textvariable=self.date_value)
         ent_date.grid(row=2, column=1, sticky='nsew', pady=3)
 
         lbl_time = tk.Label(edit_values_frame, text='Time:')
         lbl_time.grid(row=3, column=0, sticky='nsew', pady=3)
 
-        self.time = tk.StringVar(self)
-        self.entries.append(self.time)
-        ent_time = tk.Entry(edit_values_frame, textvariable=self.time)
+        self.time_value = tk.StringVar(self)
+        self.entries.append(self.time_value)
+        ent_time = tk.Entry(edit_values_frame, textvariable=self.time_value)
         ent_time.grid(row=3, column=1, sticky='nsew', pady=3)
 
         btn_confirm_edit = tk.Button(edit_values_frame, text='Confirm edit', command=lambda: self.edit_sign_in())
@@ -297,19 +303,27 @@ class EditSignIn(tk.Frame):
         btn_delete_user = tk.Button(edit_values_frame, text='Delete', command=lambda: self.delete_sign_in())
         btn_delete_user.grid(row=5, column=0, columnspan=2, sticky='nsew', pady=3)
 
-        btn_exit = tk.Button(edit_values_frame, text='Return to search:', command=lambda:self.controller.show_frame(self.controller.show_frame('EditSignSearch')))
+        btn_exit = tk.Button(edit_values_frame, text='Return to search:', command=lambda: self.controller.show_frame('EditSignSearch'))
         btn_exit.grid(row=6, column=0, columnspan=2, sticky='nsew', pady=3)
 
     def fill_string_vars(self, sign_in_info):
         
         self.sign_in_info = sign_in_info
-        self.sign_in_id.set('Sign In ID: {}'.format(sign_in_info['sign_in_id']))
+        self.sign_in_id.set('Sign In ID: {}'.format(self.sign_in_info['sign_in_id']))
         self.student_id_value.set(sign_in_info['student_id'])
-        self.date.set(sign_in_info['date'])
-        self.time.set(sign_in_info['time'])
+        self.date_value.set(sign_in_info['date'])
+        self.time_value.set(sign_in_info['time'])
 
     def edit_sign_in(self):
         """Collects user inputs and edits the user's account"""
+
+        if not validation.date_format_check(self.date_value.get()):
+            messagebox.showerror('Failure', 'Date format incorrect or non-existent date')
+            return
+
+        if not validation.time_format_check(self.time_value.get()):
+            messagebox.showerror('Failure', 'Time format incorrect or non-existent time')
+            return
 
         edited_values = {}
         sign_in_id = self.sign_in_info['sign_in_id']
@@ -318,7 +332,7 @@ class EditSignIn(tk.Frame):
 
         for count, i in enumerate(self.entries):  # Get values and place in dictionary
                 edited_values[account_dict_keys[count]] = i.get()
-
+        print(edited_values)
         logic.edit_sign_in(sign_in_id, edited_values)
 
     def delete_sign_in(self):
@@ -328,4 +342,101 @@ class EditSignIn(tk.Frame):
         logic.delete_sign_in(sign_in_id)
         self.controller.show_frame('EditSignSearch')
 
-    
+
+class EditSignOut(tk.Frame):
+
+    def __init__(self, parent, controller):
+
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        edit_values_frame = tk.Frame(self)
+        edit_values_frame.pack()
+
+        self.sign_out_id = tk.StringVar(edit_values_frame)
+        lbl_sign_out_id = tk.Label(edit_values_frame, textvariable=self.sign_out_id)
+        lbl_sign_out_id.grid(row=0, column=0, columnspan=2)
+
+        lbl_student_id = tk.Label(edit_values_frame, text='Student ID:')
+        lbl_student_id.grid(row=1, column=0, sticky='nsew', pady=3)
+
+        self.entries = []
+
+        self.student_id_value = tk.StringVar(edit_values_frame)
+        self.entries.append(self.student_id_value)
+        ent_student_id = tk.Entry(edit_values_frame, textvariable=self.student_id_value)
+        ent_student_id.grid(row=1, column=1, sticky='nsew', pady=3)
+
+        lbl_date_value = tk.Label(edit_values_frame, text='Date:')
+        lbl_date_value.grid(row=2, column=0, stick='nsew', pady=3)
+
+        self.date_value = tk.StringVar(edit_values_frame)
+        self.entries.append(self.date_value)
+        ent_date_value = tk.Entry(edit_values_frame, textvariable=self.date_value)
+        ent_date_value.grid(row=2, column=1, sticky='nsew', pady=3)
+
+        lbl_time = tk.Label(edit_values_frame, text='Time:')
+        lbl_time.grid(row=3, column=0, sticky='nsew', pady=3)
+
+        self.time_value = tk.StringVar(edit_values_frame)
+        self.entries.append(self.time_value)
+        ent_time_value = tk.Entry(edit_values_frame, textvariable=self.time_value)
+        ent_time_value.grid(row=3, column=1, sticky='nsew', pady=3)
+
+        lbl_sign_out_type = tk.Label(edit_values_frame, text='Sign out type:')
+        lbl_sign_out_type.grid(row=4, column=0, sticky='nsew', pady=3)
+
+        self.sign_out_type = tk.StringVar(edit_values_frame)
+        self.entries.append(self.sign_out_type)
+        sign_out_types = ['Breaktime', 'Lunchtime', 'Going home']
+
+        menu_sign_out_type = tk.OptionMenu(edit_values_frame, self.sign_out_type, *sign_out_types)
+        menu_sign_out_type.config(width=17)
+        menu_sign_out_type.grid(row=4, column=1)
+
+        btn_confirm_edit = tk.Button(edit_values_frame, text='Confirm edit', command=lambda: self.edit_sign_out())
+        btn_confirm_edit.grid(row=5, column=0, columnspan=2, sticky='nsew', pady=3)
+
+        btn_delete_user = tk.Button(edit_values_frame, text='Delete', command=lambda: self.delete_sign_out())
+        btn_delete_user.grid(row=6, column=0, columnspan=2, sticky='nsew', pady=3)
+
+        btn_exit = tk.Button(edit_values_frame, text='Return to search:', command=lambda: self.controller.show_frame('EditSignSearch'))
+        btn_exit.grid(row=7, column=0, columnspan=2, sticky='nsew', pady=3)
+
+    def fill_string_vars(self, sign_out_info):
+        
+        self.sign_out_info = sign_out_info
+        self.sign_out_id.set('Sign Out ID: {}'.format(sign_out_info['sign_out_id']))
+        self.student_id_value.set(sign_out_info['student_id'])
+        self.date_value.set(sign_out_info['date'])
+        self.time_value.set(sign_out_info['time'])
+        self.sign_out_type.set(sign_out_info['sign_out_type'])
+
+    def edit_sign_out(self):
+        """Collects user inputs and edits the user's account"""
+
+        if not validation.date_format_check(self.date_value.get()):
+            messagebox.showerror('Failure', 'Date format incorrect or non-existent date')
+            return
+
+        if not validation.time_format_check(self.time_value.get()):
+            messagebox.showerror('Failure', 'Time format incorrect or non-existent time')
+            return
+
+        edited_values = {}
+        sign_out_id = self.sign_out_info['sign_out_id']
+        # Tuple to hold dict keys
+        account_dict_keys = ('student_id', 'date', 'time', 'sign_out_type')
+
+        for count, i in enumerate(self.entries):  # Get values and place in dictionary
+                edited_values[account_dict_keys[count]] = i.get()
+        print(edited_values)
+        logic.edit_sign_out(sign_out_id, edited_values)
+
+    def delete_sign_out(self):
+        """Delete the sign in entry from the database"""
+
+        sign_out_id = self.sign_out_info['sign_out_id']
+        logic.delete_sign_out(sign_out_id)
+        self.controller.show_frame('EditSignSearch')
+
