@@ -1,8 +1,11 @@
-import validation
+"""Editing sign in and outs"""
+
 from datetime import datetime
-from main import tk, messagebox
+from tkinter import ttk
+
 import logic
-from tkinter import ttk 
+import validation
+from main import tk, messagebox
 
 
 class SignSearch(tk.Frame):

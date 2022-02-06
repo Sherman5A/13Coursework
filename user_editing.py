@@ -1,5 +1,7 @@
-from main import tk, messagebox
+"""Searching users, and editing account details"""
+
 import logic
+from main import tk, messagebox
 
 
 class UserSearch(tk.Frame):

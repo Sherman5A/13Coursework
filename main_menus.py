@@ -1,3 +1,5 @@
+"""Main menus for navigation"""
+
 from main import tk
 
 class StartPage(tk.Frame):

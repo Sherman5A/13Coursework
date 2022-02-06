@@ -1,3 +1,5 @@
+"""Account processes: logging in, signing up, logout"""
+
 from main import tk, messagebox
 import logic
 

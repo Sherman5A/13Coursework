@@ -9,6 +9,7 @@ def date_format_check(input):
     except ValueError:
         return False
 
+
 def string_check(input):
     """Checks if a string contains digits or special characters"""
 
@@ -23,6 +24,7 @@ def string_check(input):
         print('Variable is not string')
         return False
 
+
 def len_check(input, max_len):
     """Checks length of string
         input: variable to check
@@ -32,6 +34,7 @@ def len_check(input, max_len):
     if len(input) <= 0 or len(input) > max_len:
         return False
     return True
+
 
 def validate_num(input, min_num=None):
     """Checks if input is int
@@ -46,6 +49,7 @@ def validate_num(input, min_num=None):
         return converted_input > min_num
     except ValueError:
         return False
+
 
 def password_strength(input):
     """Check password is >= 7 characters, contains lower and upper case """

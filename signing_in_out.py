@@ -1,5 +1,7 @@
-from main import tk, messagebox
+"""Sign in and out of school + history"""
+
 import logic
+from main import tk, messagebox
 
 
 class SignIn(tk.Frame):
