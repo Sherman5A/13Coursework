@@ -66,6 +66,7 @@ class StudentMenu(tk.Frame):
         """Changes the StudentMenu name field to the currently logged in 
         student's name"""
         self.user_info = user_info
+        # Set the label to display the user's name and ID
         self.student_name.set('ID: {}\nName: {} {}'.format(user_info['id'], user_info['first_name'],
                                              user_info['second_name']).title())
 
@@ -76,12 +77,13 @@ class TeacherMenu(StudentMenu):
     def __init__(self, parent, controller):
         """Initialise class values and create initial GUI elements"""
 
+        # Inherit student menu
         self.controller = controller
         StudentMenu.__init__(self, parent, controller)
 
         # GUI creation
-
-        self.btn_user_logout.destroy()
+        
+        self.btn_user_logout.destroy()  # Delete button to replace at later date
 
         frame_teacher_actions = tk.Frame(self)
         frame_teacher_actions.pack()

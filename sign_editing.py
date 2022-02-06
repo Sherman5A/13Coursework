@@ -34,7 +34,7 @@ class SignSearch(tk.Frame):
         search_term_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
         search_term_frame.pack(fill='both', anchor='nw')
 
-        self.entries = [] # List to store variables to .get() later
+        self.entries = []  # List to store Entries and StringVars to .get() later
 
         lbl_sign_in_out = tk.Label(search_term_frame, text='Sign type:')
         lbl_sign_in_out.grid(row=0, column=0, sticky='nsew', pady=(5, 3))
@@ -94,7 +94,7 @@ class SignSearch(tk.Frame):
         frame_from_time = tk.Frame(search_term_frame)
         frame_from_time.grid(row=5, column=1, sticky='nsew', pady=3)
 
-        self.from_time = [] # List to manage .get()s easier.
+        self.from_time = []  # List to manage .get()s easier.
         from_hour_value = tk.StringVar(frame_from_time, value='')
         from_minute_value = tk.StringVar(frame_from_time, value='')
         from_second_value = tk.StringVar(frame_from_time, value='')
@@ -117,7 +117,7 @@ class SignSearch(tk.Frame):
         lbl_time_to = tk.Label(search_term_frame, text='To time:')
         lbl_time_to.grid(row=6, column=0, sticky='nsew', pady=3)
 
-        self.to_time = [] # List to manage .get()s easier.
+        self.to_time = []  # List to manage .get()s easier.
         to_hour_value = tk.StringVar(frame_to_time, value='')
         to_minute_value = tk.StringVar(frame_to_time, value='')
         to_second_value = tk.StringVar(frame_to_time, value='')
@@ -147,6 +147,8 @@ class SignSearch(tk.Frame):
                                                'ID, Date, Time, Student ID, '
                                                'Sign Out Type (If applicable)')
         lbl_format_explanation.pack()
+
+        # Scroll bar for the listbox
         scroll_sign_results = tk.Scrollbar(search_result_frame)
         scroll_sign_results.pack(side='right', fill='y', padx=(0,2))
 
@@ -204,23 +206,25 @@ class SignSearch(tk.Frame):
             if dt_to_time <= dt_from_time:
                 messagebox.showerror('Error', 'From is greater than to time')
 
-            time_tuple = (from_time, to_time) # Add times to dict.
+            time_tuple = (from_time, to_time)  # Add times to tuple.
             search_results = logic.search_signs(sign_in_or_out, search_terms, time_tuple)
         else:
             search_results = logic.search_signs(sign_in_or_out, search_terms)
 
+        # Add search results to result listbox.
         for i in search_results:
             self.list_search_results.insert(tk.END, ', '.join(map(str, i)))
 
 
 class EditSignSearch(SignSearch):
+    """Menu that allows user to select sign in / out entry to edit"""
 
     def __init__(self, parent, controller):
 
         self.controller = controller
         SignSearch.__init__(self, parent, controller)
 
-        self.btn_change_sign_search.destroy()
+        self.btn_change_sign_search.destroy()  # Button is not required.
 
         frame_start_edit = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
         frame_start_edit.pack(pady=3, expand=True, fill='both')
@@ -231,27 +235,31 @@ class EditSignSearch(SignSearch):
     def prepare_edit(self):
         """Get's info of selected user and passes it to the EditUser class"""
 
+        # Get line user clicked on,
         line_selected = self.list_search_results.curselection()
 
         if len(line_selected) == 0:
             messagebox.showerror('Failure', 'Please select a sign before editing entry.')
-        else:
-
+        
+        else:    
+            # Get details of selected line of listbox
             selected_user = self.list_search_results.get(line_selected[0], line_selected[0])[0]
-            if len(selected_user.split(', ')) == 4:
+            if len(selected_user.split(', ')) == 4:  # Dict keys for a sign in.
                 search_keys = ('sign_in_id', 'date', 'time', 'student_id')
-            else: 
+            else:  # Dict keys for a sign out.
                 search_keys = ('sign_out_id', 'date', 'time', 'student_id', 'sign_out_type')
             
             sign_info = {}
+            # Iterates through the entry box's values and their names at the
+            # same time.
             for (key, value) in zip(search_keys, selected_user.split(', ')):
                 sign_info[key] = value
 
-            if len(sign_info) == 4:
+            if len(sign_info) == 4:  # If the selected option is a sign in.
                 print(sign_info)
                 self.controller.frames['EditSignIn'].fill_string_vars(sign_info)
                 self.controller.show_frame('EditSignIn')
-            else:
+            else:  # If the selected option is a sign out.
                 print(sign_info)
                 self.controller.frames['EditSignOut'].fill_string_vars(sign_info)
                 self.controller.show_frame('EditSignOut')
@@ -263,7 +271,7 @@ class EditSignIn(tk.Frame):
 
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        self.entries = []
+        self.entries = []  # List of entries make .get() easier.
 
         edit_values_frame = tk.Frame(self)
         edit_values_frame.pack()
@@ -309,6 +317,8 @@ class EditSignIn(tk.Frame):
     def fill_string_vars(self, sign_in_info):
         
         self.sign_in_info = sign_in_info
+
+        # Fill in StringVars with the current entries data
         self.sign_in_id.set('Sign In ID: {}'.format(self.sign_in_info['sign_in_id']))
         self.student_id_value.set(sign_in_info['student_id'])
         self.date_value.set(sign_in_info['date'])
@@ -317,10 +327,12 @@ class EditSignIn(tk.Frame):
     def edit_sign_in(self):
         """Collects user inputs and edits the user's account"""
 
+        # Checks if date exists and that it's in the correct format
         if not validation.date_format_check(self.date_value.get()):
             messagebox.showerror('Failure', 'Date format incorrect or non-existent date')
             return
 
+        # Checks that the time exists and that it's in the correct format
         if not validation.time_format_check(self.time_value.get()):
             messagebox.showerror('Failure', 'Time format incorrect or non-existent time')
             return
@@ -333,12 +345,14 @@ class EditSignIn(tk.Frame):
         for count, i in enumerate(self.entries):  # Get values and place in dictionary
                 edited_values[account_dict_keys[count]] = i.get()
         print(edited_values)
+        # Delete the sign in with the specifed ID
         logic.edit_sign_in(sign_in_id, edited_values)
 
     def delete_sign_in(self):
         """Delete the sign in entry from the database"""
 
         sign_in_id = self.sign_in_info['sign_in_id']
+        # Delete the sign in with the specified ID
         logic.delete_sign_in(sign_in_id)
         self.controller.show_frame('EditSignSearch')
 
@@ -415,10 +429,12 @@ class EditSignOut(tk.Frame):
     def edit_sign_out(self):
         """Collects user inputs and edits the user's account"""
 
+        # Checks if the date exists and that it's in the correct format
         if not validation.date_format_check(self.date_value.get()):
             messagebox.showerror('Failure', 'Date format incorrect or non-existent date')
             return
 
+        # Checks if the time exists and that it's in the correct format
         if not validation.time_format_check(self.time_value.get()):
             messagebox.showerror('Failure', 'Time format incorrect or non-existent time')
             return
@@ -430,13 +446,15 @@ class EditSignOut(tk.Frame):
 
         for count, i in enumerate(self.entries):  # Get values and place in dictionary
                 edited_values[account_dict_keys[count]] = i.get()
-        print(edited_values)
+        
+        # Edit the sign out with the specified ID
         logic.edit_sign_out(sign_out_id, edited_values)
 
     def delete_sign_out(self):
         """Delete the sign in entry from the database"""
 
         sign_out_id = self.sign_out_info['sign_out_id']
+        # Delete the sign out with the specified ID
         logic.delete_sign_out(sign_out_id)
         self.controller.show_frame('EditSignSearch')
 

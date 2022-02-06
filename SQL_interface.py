@@ -22,13 +22,15 @@ class sqlInterface:
             print(e)
     
     def get_data(self, sql_command, values=None):
+        # Overloading
+        # Allows user to put values in string or as a seperate argument.
         if values is None:
             try:
                 self.cursor.execute(sql_command)
                 return self.cursor.fetchall()
             except Error as e:
                 print(e)
-        else:
+        else:  # Values argument is not left blank
             try:
                 self.cursor.execute(sql_command, values)
                 return self.cursor.fetchall()
@@ -36,13 +38,15 @@ class sqlInterface:
                 print(e)
 
     def insert_data(self, sql_command, values=None):
+        # Overloading
+        # Allows user to put values in string or as a seperate argument.
         if values is None:
             try:
                 self.cursor.execute(sql_command)
                 self.connection.commit()
             except Error as e:
                 print(e)
-        else:
+        else:  # Values argument is not left blank
             try:
                 self.cursor.execute(sql_command, values)
                 self.connection.commit()

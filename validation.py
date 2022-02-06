@@ -4,6 +4,7 @@ from datetime import datetime
 
 def date_format_check(input):
     try:
+        # Try to convert time from string in the format YYYY:MM:DD e.g 2009:11:22
         datetime.strptime(input, '%Y-%m-%d')
         return True
     except ValueError:
@@ -12,6 +13,7 @@ def date_format_check(input):
 
 def time_format_check(input):
     try:
+        # Try to convert time from string in the format HH:MM:SS e.g 17:49:22
         datetime.strptime(input, '%H:%M:%S')
         return True
     except ValueError:
@@ -60,12 +62,13 @@ def validate_num(input, min_num=None):
 
 
 def password_strength(input):
-    """Check password is >= 7 characters, contains lower and upper case """
+    """Check password is >= 7 characters, contains lower and upper case.
+       Returns true if password check is passed, false otherwise."""
 
     if len(input) < 7:
         return False
 
-    # contains both lower and upper case characters
+    # Check if password contains both lower and upper case characters.
     if input.isupper() is False and input.islower() is False:
         return True
     return False

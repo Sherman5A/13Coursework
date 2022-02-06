@@ -207,5 +207,7 @@ class LogoutMenu(tk.Frame):
     def logout(self):
         """Logs out of sql database"""
 
-        # Log out of SQL.
+        # Resetting pages clears all entry boxes and inputs. Therefore, the new
+        # user cannot access the previous person's inputs. Moreover, it resets 
+        # all class attributes
         self.controller.reset_pages()
