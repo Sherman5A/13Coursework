@@ -24,7 +24,7 @@ def string_check(input):
     """Checks if a string contains digits or special characters"""
 
     # create regex searching for digits and symbols
-    regex_argument = re.compile('\d+|[@;:()]')
+    regex_argument = re.compile('\d+|[@;:()+=_`¬~#]')
     try:
         regex_result = re.search(regex_argument, input)
         if regex_result:  # string contains symbols or digits
@@ -62,13 +62,25 @@ def validate_num(input, min_num=None):
 
 
 def password_strength(input):
-    """Check password is >= 7 characters, contains lower and upper case.
+    """Check password is > 7 characters, contains lower and upper case.
        Returns true if password check is passed, false otherwise."""
 
     if len(input) < 7:
         return False
 
     # Check if password contains both lower and upper case characters.
-    if input.isupper() is False and input.islower() is False:
+    upper_flag = True
+    lower_flag = False
+    for i in input:
+        print(i)
+        if i.isupper() == True:
+            print('capital')
+            upper_flag = True
+        if i.islower() == True:
+            lower_flag = True
+    if upper_flag == False:
+        return False
+    if lower_flag == False:
+        return False
+    else:
         return True
-    return False

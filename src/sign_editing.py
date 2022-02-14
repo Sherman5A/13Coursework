@@ -229,11 +229,11 @@ class EditSignSearch(SignSearch):
         frame_start_edit = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
         frame_start_edit.pack(pady=3, expand=True, fill='both')
 
-        btn_start_user_edit = tk.Button(frame_start_edit, text='Start edit', command=lambda: self.prepare_edit())
-        btn_start_user_edit.pack(pady=3, expand=True, fill='both')
+        btn_start_sign_edit = tk.Button(frame_start_edit, text='Start edit', command=lambda: self.prepare_edit())
+        btn_start_sign_edit.pack(pady=3, expand=True, fill='both')
 
     def prepare_edit(self):
-        """Get's info of selected user and passes it to the EditUser class"""
+        """Get's info of selected user and passes it to the EditSign class"""
 
         # Get line user clicked on,
         line_selected = self.list_search_results.curselection()
@@ -281,7 +281,7 @@ class EditSignIn(tk.Frame):
         lbl_sign_in_id = tk.Label(edit_values_frame, textvariable=self.sign_in_id)
         lbl_sign_in_id.grid(row=0, column=0, columnspan=2, sticky='nsew', pady=3)
 
-        lbl_student_id = tk.Label(edit_values_frame, text='Student ID')
+        lbl_student_id = tk.Label(edit_values_frame, text='Student ID:')
         lbl_student_id.grid(row=1, column=0, sticky='nsew', pady=3)
 
         self.student_id_value = tk.StringVar(edit_values_frame)
