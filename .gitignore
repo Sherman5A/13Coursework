@@ -7,3 +7,4 @@ test.db
 /*Db.*
 test.py
 test.db-journal
+*.pyc
