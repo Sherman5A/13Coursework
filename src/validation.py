@@ -24,9 +24,9 @@ def string_check(input):
     """Checks if a string contains digits or special characters"""
 
     # create regex searching for digits and symbols
-    regex_argument = re.compile('\d+|[@;:()+=_`¬~#]')
+    regex_argument = re.compile('\d|[@;^&{}:\[\]()+=_`¬~#]')
     try:
-        regex_result = re.search(regex_argument, input)
+        regex_result = re.match(regex_argument, input)
         if regex_result:  # string contains symbols or digits
             return False
         return True
@@ -36,14 +36,17 @@ def string_check(input):
 
 
 def len_check(input, max_len):
-    """Checks length of string
+    """Checks length of compatible data type
         input: variable to check
         max_len: int maximum length to return true
     """
-
-    if len(input) <= 0 or len(input) > max_len:
+    try:
+        if len(input) <= 0 or len(input) > max_len:
+            return False
+        return True
+    except TypeError:
+        print('Incorrect data type')
         return False
-    return True
 
 
 def validate_num(input, min_num=None):
@@ -72,9 +75,7 @@ def password_strength(input):
     upper_flag = True
     lower_flag = False
     for i in input:
-        print(i)
         if i.isupper() == True:
-            print('capital')
             upper_flag = True
         if i.islower() == True:
             lower_flag = True
