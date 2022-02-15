@@ -8,3 +8,4 @@ test.db
 test.py
 test.db-journal
 *.pyc
+*.db

@@ -205,7 +205,7 @@ class SignSearch(tk.Frame):
             # negative difference. Example, Can't have 150 <= x <= 130.
             if dt_to_time <= dt_from_time:
                 messagebox.showerror('Error', 'From is greater than to time')
-
+                return
             time_tuple = (from_time, to_time)  # Add times to tuple.
             search_results = logic.search_signs(sign_in_or_out, search_terms, time_tuple)
         else:

@@ -52,4 +52,3 @@ class sqlInterface:
                 self.connection.commit()
             except Error as e:
                 print(e)
-            
