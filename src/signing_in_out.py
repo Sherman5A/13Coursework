@@ -28,6 +28,7 @@ class SignIn(tk.Frame):
         """"Start a sign in"""
 
         logic.create_sign_in(str(self.controller.session_id))
+        self.controller.show_frame(self.controller.default_menu)
 
 
 class SignOut(tk.Frame):
@@ -70,6 +71,7 @@ class SignOut(tk.Frame):
             messagebox.showerror('Failure', 'Fill in the sign out reason')
         else: 
             logic.create_sign_out(str(self.controller.session_id), self.sign_value.get())
+            self.controller.show_frame(self.controller.default_menu)
 
 
 class SignHistory(tk.Frame):

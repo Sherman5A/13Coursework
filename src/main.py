@@ -46,7 +46,6 @@ class Gui(tk.Tk):
 
     def show_frame(self, page_name):
         """Raise specified frame class: page_name"""
-
         frame = self.frames[page_name]
         frame.tkraise()  # Raises frame of argument.
 

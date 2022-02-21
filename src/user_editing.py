@@ -24,7 +24,7 @@ class UserSearch(tk.Frame):
         lbl_search_title = tk.Label(title_frame, text='User Search')
         lbl_search_title.pack()
 
-        self.btn_change_sign_search = tk.Button(title_frame, text='Go to sign search', command=lambda: self.controller.show_frame(self.controller.default_menu))
+        self.btn_change_sign_search = tk.Button(title_frame, text='Go to sign search', command=lambda: self.controller.show_frame('SignSearch'))
         self.btn_change_sign_search.pack(pady=3)
 
         search_term_frame = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
@@ -267,7 +267,7 @@ class EditUser(tk.Frame):
         btn_delete_user = tk.Button(self.frame_edit_terms, text='Delete', command=lambda: self.delete_user())
         btn_delete_user.grid(row=9, column=0, columnspan=2, pady=3, sticky='nsew')
 
-        btn_exit = tk.Button(self.frame_edit_terms, text='Return to search:', command=lambda:self.controller.show_frame(self.controller.default_menu))
+        btn_exit = tk.Button(self.frame_edit_terms, text='Cancel', command=lambda:self.controller.show_frame(self.caller))
         btn_exit.grid(row=10, column=0, columnspan=2, pady=3, sticky='nsew')
 
     def fill_string_vars(self, user_info, caller):
