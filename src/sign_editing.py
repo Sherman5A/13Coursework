@@ -65,7 +65,7 @@ class SignSearch(tk.Frame):
 
         sign_out_value = tk.StringVar(search_term_frame, value='')
         self.entries.append(sign_out_value)
-        sign_out_list = ['', 'Going home', 'Lunch / Break']
+        sign_out_list = ['', 'Going home', 'Breaktime', 'Lunchtime']
 
         menu_sign_out_type = tk.OptionMenu(search_term_frame, sign_out_value,
                                            *sign_out_list)
