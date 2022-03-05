@@ -46,7 +46,7 @@ class sqlInterface:
                 self.connection.commit()
             except Error as e:
                 print(e)
-        else:  # Values argument is not left blank
+        else:  # Values argument is not left blank.
             try:
                 self.cursor.execute(sql_command, values)
                 self.connection.commit()

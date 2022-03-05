@@ -7,15 +7,15 @@ import SQL_interface
 def create_user(account_variables):
     """"Create a new user, performs validation, then adds to sql table"""
 
-    # creating class interfaces, passing in db to connect to
+    # Creating class interfaces, passing in DB to connect to.
     sql_database = SQL_interface.sqlInterface('test.db')
-    # create connection to database
+    # Create connection to the database defined above ^
     sql_database.create_connection()
 
     def create_table():
         """Creates user table"""
 
-        # SQL command to create table if it does not exist
+        # SQL command to create table if it does not exist.
         sql_create_user_table = """ CREATE TABLE IF NOT EXISTS users (
                                 "id" INTEGER,
                                 access_level TEXT NOT NULL,
@@ -32,61 +32,70 @@ def create_user(account_variables):
     def write_user():
         """Write variable to database table"""
 
-        # inserts data into table
+        # Inserts data into table.
         sql_database.insert_data(
             "INSERT INTO users(first_name, access_level, second_name, "
             "year_group, form_group, username, password) VALUES(?, ?, ?, ?, "
             "?, ?, ?);",
-            (
-                account_variables['first_name'],
-                account_variables['access_level'],
-                account_variables['second_name'],
-                account_variables['year_group'],
-                account_variables['form_group'],
-                account_variables['username'],
-                account_variables['password']))
+            (account_variables['first_name'],
+             account_variables['access_level'],
+             account_variables['second_name'],
+             account_variables['year_group'],
+             account_variables['form_group'],
+             account_variables['username'],
+             account_variables['password']))
 
-    # validation
+    # Validation processes. If validation is incorrect, a False boolean and a
+    # reason is returned.
     for key, value in account_variables.items():
 
-        # if value is empty or above 20 characters, decline
+        # If value is empty or above 20 characters, return False.
         if not validation.len_check(value, 20):
             return False, key, 'Length check, check that field is not empty and is ' \
                                'under 20 characters '
 
-        # names require string checks as no symbols should be accepted
+        # Names require string checks as no symbols should be accepted.
         if key == 'first_name' or key == 'second_name':
             if not validation.string_check(value):
                 return False, key, 'Alpha check'
 
-    # check if passwords match           
+    # Check if the password and repeated password the user entered match.           
     if account_variables['password'] != account_variables['password_repeat']:
         return False, 'password', "Passwords don't match"
 
-    # check if password is strong enough
+    # Check if password is strong enough.
     if not validation.password_strength(account_variables['password']):
         return False, 'password', 'Password not strong enough. Use >= 7 ' \
                                   'characters and both upper and lower case ' \
                                   'letters'
 
+    # Create table before common username query to avoid errors if the database
+    # is new.
     create_table()
 
-    # check for duplicate usernames. Usernames must be unique as they are
-    # used for log in
+    # Check for duplicate usernames. Usernames must be unique as they are
+    # used for log in. If there are 2 same usernames, which password is the
+    # correct one?
     common_usernames = sql_database.get_data(
         "SELECT username FROM users WHERE username=?",
         (account_variables['username'],))
     if len(common_usernames) != 0:
         return False, 'username', 'Username is not unique'
 
+    # After all validation has passed, write the information to the database 
+    # table.
     write_user()
-    return True  # returns everything successful flag
+    
+    # Returns True boolean to let the GUI class that everything was successful.
+    return True  
 
 
 def login(input_username, input_password):
     """Login to SQL"""
     
+    # Creating class interfaces, passing in DB to connect to.
     sql_database = SQL_interface.sqlInterface('test.db')
+    # Create connection to the database defined above ^
     sql_database.create_connection()
     sql_search_login_details = sql_database.get_data(
         """SELECT id, access_level, first_name, second_name, year_group, 
@@ -102,11 +111,13 @@ def login(input_username, input_password):
 def create_sign_in(student_id):
     """Create sign in in database using student_id"""
 
-    # creating class interfaces, passing in db to connect to
+    # Creating class interfaces, passing in db to connect to.
     sql_database = SQL_interface.sqlInterface('test.db')
-    # create connection to database
+    # Create connection to database above.
     sql_database.create_connection()
 
+    # SQL command to create a sign in table. Avoids error if the table does not
+    # exist.
     sql_create_table = """CREATE TABLE IF NOT EXISTS sign_in (
     "sign_in_id" INTEGER,
     "date" TEXT NOT NULL,
@@ -117,6 +128,8 @@ def create_sign_in(student_id):
     );"""
 
     sql_database.create_table(sql_create_table)
+    # Insert the data into the table. Dates and times are generated
+    # automatically. The student ID is manually passed as an argument.
     sql_database.insert_data("INSERT INTO sign_in(date, time, student_id) "
                              "VALUES(date('now'), time('now'), ?)", student_id)
 
@@ -124,9 +137,9 @@ def create_sign_in(student_id):
 def create_sign_out(student_id, sign_out_type):
     """"Create sign out in database using args: student_id and sign_out_type"""
 
-    # creating class interfaces, passing in db to connect to
+    # Creating class interfaces, passing in db to connect to.
     sql_database = SQL_interface.sqlInterface('test.db')
-    # create connection to database
+    # Create connection to database.
     sql_database.create_connection()
 
     sql_create_table = """CREATE TABLE IF NOT EXISTS sign_out (
@@ -150,7 +163,7 @@ def search_signs(sign_in_or_out, search_terms, time_tuple=None):
     """Searches the sign tables with the args provided."""
 
     # if sign_in_or_out == '' or sign_in_or_out == 'both':
-    #     sql_search = "SELECT * FROM sign_in, sign_out"
+    # sql_search = "SELECT * FROM sign_in, sign_out"
     if sign_in_or_out == 'sign out':
         sql_search = "SELECT * FROM sign_out"
     elif sign_in_or_out == 'sign in':
@@ -170,10 +183,10 @@ def search_signs(sign_in_or_out, search_terms, time_tuple=None):
                 search_terms.items())
         sql_search += ';'
 
-    # create SQL connection
+    # Create SQL connection.
     sql_database = SQL_interface.sqlInterface('test.db')
     sql_database.create_connection()
-    # execute and return sql search
+    # Execute and return SQL search result.
     return sql_database.get_data(sql_search)
 
 
@@ -188,21 +201,21 @@ def sign_history():
 def search_users(search_terms):
     """Searches the user tables with the dictionary provided in args."""
 
-    # if no terms are provided, return all users
+    # If no terms are provided, return all users.
     if len(search_terms) != 0:
         sql_search = "SELECT * FROM users WHERE "
-        # takes keys, values, formats value, joins them with '=', and then
-        # adds AND between dict keys adds ; to end sql statement
+        # Takes keys, values, formats value, joins them with '=', and then
+        # adds 'AND' between dict keys. Finally, adds ';' to end the SQL statement.
         sql_search += ' AND '.join(
             '='.join((key, "'{}'".format(value))) for key, value in
             search_terms.items()) + ';'
     else:
         sql_search = "SELECT * FROM users;"
 
-    # create SQL connection
+    # Create SQL connection.
     sql_database = SQL_interface.sqlInterface('test.db')
     sql_database.create_connection()
-    # execute and return sql search
+    # Execute and return sql search result.
     return sql_database.get_data(sql_search)
 
 
