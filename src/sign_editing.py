@@ -18,6 +18,7 @@ class SignSearch(tk.Frame):
         self.controller = controller
 
         # GUI creation
+        # Configuring the search with terms.
 
         self.search_config_frame = tk.Frame(self)
         self.search_config_frame.pack(side='left', anchor='nw', padx=10)
@@ -79,10 +80,14 @@ class SignSearch(tk.Frame):
         self.entries.append(ent_date_search)
         ent_date_search.grid(row=4, column=1, sticky='nsew', pady=3)
 
+        # List of all possible hours.
         # Create list of values to 24, single digits have an extra 0 on the
         # left.
         hour_list = [f'{i:02}' for i in range(24)]
+        # Insert a 0 to allow the user to leave the time blank
         hour_list.insert(0, '')
+
+        # List of all possible minutes.
         # Create list of values to 60, single digits have an extra 0 on the
         # left.
         minute_second_list = [f'{i:02}' for i in range(60)]
@@ -91,6 +96,7 @@ class SignSearch(tk.Frame):
         lbl_time_from = tk.Label(search_term_frame, text='From time:')
         lbl_time_from.grid(row=5, column=0, sticky='nsew', pady=3)
 
+        # Frame to store the from time Optionboxes and StringVars.
         frame_from_time = tk.Frame(search_term_frame)
         frame_from_time.grid(row=5, column=1, sticky='nsew', pady=3)
 
@@ -98,12 +104,15 @@ class SignSearch(tk.Frame):
         from_hour_value = tk.StringVar(frame_from_time, value='')
         from_minute_value = tk.StringVar(frame_from_time, value='')
         from_second_value = tk.StringVar(frame_from_time, value='')
+        # Add the string vars to a list to .get() later
         self.from_time.extend((from_hour_value, from_minute_value,
                                from_second_value))
 
+        # Explains how to format the time.
         lbl_time_format = tk.Label(frame_from_time, text='HH:MM:SS')
         lbl_time_format.grid(row=0, column=0, columnspan=3, sticky='nsew')
 
+        # Time from
         combo_hour_from = ttk.Combobox(frame_from_time, textvariable=from_hour_value, values=hour_list, state='readonly', width=3)
         combo_hour_from.grid(row=1, column=0, sticky='nsew', padx=2)
         combo_minute_from = ttk.Combobox(frame_from_time, textvariable=from_minute_value, values=minute_second_list, state='readonly', width=3)
@@ -111,6 +120,7 @@ class SignSearch(tk.Frame):
         combo_second_from = ttk.Combobox(frame_from_time, textvariable=from_second_value, values=minute_second_list, state='readonly', width=3)
         combo_second_from.grid(row=1, column=2, sticky='nsew', padx=2)
 
+        # Frame to store the to time Optionboxes and StringVars.
         frame_to_time = tk.Frame(search_term_frame)
         frame_to_time.grid(row=6, column=1, sticky='nsew', pady=3)
 
@@ -121,14 +131,18 @@ class SignSearch(tk.Frame):
         to_hour_value = tk.StringVar(frame_to_time, value='')
         to_minute_value = tk.StringVar(frame_to_time, value='')
         to_second_value = tk.StringVar(frame_to_time, value='')
+        # Add the string vars to a list to .get() later
         self.to_time.extend((to_hour_value, to_minute_value, to_second_value))
 
+        # Time to, together with time from, they make a range of times to search in.
         combo_hour_to = ttk.Combobox(frame_to_time, textvariable=to_hour_value, values=hour_list, width=3, state='readonly')
         combo_hour_to.grid(row=0, column=0, sticky='nsew', padx=2)
         combo_minute_to = ttk.Combobox(frame_to_time, textvariable=to_minute_value, values=minute_second_list, state='readonly', width=3)
         combo_minute_to.grid(row=0, column=1, sticky='nsew', padx=2)
         combo_second_to = ttk.Combobox(frame_to_time, textvariable=to_second_value, values=minute_second_list, state='readonly', width=3)
         combo_second_to.grid(row=0, column=2, sticky='nsew', padx=2)
+
+        # Buttons to manage search
 
         btn_begin_search = tk.Button(search_term_frame, text='Search', command=lambda: self.start_sign_search())
         btn_begin_search.grid(row=7, column=0, columnspan=2, sticky='ew', pady=3)
@@ -138,6 +152,8 @@ class SignSearch(tk.Frame):
 
         btn_return_main =tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame(self.controller.default_menu))
         btn_return_main.grid(row=9, column=0, columnspan=2, sticky='ew', pady=5)
+
+        # Result of the search
 
         search_result_frame = tk.Frame(self, relief='groove', borderwidth=2)
         search_result_frame.pack(side='left', anchor='ne', fill='both', expand=True, padx=(0, 5), pady=(3, 5))
@@ -164,9 +180,13 @@ class SignSearch(tk.Frame):
     def start_sign_search(self):
         """Start sign search with defined parameters"""
 
+        # Clear the list box.
         self.clear_search_results()
+        print(self.entries)
 
+        # Check if date box was populated.
         if len(self.entries[3].get()) != 0:
+            # Check if date exists when using it in a search. Raise error if the date does not exist.
             if not validation.date_format_check(self.entries[3].get()):
                 messagebox.showerror('Failure', 'Date format incorrect or non-existent date')
                 return
@@ -188,16 +208,16 @@ class SignSearch(tk.Frame):
         for count, i in enumerate(self.entries):
             if (i.get()) == '':  # If search term empty, do not include in dict.
                 continue
-            search_terms[search_keys[count]] = i.get()  # Add to dict.
+            search_terms[search_keys[count]] = i.get()  # Add to dict if the search term is not empty.
 
         # If time is empty, skip entering time into dict.
         if '' not in [i.get() for i in self.to_time] and '' not in [t.get() for t in self.from_time]:
 
-            # Create strings of times.
+            # Create strings of the to and from times.
             from_time = ':'.join([i.get() for i in self.from_time])
             to_time = ':'.join([i.get() for i in self.to_time])
 
-            # Convert string into time type, allows comparison.
+            # Convert the strings into time types, allowing for time comparisons.
             dt_from_time = datetime.strptime(from_time, '%H:%M:%S').time()
             dt_to_time = datetime.strptime(to_time, '%H:%M:%S').time()
 
@@ -207,8 +227,11 @@ class SignSearch(tk.Frame):
                 messagebox.showerror('Error', 'From is greater than to time')
                 return
             time_tuple = (from_time, to_time)  # Add times to tuple.
+            # Perform the sign search with the time search.
             search_results = logic.search_signs(sign_in_or_out, search_terms, time_tuple)
         else:
+            messagebox.showinfo('Time', 'Time not fully filled in, searching through all times instead.')
+            # Perform the sign search without the time search.
             search_results = logic.search_signs(sign_in_or_out, search_terms)
 
         # Add search results to result listbox.
@@ -222,9 +245,13 @@ class EditSignSearch(SignSearch):
     def __init__(self, parent, controller):
 
         self.controller = controller
+        # Inheriting the SignSearch class, don't have to write all of the SignSearch class again.
         SignSearch.__init__(self, parent, controller)
 
-        self.btn_change_sign_search.destroy()  # Button is not required.
+        self.btn_change_sign_search.destroy()  # Button inherited through SignSearch is not required, deletes it.
+
+        # Adding required buttons which were not already in SignSearch
+        # Button to access the edit menu
 
         frame_start_edit = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
         frame_start_edit.pack(pady=3, expand=True, fill='both')
@@ -235,33 +262,46 @@ class EditSignSearch(SignSearch):
     def prepare_edit(self):
         """Get's info of selected user and passes it to the EditSign class"""
 
-        # Get line user clicked on,
+        # Get the position of the line the user clicked on.
         line_selected = self.list_search_results.curselection()
 
+
+        # If the user has not selected a line, show an error message.
         if len(line_selected) == 0:
             messagebox.showerror('Failure', 'Please select a sign before editing entry.')
-        
-        else:    
-            # Get details of selected line of listbox
-            selected_user = self.list_search_results.get(line_selected[0], line_selected[0])[0]
-            if len(selected_user.split(', ')) == 4:  # Dict keys for a sign in.
-                search_keys = ('sign_in_id', 'date', 'time', 'student_id')
-            else:  # Dict keys for a sign out.
-                search_keys = ('sign_out_id', 'date', 'time', 'student_id', 'sign_out_type')
-            
+
+        else:
+            # The arguments are to select the first and last values in the listbox, only want to get the cursor value so first and last are the same.
+            # The .get() returns an iterable with only 1 value, so [0] is used.
+            selected_sign = self.list_search_results.get(line_selected[0], line_selected[0])[0]
+
+            # Defining dict keys for a sign in or out. Sign in and outs require different keys, so if an if statement is used.
+            if len(selected_sign.split(', ')) == 4:  # Dict keys for a sign in.
+                # Tuple of dictionary keys for sign in search dictionary. Allows the function to identify what each variable is in the database.
+                sign_dict_keys = ('sign_in_id', 'date', 'time', 'student_id')
+            else:  # Tuple of dictionary keys for sign out search dictionary. Allows the function to identify what each variable is in the database.
+                sign_dict_keys = ('sign_out_id', 'date', 'time', 'student_id', 'sign_out_type')
+
+
+            # Dictionary that will contain the selected sign in / outs information. Will be passed into edit function to populate the menu
             sign_info = {}
+
             # Iterates through the entry box's values and their names at the
-            # same time.
-            for (key, value) in zip(search_keys, selected_user.split(', ')):
+            # same time. zip iterates through two iterables at once. It makes adding to dictionary faster
+            for (key, value) in zip(sign_dict_keys, selected_sign.split(', ')):
                 sign_info[key] = value
 
-            if len(sign_info) == 4:  # If the selected option is a sign in.
+            if len(sign_info) == 4:  # Menus to show and populate if the selected option is a sign in.
                 print(sign_info)
+                # Populate edit menu boxes
                 self.controller.frames['EditSignIn'].fill_string_vars(sign_info)
+                # Show edit meun
                 self.controller.show_frame('EditSignIn')
-            else:  # If the selected option is a sign out.
+            else:  # Menus to show and populate if the selected option is a sign out.
                 print(sign_info)
+                # Populate edit menu boxes
                 self.controller.frames['EditSignOut'].fill_string_vars(sign_info)
+                # Show edit menu
                 self.controller.show_frame('EditSignOut')
 
 
@@ -273,11 +313,13 @@ class EditSignIn(tk.Frame):
         self.controller = controller
         self.entries = []  # List of entries make .get() easier.
 
+        # Frame contains the boxes that edit the sign in entry.
         edit_values_frame = tk.Frame(self)
         edit_values_frame.pack()
 
+        # Displays the sign in's ID.
         self.sign_in_id = tk.StringVar(edit_values_frame)
-
+        # Label to prevent users from editing the value. IDs are uneditable as the user may overwrite other entries.
         lbl_sign_in_id = tk.Label(edit_values_frame, textvariable=self.sign_in_id)
         lbl_sign_in_id.grid(row=0, column=0, columnspan=2, sticky='nsew', pady=3)
 
@@ -315,10 +357,10 @@ class EditSignIn(tk.Frame):
         btn_exit.grid(row=6, column=0, columnspan=2, sticky='nsew', pady=3)
 
     def fill_string_vars(self, sign_in_info):
-        
+
         self.sign_in_info = sign_in_info
 
-        # Fill in StringVars with the current entries data
+        # Fill in StringVars with the passed dictionary's values by the key's assigned.
         self.sign_in_id.set('Sign In ID: {}'.format(self.sign_in_info['sign_in_id']))
         self.student_id_value.set(sign_in_info['student_id'])
         self.date_value.set(sign_in_info['date'])
@@ -339,13 +381,15 @@ class EditSignIn(tk.Frame):
 
         edited_values = {}
         sign_in_id = self.sign_in_info['sign_in_id']
-        # Tuple to hold dict keys
-        account_dict_keys = ('student_id', 'date', 'time')
+        # Tuple to hold dict keys. Dict keys used to assign the edited values labels. 
+        # Without them values would have to be edited through order, which could cause problems as an incorrectly ordered list
+        # would change the wrong values, e.g date being set to name.
+        sign_in_edited_dict_keys = ('student_id', 'date', 'time')
 
         for count, i in enumerate(self.entries):  # Get values and place in dictionary
-                edited_values[account_dict_keys[count]] = i.get()
+                edited_values[sign_in_edited_dict_keys[count]] = i.get()
         print(edited_values)
-        # Delete the sign in with the specifed ID
+        # Edit the sign in with the specified ID
         logic.edit_sign_in(sign_in_id, edited_values)
 
     def delete_sign_in(self):
@@ -364,14 +408,17 @@ class EditSignOut(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
+        # Frame contains the boxes that edit the sign out entry.
         edit_values_frame = tk.Frame(self)
         edit_values_frame.pack()
 
+        # Displays the sign out's ID.
         self.sign_out_id = tk.StringVar(edit_values_frame)
+        # Label used to prevent users from editing the value. IDs are uneditable as the user may overwrite other entries.
         lbl_sign_out_id = tk.Label(edit_values_frame, textvariable=self.sign_out_id)
         lbl_sign_out_id.grid(row=0, column=0, columnspan=2)
 
-        lbl_student_id = tk.Label(edit_values_frame, text='Student ID:')
+        lbl_student_id = tk.Label(edit_values_frame, text='Sign Out ID:')
         lbl_student_id.grid(row=1, column=0, sticky='nsew', pady=3)
 
         self.entries = []
@@ -418,7 +465,8 @@ class EditSignOut(tk.Frame):
         btn_exit.grid(row=7, column=0, columnspan=2, sticky='nsew', pady=3)
 
     def fill_string_vars(self, sign_out_info):
-        
+
+        # Fill in the StringVars with the passed dictionary's values.
         self.sign_out_info = sign_out_info
         self.sign_out_id.set('Sign Out ID: {}'.format(sign_out_info['sign_out_id']))
         self.student_id_value.set(sign_out_info['student_id'])
@@ -446,7 +494,7 @@ class EditSignOut(tk.Frame):
 
         for count, i in enumerate(self.entries):  # Get values and place in dictionary
                 edited_values[account_dict_keys[count]] = i.get()
-        
+
         # Edit the sign out with the specified ID
         logic.edit_sign_out(sign_out_id, edited_values)
 

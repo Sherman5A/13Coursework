@@ -168,6 +168,7 @@ class Login(tk.Frame):
             print(account_info)
             self.controller.set_session_id(account_info['id'], account_info)
             print(self.controller.session_id)
+            print(self.controller.default_menu)
 
             if account_info['access_level'] == 'student':
                 self.controller.frames['StudentMenu'].user_configure(account_info)

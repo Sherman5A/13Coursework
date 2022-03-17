@@ -59,7 +59,7 @@ class StudentMenu(tk.Frame):
         self.btn_user_logout.pack(pady=3)
 
     def edit_user(self):
-        self.controller.frames['EditUser'].fill_string_vars(self.user_info, 'StudentMenu')
+        self.controller.frames['EditUser'].fill_string_vars(self.user_info, self.__class__.__name__)
         self.controller.show_frame('EditUser')
 
     def user_configure(self, user_info):

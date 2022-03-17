@@ -159,20 +159,26 @@ class EditSearchUsers(UserSearch):
     def prepare_edit(self):
         """Get's info of selected user and passes it to the EditUser class"""
 
+        # Get the position of the line the cursor has clicked.
         line_selected = self.list_search_results.curselection()
 
+        # If the user has not selected a line, show an error message.
         if len(line_selected) == 0:
             messagebox.showerror('Failure', 'Please select a user before editing entry.')
         else:
-
+            # First to last, getting cursor value so first and last are the same.
+            # The .get() returns a iterable with only 1 value, so [0] is used.
             selected_user = self.list_search_results.get(line_selected[0], line_selected[0])[0]
+            # Search keys for dictionary.
             search_keys = ('id', 'access_level', 'first_name', 'second_name', 'year_group',
                            'form_group', 'username', 'password')
             user_info = {}
+            # zip iterates through two iterables at once. It makes adding to dictionary easier.
             for (key, value) in zip(search_keys, selected_user.split(', ')):
                 user_info[key] = value
+            # Fill the edit menu with the values in the dictionary.
             self.controller.frames['EditUser'].fill_string_vars(user_info, 'EditSearchUsers')
-            self.controller.show_frame('EditUser')
+            self.controller.show_frame('EditUser')  # Show edit menu.
 
 
 class EditUser(tk.Frame):
@@ -185,14 +191,17 @@ class EditUser(tk.Frame):
         self.user_info = None
         self.controller = controller
 
-        # gui creation
+        # GUI creation.
 
         lbl_edit_title = tk.Label(self, text='Edit Table Entry')
         lbl_edit_title.pack()
 
+        # Editing the user's information
+
         self.frame_edit_terms = tk.Frame(self)
         self.frame_edit_terms.pack()
 
+        # List to store the .get()-able widgets.
         self.entries = []
 
         self.account_id = tk.StringVar(self.frame_edit_terms)
@@ -261,6 +270,8 @@ class EditUser(tk.Frame):
         ent_password = tk.Entry(self.frame_edit_terms, textvariable=self.password_value)
         ent_password.grid(row=7, column=1, pady=3, sticky='nsew')
 
+        # Buttons
+
         btn_confirm_edit = tk.Button(self.frame_edit_terms, text='Confirm edit', command=lambda: self.edit_account())
         btn_confirm_edit.grid(row=8, column=0, columnspan=2, pady=3, sticky='nsew')
 
@@ -294,18 +305,20 @@ class EditUser(tk.Frame):
         account_dict_keys = ('access_level', 'first_name', 'second_name',
                              'year_group', 'form_group', 'username', 'password')
 
+        # Check that user has sufficient permissions to change their access level.
         if self.access_value.get() == 'teacher' and self.user_info['access_level'] == 'student' and self.caller == 'StudentMenu':
             messagebox.showerror('Insufficient Permissions', 'Students cannot change their permissions to teacher level.')
-        
+
         else:
             for count, i in enumerate(self.entries):  # Get values and place in dictionary.
-                if count <= 3:  # converts first and second name to lowercase
+                if count <= 3:  # Converts first and second name to lowercase
                     edited_values[account_dict_keys[count]] = i.get().lower()
-                else:
+                else:  # Rest of values are not converted to lowercase.
                     edited_values[account_dict_keys[count]] = i.get()
-            logic.edit_user(user_id, edited_values)
+            logic.edit_user(user_id, edited_values)  # Write to the database
 
     def delete_user(self):
+        """Deletes the user defined in the instance's user_info['id']."""
 
         user_id = self.user_info['id']
         logic.delete_user(user_id)
