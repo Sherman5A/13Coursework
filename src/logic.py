@@ -45,7 +45,9 @@ def create_user(account_variables):
              account_variables['username'],
              account_variables['password']))
 
-    # Validation processes. If validation is incorrect, a False boolean and a
+        
+    # Validation processes. Iterates through the user's inputs. 
+    # If validation is incorrect, a False boolean and a
     # reason is returned.
     for key, value in account_variables.items():
 
@@ -197,6 +199,7 @@ def sign_history():
     all_signs = []
     all_signs.extend(search_signs('sign out', {}))
     all_signs.extend(search_signs('sign in', {}))
+    # Performing a sort on the taken sign in and signs outs. It sorts by most recent to oldest.
     return sorted(all_signs, key=lambda x: datetime.strptime('{} {}'.format(x[1], x[2]), '%Y-%m-%d %H:%M:%S'), reverse=True)
 
 
