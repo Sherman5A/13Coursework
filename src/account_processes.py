@@ -155,7 +155,7 @@ class Login(tk.Frame):
         login_result = logic.login(input_username, input_password)
         print(login_result)
         if not login_result:
-            messagebox.showerror('Failure', 'Incorrect username or password')
+            messagebox.showerror('Failure', 'Incorrect username or password / No accounts created')
         else:
             account_info = {}
             account_dict_keys = ('id', 'access_level', 'first_name',

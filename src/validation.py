@@ -7,6 +7,8 @@ def date_format_check(input):
         # Try to convert time from string in the format YYYY:MM:DD e.g 2009:11:22
         datetime.strptime(input, '%Y-%m-%d')
         return True
+    # If there is an error in converting, either due to an impossible date,
+    # or a formatting error, return false
     except ValueError:
         return False
 
@@ -16,6 +18,8 @@ def time_format_check(input):
         # Try to convert time from string in the format HH:MM:SS e.g 17:49:22
         datetime.strptime(input, '%H:%M:%S')
         return True
+    # If there is an error in converting, either due to an
+    # impossible time, or a formatting error, return false
     except ValueError:
         return False
 
@@ -30,6 +34,8 @@ def string_check(input):
         if regex_result:  # string contains symbols or digits
             return False
         return True
+    # Try to search the string with regex. If the input is not a string data type
+    # a type error flag will be raised, triggering the except, returning false.
     except TypeError:
         print('Variable is not string')
         return False
@@ -44,6 +50,9 @@ def len_check(input, max_len):
         if len(input) <= 0 or len(input) > max_len:
             return False
         return True
+    # Try to get the length of input. If the len can not be called on the
+    # data type, a type error flag will be raised,
+    # triggering the except, returning false.
     except TypeError:
         print('Incorrect data type')
         return False
@@ -60,6 +69,10 @@ def validate_num(input, min_num=None):
         if min_num is None:
             return True
         return converted_input > min_num
+    # Try to convert the input to a integer.
+    # If the input can not converted due to non-digits, a
+    # value error ror flag will be raised,
+    # triggering the except, returning false.
     except ValueError:
         return False
 

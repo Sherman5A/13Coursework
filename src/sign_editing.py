@@ -1,7 +1,7 @@
 """Editing sign in and outs"""
 
 from datetime import datetime
-from tkinter import ttk
+from tkinter import Y, ttk
 
 import logic
 import validation
@@ -230,7 +230,7 @@ class SignSearch(tk.Frame):
             # Perform the sign search with the time search.
             search_results = logic.search_signs(sign_in_or_out, search_terms, time_tuple)
         else:
-            messagebox.showinfo('Time', 'Time not fully filled in, searching through all times instead.')
+
             # Perform the sign search without the time search.
             search_results = logic.search_signs(sign_in_or_out, search_terms)
 

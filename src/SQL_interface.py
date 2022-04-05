@@ -30,6 +30,7 @@ class sqlInterface:
                 return self.cursor.fetchall()
             except Error as e:
                 print(e)
+                return False
         else:  # Values argument is not left blank
             try:
                 self.cursor.execute(sql_command, values)
