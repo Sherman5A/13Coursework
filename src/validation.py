@@ -20,21 +20,46 @@ def time_format_check(input):
         return False
 
 
+#def string_check(input):
+ #   """Checks if a string contains digits or special characters"""
+#
+ #   # create regex searching for digits and symbols
+  ##  regex_argument = re.compile('\d|[@;^&{}:\[\]()+=_`¬~#]')
+    #try:
+     #   regex_result = re.match(regex_argument, input)
+      #  if regex_result:  # string contains symbols or digits
+       #     return False
+        #return True
+    #except TypeError:
+     #   print('Variable is not string')
+      #  return False
+
 def string_check(input):
-    """Checks if a string contains digits or special characters"""
-
-    # create regex searching for digits and symbols
-    regex_argument = re.compile('\d|[@;^&{}:\[\]()+=_`¬~#]')
-    try:
-        regex_result = re.match(regex_argument, input)
-        if regex_result:  # string contains symbols or digits
+    
+    def recursion(i):
+        print(len_input)
+        print(i)
+        try:
+            regex_result = re.match(regex_argument, input[i])
+            
+            if i == len_input-1:
+                print('End reached')
+                return True
+            elif regex_result:
+                return False
+            else:
+                return recursion(i+1)
+        except TypeError:
             return False
-        return True
+
+
+    regex_argument = re.compile('\d|[@;^&{}:\[\]()+=_`¬~#]')
+    try: 
+        len_input = len(input)
+        return recursion(0)
     except TypeError:
-        print('Variable is not string')
         return False
-
-
+    
 def len_check(input, max_len):
     """Checks length of compatible data type
         input: variable to check
