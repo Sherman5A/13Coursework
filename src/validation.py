@@ -3,6 +3,8 @@ from datetime import datetime
 
 
 def date_format_check(input):
+    """Validate dates using the %Y-%m-%d format."""
+    
     try:
         # Try to convert time from string in the format YYYY:MM:DD e.g 2009:11:22
         datetime.strptime(input, '%Y-%m-%d')
@@ -14,6 +16,8 @@ def date_format_check(input):
 
 
 def time_format_check(input):
+    """Validate times using the %H:%M:%S format."""
+    
     try:
         # Try to convert time from string in the format HH:MM:SS e.g 17:49:22
         datetime.strptime(input, '%H:%M:%S')
@@ -24,30 +28,15 @@ def time_format_check(input):
         return False
 
 
-#def string_check(input):
- #   """Checks if a string contains digits or special characters"""
-#
- #   # create regex searching for digits and symbols
-  ##  regex_argument = re.compile('\d|[@;^&{}:\[\]()+=_`¬~#]')
-    #try:
-     #   regex_result = re.match(regex_argument, input)
-      #  if regex_result:  # string contains symbols or digits
-       #     return False
-        #return True
-    #except TypeError:
-     #   print('Variable is not string')
-      #  return False
-
 def string_check(input):
-    
+    """Check that the inputs do not contain digits or symbols."""
+
     def recursion(i):
-        print(len_input)
-        print(i)
+   
         try:
             regex_result = re.match(regex_argument, input[i])
             
             if i == len_input-1:
-                print('End reached')
                 return True
             elif regex_result:
                 return False
@@ -59,12 +48,15 @@ def string_check(input):
     # Try to search the string with regex. If the input is not a string data type
     # a type error flag will be raised, triggering the except, returning false.
     regex_argument = re.compile('\d|[@;^&{}:\[\]()+=_`¬~#]')
+    
     try: 
         len_input = len(input)
         return recursion(0)
+    
     except TypeError:
         return False
-    
+
+
 def len_check(input, max_len):
     """Checks length of compatible data type
         input: variable to check
@@ -109,13 +101,19 @@ def password_strength(input):
         return False
 
     # Check if password contains both lower and upper case characters.
+
+    # Setting flags for the check
     upper_flag = True
     lower_flag = False
+
+    # Checking each letter
     for i in input:
         if i.isupper() == True:
             upper_flag = True
         if i.islower() == True:
             lower_flag = True
+    
+    # Return flase, true depending on the flags
     if upper_flag == False:
         return False
     if lower_flag == False:
