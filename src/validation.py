@@ -39,23 +39,24 @@ def time_format_check(input):
       #  return False
 
 def string_check(input):
-    
+    # Use recursion to iterate through each element of the string.
     def recursion(i):
-        print(len_input)
-        print(i)
+
         try:
             regex_result = re.match(regex_argument, input[i])
-            
+            # Terminating condition
             if i == len_input-1:
                 print('End reached')
                 return True
             elif regex_result:
                 return False
+            # Continue iterating through
             else:
                 return recursion(i+1)
+        # If an index of input is not a string, return false
         except TypeError:
             return False
-            
+
     # Try to search the string with regex. If the input is not a string data type
     # a type error flag will be raised, triggering the except, returning false.
     regex_argument = re.compile('\d|[@;^&{}:\[\]()+=_`¬~#]')
@@ -64,6 +65,7 @@ def string_check(input):
         return recursion(0)
     except TypeError:
         return False
+
     
 def len_check(input, max_len):
     """Checks length of compatible data type
@@ -85,7 +87,7 @@ def len_check(input, max_len):
 def validate_num(input, min_num=None):
     """Checks if input is int
         input: variable to check
-        min_num: optionial, input can not be lower than value
+        min_num: optional, input can not be lower than value
     """
 
     try:
@@ -93,9 +95,9 @@ def validate_num(input, min_num=None):
         if min_num is None:
             return True
         return converted_input > min_num
-    # Try to convert the input to a integer.
+    # Try to convert the input to an integer.
     # If the input can not converted due to non-digits, a
-    # value error ror flag will be raised,
+    # value error flag will be raised,
     # triggering the except, returning false.
     except ValueError:
         return False
