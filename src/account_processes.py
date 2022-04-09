@@ -69,7 +69,9 @@ class SignUp(tk.Frame):
 
         lbl_password = tk.Label(frame_user_input, text='Password:')
         lbl_password.grid(row=5, column=0, pady=3)
-
+        
+        # When user enters characters, they are shown as * to keep
+        # privacy.
         self.ent_password = tk.Entry(frame_user_input, show='*')
         self.ent_password.grid(row=5, column=1, pady=3)
         self.entries.append(self.ent_password)
@@ -89,24 +91,30 @@ class SignUp(tk.Frame):
 
     def create_account(self):
         """Collects user inputs and creates user account"""
-
+        
+        # Dict that will store user's account details.
+        # It is passed into the logic function which creates the account.
         account_variables = {}
-        # Tuple to hold dict keys
+        # Tuple to hold account_variable's dictionary keys.
         account_dict_keys = ('first_name', 'second_name', 'year_group',
                              'form_group', 'username', 'password',
                              'password_repeat')
-
+        
         for count, i in enumerate(self.entries):  # Get values and place in dictionary.
+            # Change the first name, and second name to lowercase.
             if count <= 3:
                 account_variables[account_dict_keys[count]] = i.get().lower()
+            # Leave the rest of the values unchanged.
             else:
                 account_variables[account_dict_keys[count]] = i.get()
 
+        # Automatically set the account privelage to student.
         account_variables['access_level'] = 'student'
 
+        # Create user account.
         create_user_result = logic.create_user(account_variables)
-        # Show error / success message
-        print(create_user_result)
+
+        # Display success or error message.
         if create_user_result == True:
             messagebox.showinfo('Success', 'User was created')
         else:
@@ -154,6 +162,7 @@ class Login(tk.Frame):
         input_password = self.ent_password.get()
         login_result = logic.login(input_username, input_password)
         print(login_result)
+        
         if not login_result:
             messagebox.showerror('Failure', 'Incorrect username or password / No accounts created')
         else:
@@ -170,7 +179,9 @@ class Login(tk.Frame):
             print(self.controller.session_id)
             print(self.controller.default_menu)
 
+            # Show either student menu or teacher menu depending on the account's privelages.
             if account_info['access_level'] == 'student':
+                # 
                 self.controller.frames['StudentMenu'].user_configure(account_info)
                 self.controller.show_frame('StudentMenu')
             else:
