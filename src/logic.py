@@ -162,8 +162,6 @@ def create_sign_out(student_id, sign_out_type):
 def search_signs(sign_in_or_out, search_terms, time_tuple=None):
     """Searches the sign tables with the args provided."""
 
-    # if sign_in_or_out == '' or sign_in_or_out == 'both':
-    # sql_search = "SELECT * FROM sign_in, sign_out"
     if sign_in_or_out == 'sign out':
         sql_search = "SELECT * FROM sign_out"
     elif sign_in_or_out == 'sign in':
@@ -205,7 +203,7 @@ def search_users(search_terms):
     if len(search_terms) != 0:
         sql_search = "SELECT * FROM users WHERE "
         # Takes keys, values, formats value, joins them with '=', and then
-        # adds 'AND' between dict keys. Finally, adds ';' to end the SQL statement.
+        # adds 'AND' between dict keys. Finally, adds ';' to end of the string.
         sql_search += ' AND '.join(
             '='.join((key, "'{}'".format(value))) for key, value in
             search_terms.items()) + ';'
@@ -270,7 +268,6 @@ def edit_sign_out(sign_out_id, edited_terms):
 def delete_sign_out(sign_out_id):
 
     sql_statement = 'DELETE FROM sign_out WHERE sign_out_id = {}'.format(sign_out_id)
-    print(sql_statement)
     sql_database = SQL_interface.sqlInterface('test.db')
     sql_database.create_connection()
     sql_database.insert_data(sql_statement)
