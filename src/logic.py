@@ -45,7 +45,9 @@ def create_user(account_variables):
              account_variables['username'],
              account_variables['password']))
 
-    # Validation processes. If validation is incorrect, a False boolean and a
+        
+    # Validation processes. Iterates through the user's inputs. 
+    # If validation is incorrect, a False boolean and a
     # reason is returned.
     for key, value in account_variables.items():
 
@@ -70,7 +72,7 @@ def create_user(account_variables):
                                   'letters'
 
     # Create table before common username query to avoid errors if the database
-    # is new.
+    # is new and the user table does not exist.
     create_table()
 
     # Check for duplicate usernames. Usernames must be unique as they are
@@ -101,10 +103,10 @@ def login(input_username, input_password):
         """SELECT id, access_level, first_name, second_name, year_group, 
         form_group, username, password FROM users WHERE username=? AND password=?""",
         (input_username, input_password))
-        
-    if len(sql_search_login_details) == 1:
-        return True, sql_search_login_details
-    else:   
+    try:
+        if len(sql_search_login_details) == 1:
+            return True, sql_search_login_details
+    except TypeError:   
         return False
 
 
@@ -167,18 +169,22 @@ def search_signs(sign_in_or_out, search_terms, time_tuple=None):
     elif sign_in_or_out == 'sign in':
         sql_search = "SELECT * FROM sign_in"
 
+    # If there are items in search_terms or time_tuple, add them to the search.
     if len(search_terms) != 0 or time_tuple is not None:
         sql_search += " WHERE "
+        # If there are items in time_tuple, add them to the search.
         if time_tuple is not None:
             sql_search += "time BETWEEN '{}' AND '{}'".format(time_tuple[0],
                                                               time_tuple[1])
             if len(search_terms) != 0:
                 sql_search += ' AND '
-
+        # If there are items in search_terms, add them to the search.
         if len(search_terms) != 0:
             sql_search += ' AND '.join(
                 '='.join((key, "'{}'".format(value))) for key, value in
                 search_terms.items())
+        # Add ; to end the search after all search values are 
+        # added to terminate search
         sql_search += ';'
 
     # Create SQL connection.
@@ -193,6 +199,7 @@ def sign_history():
     all_signs = []
     all_signs.extend(search_signs('sign out', {}))
     all_signs.extend(search_signs('sign in', {}))
+    # Performing a sort on the taken sign in and signs outs. It sorts by most recent to oldest.
     return sorted(all_signs, key=lambda x: datetime.strptime('{} {}'.format(x[1], x[2]), '%Y-%m-%d %H:%M:%S'), reverse=True)
 
 

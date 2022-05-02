@@ -26,7 +26,8 @@ class SignIn(tk.Frame):
 
     def start_sign_in(self):
         """"Start a sign in"""
-
+        
+        # Create a sign in instance.
         logic.create_sign_in(str(self.controller.session_id))
         self.controller.show_frame(self.controller.default_menu)
 
@@ -52,7 +53,8 @@ class SignOut(tk.Frame):
         lbl_sign_out_type.grid(row=0, column=0)
 
         self.sign_value = tk.StringVar(frame_sign_out_type, value='')
-
+  
+        # Different reasons for signing out of school.
         sign_out_types = ['Breaktime', 'Lunchtime', 'Going home']
 
         self.menu_sign_out_type = tk.OptionMenu(frame_sign_out_type, self.sign_value, *sign_out_types)
@@ -67,9 +69,12 @@ class SignOut(tk.Frame):
 
     def start_sign_out(self):
         """"Start sign out"""
+        
+        # If the sign value wasn't selected, raise an errror message.
         if self.sign_value.get() == '':
             messagebox.showerror('Failure', 'Fill in the sign out reason')
         else: 
+            # Create a sign out instance.
             logic.create_sign_out(str(self.controller.session_id), self.sign_value.get())
             self.controller.show_frame(self.controller.default_menu)
 
@@ -118,10 +123,17 @@ class SignHistory(tk.Frame):
 
     def view_history(self):
         """View all sign in / outs"""
+
+        # Clear search results.
         self.clear_search_results()
+        # Get all sign in and out results.
         history_list = logic.sign_history()
+        
+        # Itereate through the retrieved sign ins and outs, and insert them
+        # into the list_sign_history listbox.
         for i in  history_list:
             i = list(i)
+
             # The length of sign out lists is 5, whereas sign in lists have a
             # a length of 4. Can tell the difference between lists
             if len(i) == 4:

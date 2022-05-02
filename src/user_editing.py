@@ -47,6 +47,7 @@ class UserSearch(tk.Frame):
 
         self.access_value = tk.StringVar(search_term_frame)
         self.entries.append(self.access_value)
+        # Access tiers that are available to the user.
         access_tiers = ['', 'student', 'teacher']
 
         menu_access_search = tk.OptionMenu(search_term_frame, self.access_value, *access_tiers)
@@ -72,6 +73,7 @@ class UserSearch(tk.Frame):
 
         self.year_value = tk.StringVar(search_term_frame, value='')
         self.entries.append(self.year_value)
+        # Year groups that are avaiable to the user.
         year_list = ['','12', '13']
 
         menu_year_search = tk.OptionMenu(search_term_frame, self.year_value, *year_list)
@@ -83,6 +85,7 @@ class UserSearch(tk.Frame):
 
         self.form_value = tk.StringVar(search_term_frame, value='')
         self.entries.append(self.form_value)
+        # Form groups that are available to the user.
         form_list = ['', 'A', 'B', 'C', 'D', 'E', 'D', 'F']
 
         menu_form_search = tk.OptionMenu(search_term_frame, self.form_value, *form_list)
@@ -96,6 +99,8 @@ class UserSearch(tk.Frame):
         ent_username_search.grid(row=7, column=1, sticky='nsew', pady=3)
         self.entries.append(ent_username_search)
 
+        # Buttons for searching, clearing, and exiting out of the menu.
+
         btn_begin_search = tk.Button(search_term_frame, text='Search', command=lambda: self.search_users())
         btn_begin_search.grid(row=8, column=0, columnspan=2, sticky='ew', pady=3)
 
@@ -105,14 +110,19 @@ class UserSearch(tk.Frame):
         btn_return_main = tk.Button(search_term_frame, text='Return to main menu', command=lambda: self.controller.show_frame(self.controller.default_menu))
         btn_return_main.grid(row=10, column=0, columnspan=2, sticky='ew', pady=5)
 
+        # Widgets where the search output is displayed. 
+
         search_result_frame = tk.Frame(self, relief='groove', borderwidth=2)
         search_result_frame.pack(side='left', anchor='ne', fill='both', expand=True, padx=(0, 5), pady=(3,5))
 
         lbl_format_explanation = tk.Label(search_result_frame, text='Order of elements: \n ID, Access Level, First Name, Second Name, Year Group, Form Group, Username, Password')
         lbl_format_explanation.pack()
+
+        # Scroll bar which is assigned to list_search_results.
         scroll_sign_history = tk.Scrollbar(search_result_frame)
         scroll_sign_history.pack(side='right', fill='y', padx=(0,2))
 
+        # Lists all of the search results.
         self.list_search_results = tk.Listbox(search_result_frame, yscrollcommand=scroll_sign_history.set)
         self.list_search_results.pack(side='left', fill='both', expand=True, padx=(2,2))
 
@@ -129,13 +139,19 @@ class UserSearch(tk.Frame):
         # Tuple to hold dict keys.
         search_keys = ('id', 'access_level', 'first_name', 'second_name', 'year_group',
                        'form_group', 'username', 'password')
-        search_terms = {}
+        search_terms = {}  # Dictionary that stores the items to search by.
+
+        # Iterate through the input widgets, and get the text currently inside them.
         for count, i in enumerate(self.entries):
             if (i.get()) == '':  # If input is empty, do not create dictionary entry.
                 continue
+            # If the input is not empty, add it to the dictionary.
             search_terms[search_keys[count]] = i.get()
 
+        # Execute the database search
         search_results = logic.search_users(search_terms)
+        
+        # Add the results of the database search to the ouput listbox.
         for i in search_results:
             self.list_search_results.insert(tk.END, ', '.join(map(str, i)))
 
@@ -143,11 +159,12 @@ class UserSearch(tk.Frame):
 class EditSearchUsers(UserSearch):
 
     def __init__(self, parent, controller):
-        """Initialise class values and create GUI elements"""
+        """Inherit UserSerach, initialise class values and create GUI elements."""
 
         self.controller = controller
         UserSearch.__init__(self, parent, controller)
 
+        # Destroy unneeded widgets left over from inhertiance.
         self.btn_change_sign_search.destroy()
 
         frame_start_edit = tk.Frame(self.search_config_frame, relief='groove', borderwidth=2)
@@ -157,42 +174,53 @@ class EditSearchUsers(UserSearch):
         btn_start_user_edit.pack(pady=3, expand=True, fill='both')
 
     def prepare_edit(self):
-        """Get's info of selected user and passes it to the EditUser class"""
+        """Get's info of selected user and passes it to the EditUser class."""
 
+        # Get the position of the line the cursor has clicked.
         line_selected = self.list_search_results.curselection()
 
+        # If the user has not selected a line, show an error message.
         if len(line_selected) == 0:
             messagebox.showerror('Failure', 'Please select a user before editing entry.')
         else:
-
+            # First to last, getting cursor value so first and last are the same.
+            # The .get() returns a iterable with only 1 value, so [0] is used.
             selected_user = self.list_search_results.get(line_selected[0], line_selected[0])[0]
+            # Search keys for dictionary.
             search_keys = ('id', 'access_level', 'first_name', 'second_name', 'year_group',
                            'form_group', 'username', 'password')
             user_info = {}
+            # zip iterates through two iterables at once. It makes adding to dictionary easier.
             for (key, value) in zip(search_keys, selected_user.split(', ')):
                 user_info[key] = value
+            # Fill the edit menu with the values in the dictionary.
             self.controller.frames['EditUser'].fill_string_vars(user_info, 'EditSearchUsers')
-            self.controller.show_frame('EditUser')
+            self.controller.show_frame('EditUser')  # Show edit menu.
 
 
 class EditUser(tk.Frame):
-    """Edit search result"""
+    """Edit the selected user."""
 
     def __init__(self, parent, controller):
-        """"Initialise class values and creates GUI elements"""
+        """"Initialise class values and create GUI elements."""
 
         tk.Frame.__init__(self, parent)
+        # Define user info in main init class before assigning 
+        # it to value in a method.
         self.user_info = None
         self.controller = controller
 
-        # gui creation
+        # GUI creation.
 
         lbl_edit_title = tk.Label(self, text='Edit Table Entry')
         lbl_edit_title.pack()
 
+        # Wigets for editing the user's information
+
         self.frame_edit_terms = tk.Frame(self)
         self.frame_edit_terms.pack()
 
+        # List to store the .get()-able widgets.
         self.entries = []
 
         self.account_id = tk.StringVar(self.frame_edit_terms)
@@ -204,7 +232,10 @@ class EditUser(tk.Frame):
 
         self.access_value = tk.StringVar(self.frame_edit_terms)
         self.entries.append(self.access_value)
+
+        # Access values to choose from.
         access_values = ['teacher', 'student']
+        
         menu_access_value = tk.OptionMenu(self.frame_edit_terms, self.access_value, *access_values)
         menu_access_value.config(width='20')
         menu_access_value.grid(row=1, column=1, pady=3)
@@ -230,6 +261,8 @@ class EditUser(tk.Frame):
 
         self.year_group_value = tk.StringVar(self.frame_edit_terms)
         self.entries.append(self.year_group_value)
+        
+        # Year values to choose from.
         year_values = ['12', '13']
         menu_year_group = tk.OptionMenu(self.frame_edit_terms, self.year_group_value, *year_values)
         menu_year_group.config(width='20')
@@ -240,6 +273,8 @@ class EditUser(tk.Frame):
 
         self.form_group_value = tk.StringVar(self.frame_edit_terms)
         self.entries.append(self.form_group_value)
+
+        # Form values to choose from.
         form_values = ['A', 'B', 'C', 'D', 'E', 'F']
         menu_form_group = tk.OptionMenu(self.frame_edit_terms, self.form_group_value, *form_values)
         menu_form_group.config(width='20')
@@ -260,6 +295,8 @@ class EditUser(tk.Frame):
         self.entries.append(self.password_value)
         ent_password = tk.Entry(self.frame_edit_terms, textvariable=self.password_value)
         ent_password.grid(row=7, column=1, pady=3, sticky='nsew')
+
+        # Buttons
 
         btn_confirm_edit = tk.Button(self.frame_edit_terms, text='Confirm edit', command=lambda: self.edit_account())
         btn_confirm_edit.grid(row=8, column=0, columnspan=2, pady=3, sticky='nsew')
@@ -294,18 +331,21 @@ class EditUser(tk.Frame):
         account_dict_keys = ('access_level', 'first_name', 'second_name',
                              'year_group', 'form_group', 'username', 'password')
 
+        # Check that user has sufficient permissions to change their access level.
         if self.access_value.get() == 'teacher' and self.user_info['access_level'] == 'student' and self.caller == 'StudentMenu':
             messagebox.showerror('Insufficient Permissions', 'Students cannot change their permissions to teacher level.')
-        
+
+        # If the user has sufficient permissions, commit the edit changes to the database. 
         else:
             for count, i in enumerate(self.entries):  # Get values and place in dictionary.
-                if count <= 3:  # converts first and second name to lowercase
+                if count <= 3:  # Converts first and second name to lowercase
                     edited_values[account_dict_keys[count]] = i.get().lower()
-                else:
+                else:  # Rest of values are not converted to lowercase.
                     edited_values[account_dict_keys[count]] = i.get()
-            logic.edit_user(user_id, edited_values)
+            logic.edit_user(user_id, edited_values)  # Write to the database
 
     def delete_user(self):
+        """Deletes the user defined in the instance's user_info['id']."""
 
         user_id = self.user_info['id']
         logic.delete_user(user_id)

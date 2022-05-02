@@ -1,6 +1,5 @@
 """Main menus for navigation"""
 
-from cgitb import text
 from main import tk
 
 class StartPage(tk.Frame):
@@ -8,11 +7,12 @@ class StartPage(tk.Frame):
 
     def __init__(self, parent, controller):
         """Initialise class values and create GUI elements"""
-        # initialise frame
-        tk.Frame.__init__(self, parent) # start tk frame class
+
+        # Initialise frame.
+        tk.Frame.__init__(self, parent) # Start tk frame class.
         self.controller = controller
 
-        # create GUI elements
+        # Create GUI elements.
         lbl_title = tk.Label(self, text='Start Page:')
         lbl_title.pack(pady=10)
 
@@ -29,12 +29,14 @@ class StudentMenu(tk.Frame):
     def __init__(self, parent, controller):
         """Initialise class values and create initial GUI elements"""
 
-        # Initialise frame 
+        # Initialise frame .
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        # GUI creation
-        # String var for student name, allows text to change.
+        # GUI creation.
+
+        # String var for student name, allows text to change with 
+        # .set() and text can be retrieved with .get().
         self.student_name = tk.StringVar(self, value='Student Name')
 
         lbl_student_title = tk.Label(self, textvariable=self.student_name)
@@ -42,6 +44,8 @@ class StudentMenu(tk.Frame):
 
         frame_student_actions = tk.Frame(self)
         frame_student_actions.pack(pady=3)
+
+        # Buttons to navigate through the program.
 
         btn_school_sign_in = tk.Button(frame_student_actions, text='Sign into school', command=lambda: self.controller.show_frame('SignIn'))
         btn_school_sign_in.grid(row=0, column=0, sticky='ew', pady=3, padx=3)
@@ -59,12 +63,16 @@ class StudentMenu(tk.Frame):
         self.btn_user_logout.pack(pady=3)
 
     def edit_user(self):
-        self.controller.frames['EditUser'].fill_string_vars(self.user_info, 'StudentMenu')
-        self.controller.show_frame('EditUser')
+        """Edit the own user's profile"""
+
+        # Fill in the EditUser frame with the signed in studnet's information.
+        self.controller.frames['EditUser'].fill_string_vars(self.user_info, self.__class__.__name__)
+        self.controller.show_frame('EditUser')  # Show the EditUser frame.
 
     def user_configure(self, user_info):
         """Changes the StudentMenu name field to the currently logged in 
         student's name"""
+
         self.user_info = user_info
         # Set the label to display the user's name and ID
         self.student_name.set('ID: {}\nName: {} {}'.format(user_info['id'], user_info['first_name'],
@@ -87,6 +95,8 @@ class TeacherMenu(StudentMenu):
 
         frame_teacher_actions = tk.Frame(self)
         frame_teacher_actions.pack()
+
+        # Buttons to navigate through the menu.
 
         btn_user_search = tk.Button(frame_teacher_actions, text='User Search', command=lambda: self.controller.show_frame('UserSearch'))
         btn_user_search.grid(row=2, column=0, sticky='ew', pady=3, padx=3)

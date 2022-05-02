@@ -36,10 +36,12 @@ class Gui(tk.Tk):
 
             # Initialise frame and assign reference 'frame' to frame.
             frame = F(parent=self.container, controller=self)
-            self.frames[F.__name__] = frame  # F.__name__ gets name of class,
-            # it then assigns the class reference to dictionary key.
+            # F.__name__ gets name of class, it then assigns 
+            # the created instances's reference to a 
+            # dictionary key with the name of the class.
+            self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky='nsew')  # Grid and let frames expand.
-
+            
         # Page setup
         self.title('6th Form Sign System')
         self.show_frame('StartPage')
@@ -47,7 +49,7 @@ class Gui(tk.Tk):
     def show_frame(self, page_name):
         """Raise specified frame class: page_name"""
         frame = self.frames[page_name]
-        frame.tkraise()  # Raises frame of argument.
+        frame.tkraise()  # Raises frame in argument.
 
     def set_session_id(self, session_id, user_info):
         """"Assign id to session, used for when signing in and out"""
@@ -70,15 +72,20 @@ class Gui(tk.Tk):
 
             # Initialise frame and assign reference 'frame' to frame
             frame = F(parent=self.container, controller=self)
-            self.frames[F.__name__] = frame  # F.__name__ gets name of class,
-            # it then assigns the class reference to dictionary key
-            frame.grid(row=0, column=0, sticky='nsew')  # Grid and let expand
+            self.frames[F.__name__] = frame  
+            # F.__name__ gets name of class, it then assigns 
+            # the created instances's reference to a 
+            # dictionary key with the name of the class.
+            frame.grid(row=0, column=0, sticky='nsew')  # Grid and let expand.
 
         self.show_frame('StartPage')
 
 
+# Do not run any of the code here unless the file is directly run
+# If the Python file is ran as a module, then __name__ is not set to main
+# and the code is not run.
 if __name__ == '__main__':
 
     app = Gui()
-    app.minsize(800, 400)
+    app.minsize(800, 400) # Define a minimum size for the GUI
     app.mainloop()
