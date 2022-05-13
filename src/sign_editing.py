@@ -1,6 +1,7 @@
 """Editing sign in and outs"""
 
 from datetime import datetime
+from email import message
 from tkinter import Y, ttk
 
 import logic
@@ -239,6 +240,8 @@ class SignSearch(tk.Frame):
             search_results = logic.search_signs(sign_in_or_out, search_terms)
 
         # Add search results to result listbox.
+        if search_results == False:
+            messagebox.showerror('Error', 'No sign ins / outs found. Please add a sign in / out entry.')       
         for i in search_results:
             self.list_search_results.insert(tk.END, ', '.join(map(str, i)))
 
