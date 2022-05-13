@@ -1,6 +1,8 @@
 """Account processes: logging in, signing up, logout"""
 
+# Import tkinter modules that allow for GUI creation
 from main import tk, messagebox
+# Import logic which allows for validation and writing to the database.
 import logic
 
 class SignUp(tk.Frame):
@@ -22,9 +24,11 @@ class SignUp(tk.Frame):
 
         self.entries = []  # Entries, StringVars stored in list for easier .get()
 
+        # Create a label that has the text ‘First Name:’.
         lbl_first_name = tk.Label(frame_user_input, text='First Name:')
         lbl_first_name.grid(row=0, column=0, pady=3)
 
+        # Create an entry for the user’s first name.
         self.ent_first_name = tk.Entry(frame_user_input)
         self.ent_first_name.grid(row=0, column=1, pady=3)
         self.entries.append(self.ent_first_name)
@@ -39,10 +43,16 @@ class SignUp(tk.Frame):
         lbl_year_group = tk.Label(frame_user_input, text='Year group:')
         lbl_year_group.grid(row=2, column=0)
 
+        # year_groups is a list of years that the user can select 
+        # from the listbox menu.
         year_groups = ['12', '13']
+        # Stores the current value of the listbox.
         self.year_value = tk.StringVar(frame_user_input, value='')
+        # Adds the current value to a list for easier retrieval.    
         self.entries.append(self.year_value)
 
+        # Create an option menu that allows the user to select what year group 
+        # they are in using the year_groups, and year_value.
         self.menu_year_group = tk.OptionMenu(frame_user_input, self.year_value, *year_groups)
         self.menu_year_group.grid(row=2, column=1, sticky='ew', pady=3)
         self.menu_year_group.config(width=16)
@@ -50,8 +60,10 @@ class SignUp(tk.Frame):
         lbl_form_group = tk.Label(frame_user_input, text='Form group:')
         lbl_form_group.grid(row=3, column=0)
 
+        # A list of form groups that can be selected from the listbox.
         form_list = ['A', 'B', 'C', 'D', 'E', 'D', 'F']
         self.form_value = tk.StringVar(frame_user_input, value='')
+        # Storest the current value in the listbox.
         self.entries.append(self.form_value)
 
         self.menu_form_group = tk.OptionMenu(frame_user_input, self.form_value, *form_list)
@@ -64,8 +76,6 @@ class SignUp(tk.Frame):
         self.ent_username = tk.Entry(frame_user_input)
         self.ent_username.grid(row=4, column=1, pady=3)
         self.entries.append(self.ent_username)
-
-        # <3 <3
 
         lbl_password = tk.Label(frame_user_input, text='Password:')
         lbl_password.grid(row=5, column=0, pady=3)
@@ -101,7 +111,8 @@ class SignUp(tk.Frame):
                              'password_repeat')
         
         for count, i in enumerate(self.entries):  # Get values and place in dictionary.
-            # Change the first name, and second name to lowercase.
+            # If the values are names (<=3 in the list), then remove 
+            # their capitalisation.
             if count <= 3:
                 account_variables[account_dict_keys[count]] = i.get().lower()
             # Leave the rest of the values unchanged.
@@ -116,8 +127,10 @@ class SignUp(tk.Frame):
 
         # Display success or error message.
         if create_user_result == True:
+            # If the process was successful, show a success message.
             messagebox.showinfo('Success', 'User was created')
         else:
+            # If the process was not successful, show an error message.
             messagebox.showerror('Failure', 'Field: {} \n{}'.format(create_user_result[1], create_user_result[2]))
 
 
@@ -158,33 +171,39 @@ class Login(tk.Frame):
     def login_check(self):
         """Checks username and password"""
 
+        # Get the username and password string.
         input_username = self.ent_username.get()
         input_password = self.ent_password.get()
+
+        # Execute a logic function that checks the database for matching
+        # usernames and passwords.
         login_result = logic.login(input_username, input_password)
-        print(login_result)
         
+        # If no matches are found, display an error message.
         if not login_result:
             messagebox.showerror('Failure', 'Incorrect username or password / No accounts created')
         else:
+            # If a match is found, collect that account's data into a dictionary
             account_info = {}
             account_dict_keys = ('id', 'access_level', 'first_name',
                                  'second_name', 'year_group',
                                  'form_group', 'username', 'password')
 
+            # Adding the account information into a dictionary. Dictionary keys
+            # are sourced from the account_dict_key tuple. 
             for count, i in enumerate(login_result[1][0]):
                 account_info[account_dict_keys[count]] = i
 
-            print(account_info)
+
             self.controller.set_session_id(account_info['id'], account_info)
-            print(self.controller.session_id)
-            print(self.controller.default_menu)
 
             # Show either student menu or teacher menu depending on the account's privelages.
             if account_info['access_level'] == 'student':
-                # 
+                # If the account is a student's show the student menu.
                 self.controller.frames['StudentMenu'].user_configure(account_info)
                 self.controller.show_frame('StudentMenu')
             else:
+                # If the account is a student's show the teacher menu.
                 self.controller.frames['TeacherMenu'].user_configure(account_info)
                 self.controller.show_frame('TeacherMenu')
 
@@ -209,6 +228,8 @@ class LogoutMenu(tk.Frame):
         tk.Grid.columnconfigure(logout_btn_frame, 0, weight=1)
         tk.Grid.columnconfigure(logout_btn_frame, 1, weight=1)
         tk.Grid.rowconfigure(logout_btn_frame, 0, weight=1)
+
+        # Confirmation buttons to confirm user's choice.
 
         self.btn_logout_confim = tk.Button(logout_btn_frame, text='Logout', command=lambda: self.logout())
         self.btn_logout_confim.grid(row=0, column=0, sticky='nsew', padx=(25,5), pady=(6,5))

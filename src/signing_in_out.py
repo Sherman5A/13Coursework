@@ -27,8 +27,9 @@ class SignIn(tk.Frame):
     def start_sign_in(self):
         """"Start a sign in"""
         
-        # Create a sign in instance.
+        # Create a sign in entry.
         logic.create_sign_in(str(self.controller.session_id))
+        # After creating the sign in, either show the student or teacher menu.
         self.controller.show_frame(self.controller.default_menu)
 
 
@@ -70,7 +71,7 @@ class SignOut(tk.Frame):
     def start_sign_out(self):
         """"Start sign out"""
         
-        # If the sign value wasn't selected, raise an errror message.
+        # If the sign value wasn't selected, raise an error message.
         if self.sign_value.get() == '':
             messagebox.showerror('Failure', 'Fill in the sign out reason')
         else: 
@@ -118,7 +119,7 @@ class SignHistory(tk.Frame):
 
     def clear_search_results(self):
         """Clears the list box of all entries"""
-
+        # Clears the sign history list from start to end.
         self.list_sign_history.delete(0, tk.END)
 
     def view_history(self):
@@ -129,7 +130,7 @@ class SignHistory(tk.Frame):
         # Get all sign in and out results.
         history_list = logic.sign_history()
         
-        # Itereate through the retrieved sign ins and outs, and insert them
+        # Iterate through the retrieved sign ins and outs, and insert them
         # into the list_sign_history listbox.
         for i in  history_list:
             i = list(i)

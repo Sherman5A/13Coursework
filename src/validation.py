@@ -14,7 +14,6 @@ def date_format_check(input):
     except ValueError:
         return False
 
-
 def time_format_check(input):
     """Validate times using the %H:%M:%S format."""
     
@@ -23,7 +22,7 @@ def time_format_check(input):
         datetime.strptime(input, '%H:%M:%S')
         return True
     # If there is an error in converting, either due to an
-    # impossible time, or a formatting error, return false
+    # impossible time, or a formatting error, return false.
     except ValueError:
         return False
 
@@ -36,15 +35,15 @@ def string_check(input):
    
         try:
             regex_result = re.match(regex_argument, input[i])
-            # Terminating condition
+            # Terminating condition.
             if i == len_input-1:
                 return True
             elif regex_result:
                 return False
-            # Continue iterating through
+            # Continue iterating through.
             else:
                 return recursion(i+1)
-        # If an index of input is not a string, return false
+        # If an index of input is not a string, return false.
         except TypeError:
             return False
 
@@ -52,10 +51,11 @@ def string_check(input):
     # a type error flag will be raised, triggering the except, returning false.
     regex_argument = re.compile('\d|[@;^&{}:\[\]()+=_`¬~#]')
     
+    # Try to get the length of the input.
     try: 
         len_input = len(input)
         return recursion(0)
-    
+    # If the input is the wrong type, return false.
     except TypeError:
         return False
 
@@ -73,7 +73,6 @@ def len_check(input, max_len):
     # data type, a type error flag will be raised,
     # triggering the except, returning false.
     except TypeError:
-        print('Incorrect data type')
         return False
 
 
@@ -104,7 +103,6 @@ def password_strength(input):
         return False
 
     # Check if password contains both lower and upper case characters.
-
     # Setting flags for the check
     upper_flag = True
     lower_flag = False
@@ -116,7 +114,7 @@ def password_strength(input):
         if i.islower() == True:
             lower_flag = True
     
-    # Return flase, true depending on the flags
+    # Return false, true depending on the flags
     if upper_flag == False:
         return False
     if lower_flag == False:

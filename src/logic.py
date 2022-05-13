@@ -1,6 +1,8 @@
-
+# Datetime is used to check if dates exist and are formatted correctly.
 from datetime import datetime
+# Validation is used to validate strings, integers, passwords, etc.
 import validation
+# SQL_interface is used to write and access the database.
 import SQL_interface
 
 
@@ -99,13 +101,16 @@ def login(input_username, input_password):
     sql_database = SQL_interface.sqlInterface('test.db')
     # Create connection to the database defined above ^
     sql_database.create_connection()
+    # Get all occurrences of the user's login inputs. 
     sql_search_login_details = sql_database.get_data(
         """SELECT id, access_level, first_name, second_name, year_group, 
         form_group, username, password FROM users WHERE username=? AND password=?""",
         (input_username, input_password))
+    # If the password and username match, then return true.
     try:
         if len(sql_search_login_details) == 1:
             return True, sql_search_login_details
+    # If there are no occurrences, return false
     except TypeError:   
         return False
 
@@ -144,6 +149,8 @@ def create_sign_out(student_id, sign_out_type):
     # Create connection to database.
     sql_database.create_connection()
 
+    # SQL command to create a sign out table. Avoids error if the table does not
+    # exist.
     sql_create_table = """CREATE TABLE IF NOT EXISTS sign_out (
         "sign_out_id" INTEGER,
         "date" TEXT NOT NULL,
@@ -153,8 +160,10 @@ def create_sign_out(student_id, sign_out_type):
         FOREIGN KEY("student_id") REFERENCES "users"("id") ON UPDATE CASCADE ON DELETE CASCADE,
         PRIMARY KEY("sign_out_id" AUTOINCREMENT)
         );"""
+    # Execute the create table command
     sql_database.create_table(sql_create_table)
-
+    
+    # Insert the sign out data into the created table.
     sql_database.insert_data(
         "INSERT INTO sign_out(date, time, student_id, sign_out_type) VALUES("
         "date('now'), time('now'), ?, ?)",
@@ -164,6 +173,8 @@ def create_sign_out(student_id, sign_out_type):
 def search_signs(sign_in_or_out, search_terms, time_tuple=None):
     """Searches the sign tables with the args provided."""
 
+    # Depending on the argument 'sign_in_or_out' either search the sign out
+    # or sign in the database table.
     if sign_in_or_out == 'sign out':
         sql_search = "SELECT * FROM sign_out"
     elif sign_in_or_out == 'sign in':
@@ -189,6 +200,7 @@ def search_signs(sign_in_or_out, search_terms, time_tuple=None):
 
     # Create SQL connection.
     sql_database = SQL_interface.sqlInterface('test.db')
+    # Connect to the database
     sql_database.create_connection()
     # Execute and return SQL search result.
     return sql_database.get_data(sql_search)
@@ -196,8 +208,11 @@ def search_signs(sign_in_or_out, search_terms, time_tuple=None):
 
 def sign_history():
 
+    # List to store all of the sign ins.
     all_signs = []
+    # Add all sign outs to the list.
     all_signs.extend(search_signs('sign out', {}))
+    # Add all sign ins to the list.
     all_signs.extend(search_signs('sign in', {}))
     # Performing a sort on the taken sign in and signs outs. It sorts by most recent to oldest.
     return sorted(all_signs, key=lambda x: datetime.strptime('{} {}'.format(x[1], x[2]), '%Y-%m-%d %H:%M:%S'), reverse=True)
@@ -210,15 +225,16 @@ def search_users(search_terms):
     if len(search_terms) != 0:
         sql_search = "SELECT * FROM users WHERE "
         # Takes keys, values, formats value, joins them with '=', and then
-        # adds 'AND' between dict keys. Finally, adds ';' to end of the string.
+        # adds 'AND' between dict keys. Finally, adds ';' to end the SQL statement.
         sql_search += ' AND '.join(
             '='.join((key, "'{}'".format(value))) for key, value in
             search_terms.items()) + ';'
     else:
         sql_search = "SELECT * FROM users;"
 
-    # Create SQL connection.
+    # Create a database interface class
     sql_database = SQL_interface.sqlInterface('test.db')
+    # Connect to the database using the interface class
     sql_database.create_connection()
     # Execute and return sql search result.
     return sql_database.get_data(sql_search)
@@ -226,55 +242,85 @@ def search_users(search_terms):
 
 def edit_user(user_id, edited_terms):
 
+    # Create the start of an SQL statement that updates the information of the 
+    # student given by user_id, with the terms provided in edited_terms.
     sql_statement = """UPDATE users """ \
                     """SET """
+    # Get the edited terms and add them to the SQL command with the correct
+    # formatting
     sql_statement += ', '.join('='.join((key, "'{}'".format(value))) for key, value in
                                   edited_terms.items()) + ' WHERE id = {};'.format(user_id)
     sql_database = SQL_interface.sqlInterface('test.db')
+    # Connect to the database using the interface class
     sql_database.create_connection()
+    # Execute the sql_statement created. This updates the user with the ID
+    # given in the argument.
     sql_database.insert_data(sql_statement)
 
 
 def delete_user(user_id):
 
+    # Create SQL statement to execute.
     sql_statement = """DELETE FROM users WHERE id = {};""".format(user_id)
-
+    # Create a database interface class.
     sql_database = SQL_interface.sqlInterface('test.db')
+    # Connect to the database using the interface class.
     sql_database.create_connection()
+    # Execute the sql_statement created. This deletes the user with the ID
+    # given in the argument.
     sql_database.insert_data(sql_statement)
 
 
 def edit_sign_in(sign_in_id, edited_terms):
     
+    # Create the start of an SQL statement that updates the information of the 
+    # sign in given by sign_in_id, with the terms provided in edited_terms.
     sql_statement = 'UPDATE sign_in SET '
+    # Format the edited terms into an SQL command
     sql_statement += ', '.join('='.join((key, "'{}'".format(value))) 
                                for key, value in edited_terms.items()) + ' WHERE sign_in_id = {};'.format(sign_in_id)
+    # Create a class that interfaces with the SQL database.
     sql_database = SQL_interface.sqlInterface('test.db')
+    # Connect to the SQL database.
     sql_database.create_connection()
+    # Execute the command, updating the sign in.
     sql_database.insert_data(sql_statement)
 
 
 def delete_sign_in(sign_in_id):
 
+    # Delete the sign in with the id, sign_in_id.
     sql_statement = 'DELETE FROM sign_in WHERE sign_in_id = {}'.format(sign_in_id)
+    # Create a class that interfaces with the SQL database.
     sql_database = SQL_interface.sqlInterface('test.db')
+    # Connect to the SQL database.
     sql_database.create_connection()
+    # Execute the command, deleting the sign in.
     sql_database.insert_data(sql_statement)
 
 
 def edit_sign_out(sign_out_id, edited_terms):
 
+    # SQL command that edits the sign out with the ID given in the arguments.
     sql_statement = 'UPDATE sign_out SET '
+    # Formatting the SQL statement correctly.
     sql_statement += ', '.join('='.join((key, "'{}'".format(value))) 
                                for key, value in edited_terms.items()) + ' WHERE sign_out_id = {};'.format(sign_out_id)
+    # Create a class that interfaces with the SQL database.
     sql_database = SQL_interface.sqlInterface('test.db')
+    # Connect to the SQL database.
     sql_database.create_connection()
+    # Execute the command, deleting the sign in.
     sql_database.insert_data(sql_statement)
 
 
 def delete_sign_out(sign_out_id):
-
+    
+    # Delete selected sign out.
     sql_statement = 'DELETE FROM sign_out WHERE sign_out_id = {}'.format(sign_out_id)
+    # Create a class that interfaces with the SQL database.
     sql_database = SQL_interface.sqlInterface('test.db')
+    # Connect to the SQL database.
     sql_database.create_connection()
+    # Execute the command, deleting the sign in.
     sql_database.insert_data(sql_statement)

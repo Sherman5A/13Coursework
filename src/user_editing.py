@@ -73,7 +73,7 @@ class UserSearch(tk.Frame):
 
         self.year_value = tk.StringVar(search_term_frame, value='')
         self.entries.append(self.year_value)
-        # Year groups that are avaiable to the user.
+        # Year groups that are available to the user.
         year_list = ['','12', '13']
 
         menu_year_search = tk.OptionMenu(search_term_frame, self.year_value, *year_list)
@@ -128,7 +128,7 @@ class UserSearch(tk.Frame):
 
     def clear_search_results(self):
         """Clears the list box of all entries"""
-
+        # Clears the search result list box
         self.list_search_results.delete(0, tk.END)
 
     def search_users(self):
@@ -148,7 +148,7 @@ class UserSearch(tk.Frame):
             # If the input is not empty, add it to the dictionary.
             search_terms[search_keys[count]] = i.get()
 
-        # Execute the database search
+        # Execute the database search.
         search_results = logic.search_users(search_terms)
         
         # Add the results of the database search to the ouput listbox.
@@ -327,7 +327,7 @@ class EditUser(tk.Frame):
 
         edited_values = {}
         user_id = self.user_info['id']
-        # Tuple to hold dict keys
+        # Tuple to hold dict keys.
         account_dict_keys = ('access_level', 'first_name', 'second_name',
                              'year_group', 'form_group', 'username', 'password')
 

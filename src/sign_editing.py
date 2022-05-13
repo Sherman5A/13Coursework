@@ -182,8 +182,7 @@ class SignSearch(tk.Frame):
 
         # Clear the list box.
         self.clear_search_results()
-        print(self.entries)
-
+        
         # Check if date box was populated.
         if len(self.entries[3].get()) != 0:
             # Check if date exists when using it in a search. Raise error if the date does not exist.
@@ -191,11 +190,16 @@ class SignSearch(tk.Frame):
                 messagebox.showerror('Failure', 'Date format incorrect or non-existent date')
                 return
 
+        # Get whether the user selected to search sign ins, sign outs, or both.
+        # Then call the respective function.
         sign_in_or_out = self.sign_value.get().lower()
         if sign_in_or_out == '' or sign_in_or_out == 'both':
+            # If both is selected, sign out and sign are called and their 
+            # results are combined.
             self.search_signs('sign out')
             self.search_signs('sign in')
         else:
+            # Otherwise, only the selected database in 'sign_in_or_out' is searched.
             self.search_signs(sign_in_or_out)
 
     def search_signs(self, sign_in_or_out):
@@ -292,13 +296,13 @@ class EditSignSearch(SignSearch):
                 sign_info[key] = value
 
             if len(sign_info) == 4:  # Menus to show and populate if the selected option is a sign in.
-                print(sign_info)
+                
                 # Populate edit menu boxes
                 self.controller.frames['EditSignIn'].fill_string_vars(sign_info)
                 # Show edit meun
                 self.controller.show_frame('EditSignIn')
             else:  # Menus to show and populate if the selected option is a sign out.
-                print(sign_info)
+                
                 # Populate edit menu boxes
                 self.controller.frames['EditSignOut'].fill_string_vars(sign_info)
                 # Show edit menu
@@ -388,7 +392,7 @@ class EditSignIn(tk.Frame):
 
         for count, i in enumerate(self.entries):  # Get values and place in dictionary
                 edited_values[sign_in_edited_dict_keys[count]] = i.get()
-        print(edited_values)
+        
         # Edit the sign in with the specified ID
         logic.edit_sign_in(sign_in_id, edited_values)
 
@@ -398,6 +402,7 @@ class EditSignIn(tk.Frame):
         sign_in_id = self.sign_in_info['sign_in_id']
         # Delete the sign in with the specified ID
         logic.delete_sign_in(sign_in_id)
+        # Return to the search menu after deleting the entry.
         self.controller.show_frame('EditSignSearch')
 
 
@@ -504,5 +509,6 @@ class EditSignOut(tk.Frame):
         sign_out_id = self.sign_out_info['sign_out_id']
         # Delete the sign out with the specified ID
         logic.delete_sign_out(sign_out_id)
+        # Return to the search menu after deleting the entry.
         self.controller.show_frame('EditSignSearch')
 
